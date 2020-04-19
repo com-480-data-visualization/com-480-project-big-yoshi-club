@@ -13,19 +13,26 @@ class roll{
         this.X0 = 0
         this.current = 0
         this.buffer = []
-
+        this.RADIUS = 5
         this.on = false
 
         //getting time intervals
         this.year0 = d3.max(this.data, d => parseInt(d['Last Known Eruption']))
         //scalings
+        let W = this.RADIUS + this.WIDTH
         this.x = d3.scaleLinear()
                     .domain([this.year0, this.year0 - this.YEAR_WINDOW])
-                    .range([this.X0, this.WIDTH])
+                    .range([this.X0, W])
         this.y = d3.scaleLinear()
                     .domain([d3.min(this.data, d => parseInt(d['Elevation'])) - 100, d3.max(this.data, d=> parseInt(d['Elevation'])) + 150])
                     .range([this.AXIS_HEIGHT, 0])
                     
+        this.svg.append('rect')
+                    .attr('fill', 'cyan')
+                    .attr('x', `${this.X0}`)
+                    .attr('y', '0')
+                    .attr('width', `${W}`)
+                    .attr('height', `${this.AXIS_HEIGHT}`)
         this.circles = this.svg.append('g')
 
 
@@ -46,6 +53,8 @@ class roll{
 
         d3.select('#slower')
             .style('background-image', 'url(ressources/imgs/slower.png)')
+
+
 
     }
 
@@ -70,8 +79,10 @@ class roll{
             .append('circle')
                 .attr('cy', d => this.y(d['Elevation']))
                 .attr('cx', d => (this.year0 - d['Last Known Eruption']) * this.WIDTH / this.YEAR_WINDOW)
-                .attr('r', 5)
+                .attr('r', this.RADIUS)
                 .style('fill', 'red')
+                .on('mouseover', mouseOver)
+                .on('mouseout', mouseOut)
     }
 
     update_points(){
@@ -92,7 +103,7 @@ class roll{
                 .transition()
                     .duration(d => 3.4 * this.TIME_WINDOW * (this.year0 - d['Last Known Eruption']) / this.YEAR_WINDOW)
                     .ease(d3.easeLinear)
-                    .attr('cx', this.X0)
+                    .attr('cx', this.X0 + this.RADIUS)
                     .on('end', () => {
                         this.buffer.shift()
                     })

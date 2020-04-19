@@ -9,17 +9,24 @@
 #button_div{
     float: left;
     width: 10%;
-    align-content: left;
+    align-content: right;
+    height: 80%;
+    padding : 1%;
 }
 
 #button_div button{
     display: block;
-    width: 100%;
+    width: 67%;
     height: 25%;
     background-repeat: no-repeat;
     background-size: contain;
     background-color: inherit;
     border: 0;
+    float: right;
+}
+
+#button_div button:hover{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.274);
 }
 
 #plot_roll{
