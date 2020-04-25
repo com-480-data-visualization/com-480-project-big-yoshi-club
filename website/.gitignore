@@ -1,0 +1,4 @@
+# Folder containing the source code of all dependencies
+# It is usually better to ignore it and use `npm install`
+# to reinstall dependencies after cloning the project.
+node_modules/
