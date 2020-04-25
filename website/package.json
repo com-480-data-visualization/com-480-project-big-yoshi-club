@@ -2,10 +2,10 @@
   "name": "com-480-project-big-yoshi-club",
   "version": "1.0.0",
   "description": "COM-480 Data Visualization Project",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
