@@ -2,11 +2,55 @@
 
 <html>
 	<head>
-		<script src="https://d3js.org/d3.v5.min.js"></script>
 		<link rel = 'stylesheet' href = 'css/style.css'>
+		<script src = "https://d3js.org/d3.v5.min.js"></script>
+		
 	</head>
 
 	<body>
-		<h1>Hello World!</h1>
+		<div id="content">
+			<h1>Visualisation Title</h1>
+
+			<div id="vis-box">
+				<!-- Map, timelines and controls -->
+				<div id="left-col">
+					<img id="map" src="img/world.svg" alt="worldmap">
+					<div id="timelines">
+						<svg>
+							<text>Volcanoes timeline</text>
+						</svg>
+						<svg>
+							<text>Earthquakes timeline</text>
+						</svg>
+						<svg>
+							<text>Meteors timeline</text>
+						</svg>
+					</div>
+					<svg id="time-controls">
+						<text>Time controls</text>
+					</svg>
+				</div>
+
+				<!-- Filters and stats -->
+				<div id="right-col">
+					<div id="filters">
+						<h2>Filters</h2>
+						<ul>
+							<li>Volcanoes</li>
+							<li>Earthquakes</li>
+							<li>Meteors</li>
+						</ul>
+					</div>
+					<div id="controls">
+						<h2>Controls</h2>
+						<ul>
+							<li>Stats</li>
+							<li>Plots</li>
+							<li>Etc.</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>

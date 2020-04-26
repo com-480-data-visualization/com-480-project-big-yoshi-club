@@ -12,6 +12,7 @@ const port = 3000
 app.use('/html', express.static('html'))
 app.use('/js', express.static('js'))
 app.use('/css', express.static('css'))
+app.use('/img', express.static('img'))
 
 // Serve main HTML file
 app.get('/', (req, res) => {

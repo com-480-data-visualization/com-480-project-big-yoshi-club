@@ -1,3 +1,75 @@
-h1 {
-	color: blueviolet;
+#content {
+	width: 80%;
+
+	border: 2px dashed;
+
+	/* Center horizontally */
+	margin: 0 auto;
+
+	padding: 15px;
+}
+
+#content h1 {
+	text-align: center;
+}
+
+#vis-box {
+	/* Use horizontal flex for side by side columns */
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+#left-col {
+	border: 1px dashed;
+
+	width: 68%;
+
+	padding: 5px;
+
+	display: flex;
+	flex-direction: column;
+}
+
+#left-col svg text, #time-controls text {
+	font-size: large;
+	text-anchor: middle;
+	transform: translate(50%, 60%);
+}
+
+#right-col {
+	border: 1px dashed;
+
+	width: 30%;
+
+	padding: 5px;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#right-col div {
+	height: 50%;
+}
+
+#map {
+	align-self: center;
+	width: 100%;
+}
+
+#timelines {
+	display: flex;
+	flex-direction: column;
+}
+
+#timelines svg {
+	margin: 5px;
+
+	border: dashed 1px;
+}
+
+#time-controls {
+	border: dashed 1px;
+	margin: 5px;
 }
