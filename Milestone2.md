@@ -69,7 +69,6 @@
 ## 3.4 Extra Ideas
 
 - Select data by region instead of brush
-- Secret button to display every point as a bigg yoshi
 
 ## 3.5 Skeleton Website
 
@@ -79,5 +78,7 @@ To see our skeleton website, run the following commands:
 $ cd website/
 $ npm install && npm start
 ```
+
+And then open `http://localhost:3000` in your web browser.
 
 We already have a "working" prototype of the timelapses. To see it in action, refer to instructions in `roll/README.txt`.
