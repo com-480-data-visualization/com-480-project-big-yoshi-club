@@ -79,3 +79,5 @@ To see our skeleton website, run the following commands:
 $ cd website/
 $ npm install && npm start
 ```
+
+We already have a "working" prototype of the timelapses. To see it in action, refer to instructions in `roll/README.txt`.
