@@ -28,19 +28,19 @@ The project is mainly aimed at enthusiasts of earthquakes, volcanoes and meteor 
 
 As mentioned previously, this dataset mainly contains Earthquakes (99.23% of the dataset). We show the distribution of the other types contained in the dataset in *Fig. 1*:
 
-![Fig. 1](Earthquakes/classes.png)
+![Fig. 1](data/Earthquakes/classes.png)
 
 *Fig. 1: Other than Earthquakes, the dataset contains 175 accounts of Nuclear Explosions, 4 accounts of Explosions and 1 event of a Rock Burst which happened in 2010 in the Indian Ocean.*
 
 *Fig. 2* shows the distribution of the Earthquake Magnitudes:
 
-![Fig. 2](Earthquakes/Magnitude.png)
+![Fig. 2](data/Earthquakes/Magnitude.png)
 
 *Fig. 2*
 
 Finally, in *Fig. 3* we plot the number of occurrences of earthquakes per year:
 
-![Fig. 3](Earthquakes/year.png)
+![Fig. 3](data/Earthquakes/year.png)
 
 *Fig. 3*
 
@@ -48,19 +48,19 @@ Finally, in *Fig. 3* we plot the number of occurrences of earthquakes per year:
 
 In *Fig. 4*, we see that out of the 290 meteorite classes present in the valid data, only 6 of them include more than 1000 data points: L6, H5, H4, H6, L5, and LL5. Although we want to map each class to more easy to understand categories (e.g. composition), the distribution of data points within them may well be just as irregular.
 
-![Fig. 4](MeteoriteLandings/classes.png)
+![Fig. 4](data/MeteoriteLandings/classes.png)
 
 *Fig. 4*
 
 In *Fig. 5*, we see the strike distribution over time is also very irregular, with most data points lying between 1972 and 2013, and spanning from 860 CE to 2013 CE. This may be due to more measurements and deliberate observations being done in that era, compared to more ancient times, as observed falls seem to be more spread out over time.
 
-![Fig. 5](MeteoriteLandings/years.png)
+![Fig. 5](data/MeteoriteLandings/years.png)
 
 *Fig. 5*
 
 In *Fig. 6*, we see recorded meteorite masses range from 0.01g to 60,000 kg, with a median at ~30g (orange line). We can see a large majority of all meteorites are very light.
 
-![Fig. 6](MeteoriteLandings/mass.png)
+![Fig. 6](data/MeteoriteLandings/mass.png)
 
 *Fig. 6*
 
@@ -72,13 +72,13 @@ Finally, we notice very few meteorite falls were actually witnessed (only ~3%, 1
 
 As we can see in *Fig. 7*, the distribution of the last known eruptions are really concentrated in the past 50 years or so with a large amount in the last 5 years from 2018 (when the dataset was created).
 
-![Fig. 7](volcanoes/age.png)
+![Fig. 7](data/volcanoes/age.png)
 
 *Fig. 7*
 
 The elevations (given in meters with respect to sea level) lie between -5700 and 6879 meters and the average height is 1688.
 
-![Fig. 8](volcanoes/elevations.png)
+![Fig. 8](data/volcanoes/elevations.png)
 
 *Fig. 8*
 
@@ -88,13 +88,13 @@ As for the primary volcano type, the dominant rock type and the tectonic setting
 
 There are 33 types of volcano types. They express the nature of the volcano (the form or the surroundings). There are 11 rock types and 10 tectonic settings. The rock types distribution is shown in the next figure, where we can see that *basalt / picro-basalt* and *andesite / basaltic andesite* are the most common.
 
-![Fig. 9](volcanoes/rock_types.png)
+![Fig. 9](data/volcanoes/rock_types.png)
 
 *Fig. 9*
 
 The tectonic settings can be regrouped into 3 categories: *Rift zone*, *Intraplate*, and *Subduction* zone. The distribution is given in *Fig. 10*.
 
-![Fig. 10](volcanoes/tectonic_settings.png)
+![Fig. 10](data/volcanoes/tectonic_settings.png)
 
 *Fig. 10*
 
