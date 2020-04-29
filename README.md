@@ -12,13 +12,9 @@
 
 [Milestone 1 Report](Milestone1.md)
 
-
 ## Milestone 2 (Friday 1st May, 5pm)
 
-**10% of the final grade**
-
-
-
+[Milestone 2 Report](Milestone2.md)
 
 ## Milestone 3 (Thursday 28th May, 5pm)
 
