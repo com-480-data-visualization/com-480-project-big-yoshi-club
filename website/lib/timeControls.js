@@ -69,12 +69,12 @@ class TimelineControl {
 
 		// Create time window rectangle that defines the time window [twLoBnd, twUpBnd]
 		// (Style that does not depend on time window bounds is handled in CSS)
-		const tcw_x = (this.twLoBnd.getTime() - this.minDate.getTime()) / (this.maxDate.getTime() - this.minDate.getTime())
-		const tcw_w = (this.twUpBnd.getTime() - this.twLoBnd.getTime()) / (this.maxDate.getTime() - this.minDate.getTime())
+		const scale_x = d3.scaleLinear().domain([this.minDate.getTime(), this.maxDate.getTime()]).range([0, 100])
+		const tcw_x = scale_x(this.twLoBnd)
+		const tcw_w = scale_x(this.twUpBnd) - scale_x(this.twLoBnd)
 		this.svg.append("rect").attr("id", "time-control-window")
-			// Convert ratios in strings representing a percentage
-			.style("x", `${tcw_x * 100}%`)
-			.style("width", `${tcw_w * 100}%`)
+			.style("x", `${tcw_x}%`)
+			.style("width", `${tcw_w}%`)
 
 		// Add lower/upper bound labels
 		const tcw_lox = tcw_x
@@ -83,13 +83,13 @@ class TimelineControl {
 			.text(`${this.twLoBnd.getFullYear()}`)
 			.attr("class", "time-control-twlo-year")
 			.attr("text-anchor", "start")
-			.attr("x", `${tcw_lox * 100}%`)
+			.attr("x", `${tcw_lox}%`)
 			.attr("y", "88%")
 		this.svg.append("text")
 			.text(`${this.twUpBnd.getFullYear()}`)
 			.attr("class", "time-control-twup-year")
 			.attr("text-anchor", "end")
-			.attr("x", `${tcw_upx * 100}%`)
+			.attr("x", `${tcw_upx}%`)
 			.attr("y", "88%")
 	}
 }
