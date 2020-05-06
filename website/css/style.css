@@ -33,8 +33,9 @@
 
 #left-col svg text, #time-controls text {
 	font-size: large;
-	text-anchor: middle;
+	/**text-anchor: middle;
 	transform: translate(50%, 60%);
+	*/
 }
 
 #right-col {

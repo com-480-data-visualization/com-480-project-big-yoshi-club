@@ -1,6 +1,8 @@
 class Roll{
-    constructor(data, svg){
+    constructor(data, svg, type, time_accessor){
         this.svg = d3.select('#' + svg)
+        this.type = type
+        this.time_accessor = time_accessor
         this.data = data
         const svg_viewbox = this.svg.node().viewBox.animVal;
         console.log(svg_viewbox)
