@@ -4,7 +4,7 @@ class Yoshi {
         this.data = data
         this.map_svg = map_svg
         this.roll_svgs = roll_svgs
-        this.projection_style = d3.geoNaturalEarth1()
+        this.projection_style = d3.geoGnomonic()
 
         d3.select('#projection-dropdown')
             .on('click', () => this.projection_select())
@@ -99,12 +99,14 @@ window.onclick = function (event) {
 
     if (event.target.id === "Gnomonic") {
         this.projection_style = d3.geoGnomonic()
-
+        console.log(this.data)
         this.map = new Map('map', this.data, this.projection_style)
 
     }
     else if (event.target.id == "Natural") {
         this.projection_style = d3.geoNaturalEarth1()
+        console.log(this)
+        console.log(this.data)
         this.map = new Map('map', this.data, this.projection_style)
         //this.map = new Map(map_svg, data)
 
