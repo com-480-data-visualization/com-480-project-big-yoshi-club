@@ -13,6 +13,7 @@ app.use('/html', express.static('html'))
 app.use('/js', express.static('js'))
 app.use('/css', express.static('css'))
 app.use('/img', express.static('img'))
+app.use('/data', express.static('data'))
 
 // Serve main HTML file
 app.get('/', (req, res) => {

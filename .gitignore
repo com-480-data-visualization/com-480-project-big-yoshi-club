@@ -1,5 +1,5 @@
 # Heavy data files
-*.csv
+#*.csv
 # Jupyter Notebook cache
 .ipynb_checkpoints/
 # Vscode config
