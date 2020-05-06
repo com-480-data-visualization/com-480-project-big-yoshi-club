@@ -1,51 +1,37 @@
 class Roll{
-    constructor(parent, data, svg, type, time_accessor){
+    /**
+     * 
+     * @param {parent object managing time and data} parent 
+     * @param {data to be displayed} data 
+     * @param {svg of the Roll} svg 
+     * @param {Type of data (either 'V', 'E' or 'M')} type 
+     * @param {column name for the year of the data} time_accessor 
+     */
+    constructor(parent, data, svg,type, time_accessor){
         this.parent = parent
         this.svg = d3.select('#' + svg)
         this.type = type
         this.time_accessor = time_accessor
         this.data = data
         const svg_viewbox = this.svg.node().viewBox.animVal;
-        console.log(svg_viewbox)
         this.WIDTH = svg_viewbox.width
         this.HEIGHT = svg_viewbox.height
-        this.YEAR_WINDOW = 1000
-        this.TIME_WINDOW = 1000 * 5
         this.AXIS_HEIGHT = this.HEIGHT * 0.8
         this.X0 = 0
-        this.current = 0
         this.buffer = []
         this.RADIUS = 5
-        this.on = false
+        //this.on = false
 
         //scalings
         let W = this.RADIUS + this.WIDTH
         this.x = d3.scaleLinear()
-                    .domain([this.parent.oldest, this.parent.oldest - this.YEAR_WINDOW])
+                    .domain([this.parent.oldest, this.parent.oldest - this.parent.window])
                     .range([this.X0, W])
 
-        if(this.type = 'V'){
-            this.y = d3.scaleLinear()
-                    .domain([d3.min(this.data, d => d['Elevation']) - 100, d3.max(this.data, d=> d['Elevation']) + 150])
-                    .range([this.AXIS_HEIGHT, 0])
-        } else if(this.type = 'E'){
-            this.y = d3.scaleLinear()
-                .domain([d3.min(this.data, d => d['Depth']) - 100, d3.max(this.data, d=> d['Depth']) + 150])
+        this.y = d3.scaleLinear()
+                .domain([d3.min(this.data, d => d['Elevation']) - 100, d3.max(this.data, d=> d['Elevation']) + 150])
                 .range([this.AXIS_HEIGHT, 0])
-        } else if(this.type = 'M'){
-            this.y = d3.scaleLinear()
-                .domain([d3.min(this.data, d => d['mass']) - 100, d3.max(this.data, d=> d['mass']) + 150])
-                .range([this.AXIS_HEIGHT, 0])
-        }else{
-            console.error(`type mismatch, ${this.type} is not a valid type of data`)
-        }
                     
-        this.svg.append('rect')
-                    .attr('fill', 'cyan')
-                    .attr('x', `${this.X0}`)
-                    .attr('y', '0')
-                    .attr('width', `${W}`)
-                    .attr('height', `${this.AXIS_HEIGHT}`)
         this.circles = this.svg.append('g')
 
 
@@ -70,19 +56,18 @@ class Roll{
     }
 
     update_current(){
-        while(this.data[this.current][this.time_accessor] >= this.parent.oldest - this.YEAR_WINDOW){  //if before end of window
-            if(parseInt(this.data[this.current][this.time_accessor]) < this.parent.oldest){               //if after start of window
-                this.buffer.push(this.data[this.current])                                           //add point to buffer
+        while(this.data[this.parent.year0][this.time_accessor] >= this.parent.oldest - this.YEAR_WINDOW){  //if before end of window
+            if(parseInt(this.data[this.parent.year0][this.time_accessor]) < this.parent.oldest){               //if after start of window
+                this.buffer.push(this.data[this.parent.year0])                                           //add point to buffer
             }
-            this.current++;
         }
     }
 
     //draws the points that are in the interval [year0, year0 - YEAR_WINDOW]
     draw_points(){
-        while(this.data[this.current]['Last Known Eruption'] == this.year0 - this.YEAR_WINDOW){
-            this.buffer.push(this.data[this.current])
-            this.current = this.current+1
+        while(this.data[this.parent.year0]['Last Known Eruption'] == this.year0 - this.YEAR_WINDOW){
+            this.buffer.push(this.data[this.parent.year0])
+            this.parent.year0 = this.parent.year0 + 1
         }
         this.circles.selectAll('circle')
             .data(this.buffer)
@@ -97,9 +82,9 @@ class Roll{
     }
 
     update_points(){
-        while(parseInt(this.data[this.current]['Last Known Eruption']) == this.year0 - this.YEAR_WINDOW){
-            this.buffer.push(this.data[this.current])
-            this.current = this.current+1
+        while(parseInt(this.data[this.parent.year0]['Last Known Eruption']) == this.year0 - this.YEAR_WINDOW){
+            this.buffer.push(this.data[this.parent.year0])
+            this.parent.year0 = this.parent.year0 + 1
         }
         this.circles.selectAll('circle')
             .data(this.buffer)

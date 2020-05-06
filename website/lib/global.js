@@ -23,8 +23,10 @@ class Yoshi {
         console.log(this.youngest)
         //time management
         this.on = false
-        //this.time_window = 50
+
         //this.year0 = this.oldest
+        //this.speed = 10
+        //this.window = 100
 
         //print examples for each data
         let a = data[0][0]
@@ -37,9 +39,8 @@ class Yoshi {
         this.map = new Map('map', this.data, this.projection_style)
 
         this.volcano_roll = new Roll(this, data[0], roll_svgs[0], 'V', 'Last Known Eruption')
-        this.earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'E', 'Date')
-        this.meteores_roll = new Roll(this, data[2], roll_svgs[2], 'M', 'year')
-
+        //this.earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'E', 'Date')
+        //this.meteores_roll = new Roll(this, data[2], roll_svgs[2], 'M', 'year')
 
         // Add timeline controls and display
         const svgId = "#time-controls"
@@ -65,7 +66,7 @@ class Yoshi {
     start() {
         this.on = true
         while (this.on) {
-            this.tick()
+            setInterval( () => tick(), 100)
         }
     }
 
@@ -80,6 +81,9 @@ class Yoshi {
     }
 
     tick() {
+        this.volcano_roll.update_points()
+        //this.earthquakes_roll.update_points()
+        //this.meteores_roll.update_points()
         //update map
         //update rolls
         // this.map = new Map(data)
