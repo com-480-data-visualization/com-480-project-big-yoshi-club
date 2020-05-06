@@ -1,5 +1,6 @@
 class Roll{
-    constructor(data, svg, type, time_accessor){
+    constructor(parent, data, svg, type, time_accessor){
+        this.parent = parent
         this.svg = d3.select('#' + svg)
         this.type = type
         this.time_accessor = time_accessor
@@ -17,16 +18,27 @@ class Roll{
         this.RADIUS = 5
         this.on = false
 
-        //getting time intervals
-        this.year0 = d3.max(this.data, d => parseInt(d['Last Known Eruption']))
         //scalings
         let W = this.RADIUS + this.WIDTH
         this.x = d3.scaleLinear()
-                    .domain([this.year0, this.year0 - this.YEAR_WINDOW])
+                    .domain([this.parent.oldest, this.parent.oldest - this.YEAR_WINDOW])
                     .range([this.X0, W])
-        this.y = d3.scaleLinear()
-                    .domain([d3.min(this.data, d => parseInt(d['Elevation'])) - 100, d3.max(this.data, d=> parseInt(d['Elevation'])) + 150])
+
+        if(this.type = 'V'){
+            this.y = d3.scaleLinear()
+                    .domain([d3.min(this.data, d => d['Elevation']) - 100, d3.max(this.data, d=> d['Elevation']) + 150])
                     .range([this.AXIS_HEIGHT, 0])
+        } else if(this.type = 'E'){
+            this.y = d3.scaleLinear()
+                .domain([d3.min(this.data, d => d['Depth']) - 100, d3.max(this.data, d=> d['Depth']) + 150])
+                .range([this.AXIS_HEIGHT, 0])
+        } else if(this.type = 'M'){
+            this.y = d3.scaleLinear()
+                .domain([d3.min(this.data, d => d['mass']) - 100, d3.max(this.data, d=> d['mass']) + 150])
+                .range([this.AXIS_HEIGHT, 0])
+        }else{
+            console.error(`type mismatch, ${this.type} is not a valid type of data`)
+        }
                     
         this.svg.append('rect')
                     .attr('fill', 'cyan')
@@ -58,8 +70,8 @@ class Roll{
     }
 
     update_current(){
-        while(parseInt(this.data[this.current]['Last Known Eruption']) >= this.year0 - this.YEAR_WINDOW){  //if before end of window
-            if(parseInt(this.data[this.current]['Last Known Eruption']) < this.year0){               //if after start of window
+        while(this.data[this.current][this.time_accessor] >= this.parent.oldest - this.YEAR_WINDOW){  //if before end of window
+            if(parseInt(this.data[this.current][this.time_accessor]) < this.parent.oldest){               //if after start of window
                 this.buffer.push(this.data[this.current])                                           //add point to buffer
             }
             this.current++;
@@ -68,7 +80,7 @@ class Roll{
 
     //draws the points that are in the interval [year0, year0 - YEAR_WINDOW]
     draw_points(){
-        while(parseInt(this.data[this.current]['Last Known Eruption']) == this.year0 - this.YEAR_WINDOW){
+        while(this.data[this.current]['Last Known Eruption'] == this.year0 - this.YEAR_WINDOW){
             this.buffer.push(this.data[this.current])
             this.current = this.current+1
         }
