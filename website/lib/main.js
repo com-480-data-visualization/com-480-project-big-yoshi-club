@@ -16,7 +16,7 @@ whenDocumentLoaded(() => {
         let volc = files[0]
         let earth = files[1]
         let mete = files [2]
-
+        new Yoshi(files, 'map_svg', ['volcano_svg', 'earthquakes_svg','meteores_svg'])
     }).catch(function(err){
         console.err(err)
     })
