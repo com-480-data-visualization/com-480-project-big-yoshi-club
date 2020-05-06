@@ -80,7 +80,7 @@ class Roll{
 
     //draws the points that are in the interval [year0, year0 - YEAR_WINDOW]
     draw_points(){
-        while(parseInt(this.data[this.current]['Last Known Eruption']) == this.year0 - this.YEAR_WINDOW){
+        while(this.data[this.current]['Last Known Eruption'] == this.year0 - this.YEAR_WINDOW){
             this.buffer.push(this.data[this.current])
             this.current = this.current+1
         }

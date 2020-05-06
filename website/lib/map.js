@@ -1,5 +1,3 @@
-
-
 class Map{
     constructor(svg_element_id){
         this.svg = d3.select('#' + svg_element_id);
