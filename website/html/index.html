@@ -6,6 +6,9 @@
 		<script src = "https://d3js.org/d3.v5.min.js"></script>
 		<script src="lib/topojson.min.js"></script>
 		<script src = "lib/main.js"></script>
+		<script src = "lib/map.js"></script>
+		<script src = "lib/roll.js"></script>
+		<script src = "lib/global.js"></script>
 		
 	</head>
 
@@ -17,14 +20,15 @@
 				<!-- Map, timelines and controls -->
 				<div id="left-col">
 					<img id="map" src="img/world.svg" alt="worldmap">
+					<svg id = 'map_svg'></svg>
 					<div id="timelines">
-						<svg>
+						<svg id = 'volcano_svg'>
 							<text>Volcanoes timeline</text>
 						</svg>
-						<svg>
+						<svg id = 'earthquakes_svg'>
 							<text>Earthquakes timeline</text>
 						</svg>
-						<svg>
+						<svg id = 'meteores_svg'>
 							<text>Meteors timeline</text>
 						</svg>
 					</div>
