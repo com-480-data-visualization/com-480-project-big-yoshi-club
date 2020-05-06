@@ -22,9 +22,9 @@ class Yoshi {
 
         //time management
         this.on = false
-        this.year0 = oldest
+        this.year0 = oldest - 10000
         this.speed = 10
-        this.window = 1000
+        this.window = 2000
         d3.select('#start-stop')
                 .style('background-image', 'url(img/play.png)')
                 .style('background-size', 'cover')
@@ -37,18 +37,11 @@ class Yoshi {
 
         //this.map = new Map('map', this.data, this.projection_style)
 
-        this.volcano_roll = new Roll(
-            this,
-            data[0],
-            roll_svgs[0],
-            'V',
-            'Last Known Eruption',
-            'Elevation'
-        )
-
-        //this.earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'E', 'Date')
-        //this.meteores_roll = new Roll(this, data[2], roll_svgs[2], 'M', 'year')
-
+        let volcano_roll = new Roll(this, data[0], roll_svgs[0], 'V', 'Last Known Eruption', 'Elevation')
+        let earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'E', 'Date', 'Depth')
+        let meteores_roll = new Roll(this, data[2], roll_svgs[2], 'M', 'year', 'mass')
+        this.rolls = [volcano_roll, earthquakes_roll, meteores_roll
+        ]
         // Add timeline controls and display
         const svgId = "#time-controls"
         const minDate = new Date(860, 1, 1)
@@ -72,7 +65,12 @@ class Yoshi {
         d3.select('#start-stop')
             .style('background-image', 'url(img/pause.png)')
             .on('click', () => this.stop())
+        
+        this.rolls.forEach(r =>{
+            r.move_points()
+        })
         this.interval = setInterval( () => this.tick(), this.speed)
+
     }
     stop() {
         console.log('stop')
@@ -81,19 +79,25 @@ class Yoshi {
         d3.select('#start-stop')
             .style('background-image', 'url(img/play.png)')
             .on('click', () => this.start())
+        this.rolls.forEach(r =>{
+            r.stop_points()
+        })
         //draw static points
     }
 
     reset() {
-        this.on = false
+        this.stop()
+        this.year0 = this.oldest
+        this.tick()
         console.log('reset')
         //draw static points
     }
 
     tick() {
         this.year0 = this.year0 - 1
-        this.volcano_roll.update_axis()
-        this.volcano_roll.update_points()
+        this.rolls.forEach(r => {
+            r.update_axis()
+        })
     }
 
 

@@ -16,7 +16,7 @@ class Roll{
         const svg_viewbox = this.svg.node().viewBox.animVal;
         this.WIDTH = svg_viewbox.width
         this.HEIGHT = svg_viewbox.height
-        this.AXIS_HEIGHT = this.HEIGHT * 0.82
+        this.AXIS_HEIGHT = this.HEIGHT * 0.85
         this.X0 = 55
         this.buffer = []
         this.RADIUS = 5
@@ -27,7 +27,7 @@ class Roll{
         //scalings
         let W = this.RADIUS + this.WIDTH
         this.x = d3.scaleLinear()
-                    .domain([this.parent.oldest + 5, this.parent.oldest - this.parent.window - 5])
+                    .domain([this.parent.year0 + 5, this.parent.year0 - this.parent.window - 5])
                     .range([this.X0, W])
 
         this.y = d3.scaleLinear()
@@ -36,7 +36,7 @@ class Roll{
                     
         this.circles = this.svg.append('g')
 
-
+        this.set_current()
         this.update_current()
         this.draw_points()
         this.draw_axis()
@@ -55,6 +55,16 @@ class Roll{
 
         }
     }
+    /**
+     * finds the current index
+     */
+    set_current(){
+        let i = 0
+        while(this.data[i][this.time_accessor] >= this.parent.year0 & i < this.data.length){
+            i++
+        }
+        this.current = i
+    }
 
     //draws the points that are in the interval [year0, year0 - YEAR_WINDOW]
     draw_points(){
@@ -70,28 +80,23 @@ class Roll{
                 .on('mouseout', mouseOut)
     }
 
-    update_points(){
-        this.update_current()
+    move_points(){
         this.circles.selectAll('circle')
-            .data(this.buffer)
-            .enter()
-            .append('circle')
-                .attr('cy', d => this.y(d[this.y_attribute]))
-                .attr('cx', d => this.x(d[this.time_accessor]))
-                .attr('r', '5')
-                .style('fill', 'red')
-                .on('mouseover', mouseOver)
-                .on('mouseout', mouseOut)
-                .transition()
-                    .duration(d => 1)
-                    .ease(d3.easeLinear)
-                    .attr('cx', this.X0 + this.RADIUS)
-                    .on('end', () => {
-                        this.buffer.shift()
-                    })
-                    .remove()
+            .transition()
+            .ease(d3.easeLinear)
+            .duration(d =>  this.parent.speed * (this.parent.year0 - d[this.time_accessor]))
+            .attr('cx', d => this.X0)
+            .on('end', () => {
+                this.buffer.shift()
+            })
+            .remove()
     }
 
+    stop_points(){
+        this.circles.selectAll('circle')
+        .transition()
+        .duration(0)
+    }
     draw_axis(){
         //axis
         this.x.domain([this.parent.year0, this.parent.year0 - this.parent.window])
