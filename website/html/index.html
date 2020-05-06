@@ -4,6 +4,7 @@
 	<head>
 		<link rel = 'stylesheet' href = 'css/style.css'>
 		<script src = "https://d3js.org/d3.v5.min.js"></script>
+		<script src="lib/topojson.min.js"></script>
 		<script src = "lib/main.js"></script>
 		<script src = "lib/map.js"></script>
 		<script src = "lib/roll.js"></script>
@@ -18,8 +19,17 @@
 			<div id="vis-box">
 				<!-- Map, timelines and controls -->
 				<div id="left-col">
-					<img id="map" src="img/world.svg" alt="worldmap">
-					<svg id = 'map_svg'></svg>
+					<div id="map-space">
+						<svg id = "map" viewBox="0 0 1000 550" width="550" height="300">
+							<style>
+								.country {
+									stroke: rgb(243, 254, 254);
+									stroke-width: 1px;
+								}
+							</style>	
+						</svg>
+					</div>
+					
 					<div id="timelines">
 						<svg id = 'volcano_svg' viewBox = '-5 -5 1205 205'></svg>
 						<svg id = 'earthquakes_svg' viewBox = '-5 -5 1205 205'></svg>
