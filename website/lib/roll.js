@@ -4,10 +4,10 @@ class Roll{
      * @param {parent object managing time and data} parent 
      * @param {data to be displayed} data 
      * @param {svg of the Roll} svg 
-     * @param {Type of data (either 'V', 'E' or 'M')} type 
+     * @param {type of data (either 'V', 'E' or 'M')} type 
      * @param {column name for the year of the data} time_accessor 
      */
-    constructor(parent, data, svg,type, time_accessor){
+    constructor(parent, data, svg,type, time_accessor, y_attribute){
         this.parent = parent
         this.svg = d3.select('#' + svg)
         this.type = type
@@ -16,20 +16,22 @@ class Roll{
         const svg_viewbox = this.svg.node().viewBox.animVal;
         this.WIDTH = svg_viewbox.width
         this.HEIGHT = svg_viewbox.height
-        this.AXIS_HEIGHT = this.HEIGHT * 0.8
-        this.X0 = 0
+        this.AXIS_HEIGHT = this.HEIGHT * 0.82
+        this.X0 = 55
         this.buffer = []
         this.RADIUS = 5
+        this.current = 0
+        this.y_attribute = y_attribute
         //this.on = false
 
         //scalings
         let W = this.RADIUS + this.WIDTH
         this.x = d3.scaleLinear()
-                    .domain([this.parent.oldest, this.parent.oldest - this.parent.window])
+                    .domain([this.parent.oldest + 5, this.parent.oldest - this.parent.window - 5])
                     .range([this.X0, W])
 
         this.y = d3.scaleLinear()
-                .domain([d3.min(this.data, d => d['Elevation']) - 100, d3.max(this.data, d=> d['Elevation']) + 150])
+                .domain([d3.min(this.data, d => d[this.y_attribute]) - 100, d3.max(this.data, d=> d[this.y_attribute]) + 150])
                 .range([this.AXIS_HEIGHT, 0])
                     
         this.circles = this.svg.append('g')
@@ -38,43 +40,30 @@ class Roll{
         this.update_current()
         this.draw_points()
         this.draw_axis()
-        //this.draw_points()
-        //set the button
-        d3.select('#start-stop')
-            .style('background-image', 'url(ressources/imgs/play.png)')
-            .on('click', () => this.start())
-        d3.select('#reset')
-            .style('background-image', 'url(ressources/imgs/reset.png)')
-            .on('click', () => this.reset())
-
-        d3.select('#faster')
-            .style('background-image', 'url(ressources/imgs/faster.png)')
-
-        d3.select('#slower')
-            .style('background-image', 'url(ressources/imgs/slower.png)')
 
     }
 
+    /**
+     * searches for all the points that should be displayed and puts them in the buffer
+     */
     update_current(){
-        while(this.data[this.parent.year0][this.time_accessor] >= this.parent.oldest - this.YEAR_WINDOW){  //if before end of window
-            if(parseInt(this.data[this.parent.year0][this.time_accessor]) < this.parent.oldest){               //if after start of window
-                this.buffer.push(this.data[this.parent.year0])                                           //add point to buffer
+        while(this.data[this.current][this.time_accessor] >= this.parent.year0 - this.parent.window){  //if before end of window
+            if(this.data[this.current][this.time_accessor] <= this.parent.year0){      //if after start of window
+                this.buffer.push(this.data[this.current])
+                this.current = this.current + 1                                       //add point to buffer
             }
+
         }
     }
 
     //draws the points that are in the interval [year0, year0 - YEAR_WINDOW]
     draw_points(){
-        while(this.data[this.parent.year0]['Last Known Eruption'] == this.year0 - this.YEAR_WINDOW){
-            this.buffer.push(this.data[this.parent.year0])
-            this.parent.year0 = this.parent.year0 + 1
-        }
         this.circles.selectAll('circle')
             .data(this.buffer)
             .enter()
             .append('circle')
-                .attr('cy', d => this.y(d['Elevation']))
-                .attr('cx', d => (this.year0 - d['Last Known Eruption']) * this.WIDTH / this.YEAR_WINDOW)
+                .attr('cy', d => this.y(d[this.y_attribute]))
+                .attr('cx', d => this.x(d[this.time_accessor]))
                 .attr('r', this.RADIUS)
                 .style('fill', 'red')
                 .on('mouseover', mouseOver)
@@ -82,22 +71,19 @@ class Roll{
     }
 
     update_points(){
-        while(parseInt(this.data[this.parent.year0]['Last Known Eruption']) == this.year0 - this.YEAR_WINDOW){
-            this.buffer.push(this.data[this.parent.year0])
-            this.parent.year0 = this.parent.year0 + 1
-        }
+        this.update_current()
         this.circles.selectAll('circle')
             .data(this.buffer)
             .enter()
             .append('circle')
-                .attr('cy', d => this.y(d['Elevation']))
-                .attr('cx', d => (this.year0 - d['Last Known Eruption']) * this.WIDTH / this.YEAR_WINDOW)
+                .attr('cy', d => this.y(d[this.y_attribute]))
+                .attr('cx', d => this.x(d[this.time_accessor]))
                 .attr('r', '5')
                 .style('fill', 'red')
                 .on('mouseover', mouseOver)
                 .on('mouseout', mouseOut)
                 .transition()
-                    .duration(d => 3.4 * this.TIME_WINDOW * (this.year0 - d['Last Known Eruption']) / this.YEAR_WINDOW)
+                    .duration(d => 1)
                     .ease(d3.easeLinear)
                     .attr('cx', this.X0 + this.RADIUS)
                     .on('end', () => {
@@ -108,7 +94,7 @@ class Roll{
 
     draw_axis(){
         //axis
-        this.x.domain([this.year0, this.year0 - this.YEAR_WINDOW])
+        this.x.domain([this.parent.year0, this.parent.year0 - this.parent.window])
         let axis_left = d3.axisLeft(this.y)
                             .ticks(5)
         this.svg.append('g')
@@ -119,10 +105,10 @@ class Roll{
             .attr('transform', 'rotate(-90)')
             .attr('x', -250)
             .attr('y', -70)
-            .text('elevation wrt sea level (m)')
+            .text(this.y_attribute)
 
         this.axis_bottom = d3.axisBottom(this.x)
-                            .ticks(this.YEAR_WINDOW / 100)
+                            .ticks(this.parent.window / 100)
         this.axis_x = this.svg.append('g')
                     .attr('transform', `translate(0, ${this.AXIS_HEIGHT})`)
                     .attr('class', 'axis_x')
@@ -135,65 +121,13 @@ class Roll{
     }
 
     update_axis(){
-        this.x.domain([this.year0, this.year0 - this.YEAR_WINDOW])
+        this.x.domain([this.parent.year0, this.parent.year0 - this.parent.window])
         this.axis_x.transition()
             .ease(d3.easeLinear)
-            .duration((this.TIME_WINDOW / this.YEAR_WINDOW))
+            .duration(this.parent.speed)
             .call(this.axis_bottom)
-            .on('end', () =>  this.tick())
     }
 
-    tick(){
-        if(this.year0 - this.YEAR_WINDOW > 0 && this.on){ //stops when reaching the end
-            this.year0 = this.year0 - 1
-    
-            //Updating the circles
-            this.update_points()
-
-            //updating the axis
-            this.update_axis()
-            
-        }else{//stops transitions of points when reahing the end
-            this.circles.selectAll('circle')
-                    .transition()
-
-        }
-    }
-
-
-    start(){
-        this.on = true
-        this.circles.selectAll('circle')
-                    .remove()
-        d3.select('#start-stop')
-            .style('background-image', 'url(ressources/imgs/pause.png)')
-            .on('click', () => this.stop())
-
-        this.tick()
-    }
-
-
-    stop(){
-        this.on = false
-        d3.select('#start-stop')
-            .style('background-image', 'url(ressources/imgs/play.png)')
-            .on('click', () => this.start())
-    }
-
-    reset(){
-        this.stop()
-        this.current = 0
-        this.year0 = d3.max(this.data, d => parseInt(d['Last Known Eruption']))
-        this.update_current()
-
-        this.circles.selectAll('circle')
-                    .remove()
-        this.draw_points()
-        this.axis_x.remove()
-        this.draw_axis()
-    }
-
-    
 }
 
 function mouseOver(){
