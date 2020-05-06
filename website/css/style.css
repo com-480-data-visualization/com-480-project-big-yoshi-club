@@ -31,6 +31,10 @@
 	flex-direction: column;
 }
 
+#left-col svg text, #time-controls text {
+	font-size: large;
+}
+
 #right-col {
 	border: 1px dashed;
 
