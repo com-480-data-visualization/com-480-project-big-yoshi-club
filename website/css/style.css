@@ -31,12 +31,6 @@
 	flex-direction: column;
 }
 
-#left-col svg text, #time-controls text {
-	font-size: large;
-	text-anchor: middle;
-	transform: translate(50%, 60%);
-}
-
 #right-col {
 	border: 1px dashed;
 
@@ -70,6 +64,34 @@
 }
 
 #time-controls {
-	border: dashed 1px;
 	margin: 5px;
+}
+
+#time-control-span {
+	fill: bisque;
+
+	width: 100%;
+	height: 90%;
+}
+
+#time-control-window {
+	fill: chartreuse;
+	y: 8px;
+	height: 70%;
+}
+
+.time-control-min-year {
+
+}
+
+.time-control-max-year {
+
+}
+
+.time-control-twlo-year {
+
+}
+
+.time-control-twup-year {
+
 }
