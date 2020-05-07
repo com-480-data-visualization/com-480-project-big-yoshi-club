@@ -23,8 +23,8 @@ class Yoshi {
         //time management
         this.on = false
         this.year0 = oldest - 10000
-        this.speed = 10
-        this.window = 2000
+        this.speed = 50
+        this.window = 500
         d3.select('#start-stop')
                 .style('background-image', 'url(img/play.png)')
                 .style('background-size', 'cover')
@@ -40,8 +40,8 @@ class Yoshi {
         let volcano_roll = new Roll(this, data[0], roll_svgs[0], 'V', 'Last Known Eruption', 'Elevation')
         let earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'E', 'Date', 'Depth')
         let meteores_roll = new Roll(this, data[2], roll_svgs[2], 'M', 'year', 'mass')
-        this.rolls = [volcano_roll, earthquakes_roll, meteores_roll
-        ]
+        this.rolls = [volcano_roll, earthquakes_roll, meteores_roll]
+
         // Add timeline controls and display
         const svgId = "#time-controls"
         const minDate = new Date(860, 1, 1)
@@ -65,9 +65,8 @@ class Yoshi {
         d3.select('#start-stop')
             .style('background-image', 'url(img/pause.png)')
             .on('click', () => this.stop())
-        
-        this.rolls.forEach(r =>{
-            r.move_points()
+        this.rolls.forEach(r =>  {
+            r.circles.selectAll('circle').remove()
         })
         this.interval = setInterval( () => this.tick(), this.speed)
 
@@ -82,22 +81,34 @@ class Yoshi {
         this.rolls.forEach(r =>{
             r.stop_points()
         })
-        //draw static points
+
     }
 
     reset() {
         this.stop()
         this.year0 = this.oldest
-        this.tick()
+        this.rolls.forEach(r =>{
+            r.circles.selectAll('circle').remove()
+            r.axis_x.remove()
+            r.draw_axis()
+            r.set_current()
+            r.update_current()
+            r.draw_points()
+        })
         console.log('reset')
-        //draw static points
+
     }
 
     tick() {
-        this.year0 = this.year0 - 1
-        this.rolls.forEach(r => {
-            r.update_axis()
+        if(this.year0 - this.window > 0){
+            this.year0 = this.year0 - 1
+            this.rolls.forEach(r => {
+                r.update_axis()
+                r.update_points()
         })
+        }else{
+            this.stop()
+        }
     }
 
 

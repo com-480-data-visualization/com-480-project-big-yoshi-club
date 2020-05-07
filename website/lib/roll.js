@@ -19,7 +19,7 @@ class Roll{
         this.AXIS_HEIGHT = this.HEIGHT * 0.85
         this.X0 = 55
         this.buffer = []
-        this.RADIUS = 5
+        this.RADIUS = 3
         this.current = 0
         this.y_attribute = y_attribute
         //this.on = false
@@ -27,7 +27,7 @@ class Roll{
         //scalings
         let W = this.RADIUS + this.WIDTH
         this.x = d3.scaleLinear()
-                    .domain([this.parent.year0 + 5, this.parent.year0 - this.parent.window - 5])
+                    .domain([this.parent.year0, this.parent.year0 - this.parent.window])
                     .range([this.X0, W])
 
         this.y = d3.scaleLinear()
@@ -80,22 +80,35 @@ class Roll{
                 .on('mouseout', mouseOut)
     }
 
-    move_points(){
+    update_points(){
+        while(this.data[this.current][this.time_accessor] == this.parent.year0 - this.parent.window){
+            this.buffer.push(this.data[this.current])
+            this.current = this.current+1
+        }
         this.circles.selectAll('circle')
-            .transition()
-            .ease(d3.easeLinear)
-            .duration(d =>  this.parent.speed * (this.parent.year0 - d[this.time_accessor]))
-            .attr('cx', d => this.X0)
-            .on('end', () => {
-                this.buffer.shift()
-            })
-            .remove()
+            .data(this.buffer)
+            .enter()
+            .append('circle')
+                .attr('cy', d => this.y(d[this.y_attribute]))
+                .attr('cx', d => this.x(d[this.time_accessor]))
+                .attr('r', this.RADIUS)
+                .style('fill', 'red')
+                .on('mouseover', mouseOver)
+                .on('mouseout', mouseOut)
+                .transition()
+                    .duration(d =>  this.parent.speed * (this.parent.year0 - d[this.time_accessor]))
+                    .ease(d3.easeLinear)
+                    .attr('cx', this.X0)
+                    .on('end', () => {
+                        this.buffer.shift()
+                    })
+                    .remove()
     }
 
     stop_points(){
         this.circles.selectAll('circle')
-        .transition()
-        .duration(0)
+            .transition()
+            .duration(0)
     }
     draw_axis(){
         //axis
@@ -144,5 +157,5 @@ function mouseOver(){
 function mouseOut(){
     d3.select(this)
         .style('fill', 'red')
-        .attr('r', '5')
+        .attr('r', '3')
 }
