@@ -22,7 +22,7 @@ whenDocumentLoaded(() => {
         //earthquakes parsing
         data[1].forEach(elem => {
             let date = elem['Date'].split('/')
-            elem['Date'] = 2020 - + date[2]
+            elem['Date'] = 2020 - (+date[2])
             elem['day-month'] = date[0] + '/' + date[1]
         })
 

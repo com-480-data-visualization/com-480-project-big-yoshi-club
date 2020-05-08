@@ -40,7 +40,7 @@ class Roll{
         this.update_current()
         this.draw_points()
         this.draw_axis()
-
+        this.draw_label()
     }
 
     /**
@@ -132,10 +132,7 @@ class Roll{
                     .attr('class', 'axis_x')
                     .call(this.axis_bottom)
 
-        this.svg.append('text')
-            .attr('x', this.WIDTH/2 - 120)
-            .attr('y', this.AXIS_HEIGHT + 60)
-            .text('time (years before 2018)')
+
     }
 
     update_axis(){
@@ -144,6 +141,15 @@ class Roll{
             .ease(d3.easeLinear)
             .duration(this.parent.speed)
             .call(this.axis_bottom)
+    }
+
+    draw_label(){
+
+        this.svg.append('text')
+            .attr('x', this.WIDTH/2)
+            .attr('text-anchor', 'middle')
+            .attr('y', 20)
+            .text(`${this.y_attribute.toLowerCase()} of ${this.type}`)
     }
 
 }

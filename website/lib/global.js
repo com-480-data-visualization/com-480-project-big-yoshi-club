@@ -2,6 +2,7 @@ class Yoshi {
 
     constructor(data, map_svg, roll_svgs) {
         this.data = data
+        console.log(this.data[1][10000])
         this.map_svg = map_svg
         this.roll_svgs = roll_svgs
         this.projection_style = d3.geoNaturalEarth1()
@@ -37,10 +38,12 @@ class Yoshi {
 
         //this.map = new Map('map', this.data, this.projection_style)
 
-        let volcano_roll = new Roll(this, data[0], roll_svgs[0], 'V', 'Last Known Eruption', 'Elevation')
-        let earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'E', 'Date', 'Depth')
-        let meteores_roll = new Roll(this, data[2], roll_svgs[2], 'M', 'year', 'mass')
-        this.rolls = [volcano_roll, earthquakes_roll, meteores_roll]
+        let volcano_roll = new Roll(this, data[0], roll_svgs[0], 'volcanoes', 'Last Known Eruption', 'Elevation')
+        //let earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'earthquakes', 'Date', 'Depth')
+        let meteores_roll = new Roll(this, data[2], roll_svgs[2], 'meteors', 'year', 'mass')
+        this.rolls = [volcano_roll
+            //, earthquakes_roll
+            , meteores_roll]
 
         // Add timeline controls and display
         const svgId = "#time-controls"
@@ -74,14 +77,13 @@ class Yoshi {
     stop() {
         console.log('stop')
         this.on = false
+        this.rolls.forEach(r =>{
+            r.stop_points()
+        })
         clearInterval(this.interval)
         d3.select('#start-stop')
             .style('background-image', 'url(img/play.png)')
             .on('click', () => this.start())
-        this.rolls.forEach(r =>{
-            r.stop_points()
-        })
-
     }
 
     reset() {
