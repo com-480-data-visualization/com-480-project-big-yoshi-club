@@ -28,7 +28,7 @@ whenDocumentLoaded(() => {
 
         //meteors parsing
         data[2].forEach(elem => {
-            elem['year'] = 2020 - +elem['year']
+            elem['year'] = 2020 - (+elem['year'])
             let geoLoc = elem['GeoLocation'].split(', ')
             elem['Latitude'] = +(geoLoc[0].substring(1))
             elem['Longitude'] = +(geoLoc[1].substring(0, geoLoc[1].length - 1))
