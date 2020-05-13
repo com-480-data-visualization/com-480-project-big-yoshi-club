@@ -15,20 +15,20 @@ whenDocumentLoaded(() => {
     ]).then(function(data){
         //volcanoes parsing
         data[0].forEach(elem => {
-            elem['Last Known Eruption'] = +elem['Last Known Eruption'] + 2
+            elem['date'] = +elem['Last Known Eruption']
             elem['Elevation'] = +elem['Elevation']
         });
 
         //earthquakes parsing
         data[1].forEach(elem => {
             let date = elem['Date'].split('/')
-            elem['Date'] = 2020 - (+date[2])
+            elem['date'] = 2018 - (+date[2])
             elem['day-month'] = date[0] + '/' + date[1]
         })
 
         //meteors parsing
         data[2].forEach(elem => {
-            elem['year'] = 2020 - (+elem['year'])
+            elem['date'] = 2018 - (+elem['year'])
             let geoLoc = elem['GeoLocation'].split(', ')
             elem['Latitude'] = +(geoLoc[0].substring(1))
             elem['Longitude'] = +(geoLoc[1].substring(0, geoLoc[1].length - 1))
