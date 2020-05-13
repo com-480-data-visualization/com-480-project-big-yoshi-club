@@ -10,7 +10,7 @@ function whenDocumentLoaded(action){
 whenDocumentLoaded(() => {
     Promise.all([
         d3.csv('data/volcanos.csv'),
-        d3.csv('data/earthquakes.csv'),
+        d3.csv('data/earthquakes_clean.csv'),
         d3.csv('data/meteors_valid.csv')
     ]).then(function(data){
         //volcanoes parsing
@@ -21,9 +21,10 @@ whenDocumentLoaded(() => {
 
         //earthquakes parsing
         data[1].forEach(elem => {
-            let date = elem['Date'].split('/')
-            elem['date'] = 2018 - (+date[2])
-            elem['day-month'] = date[0] + '/' + date[1]
+            elem['date'] = 2018 - elem['Date']
+            // let date = elem['Date'].split('/')
+            // elem['date'] = 2018 - (+date[2])
+            // elem['day-month'] = date[0] + '/' + date[1]
         })
 
         //meteors parsing

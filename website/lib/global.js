@@ -42,7 +42,6 @@ class Yoshi {
         const twLoBnd = new Date(1245, 1, 1)
         const twUpBnd = new Date(1963, 1, 1)
         this.timelineControl = new TimelineControl(svgId, minDate, maxDate, twLoBnd, twUpBnd)
-        this.timelineControl.display()
 
     }
 
