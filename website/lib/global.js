@@ -28,7 +28,7 @@ class Yoshi {
                 .style('background-size', 'cover')
                 .on('click', () => this.reset())
 
-        this.map = new Map(this, 'map', data[0], 'Last Known Eruption')
+        //this.map = new Map(this, 'map', data[0], 'Last Known Eruption')
 
         this.make_rolls()
 

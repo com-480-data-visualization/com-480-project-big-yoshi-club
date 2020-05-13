@@ -21,7 +21,7 @@ class Roll{
         this.AXIS_HEIGHT = this.HEIGHT * 0.85
         this.X0 = 55
         this.buffer = []
-        this.RADIUS = 3
+        this.RADIUS = 5
         this.current = 0
         this.y_attribute = y_attribute
         this.label_height = 20
@@ -79,12 +79,13 @@ class Roll{
                 .attr('cx', d => this.x(d.key))
                 .attr('r', this.RADIUS)
                 .style('fill', 'red')
-                .on('mouseover', mouseOver)
-                .on('mouseout', mouseOut)
+                .on('mouseover', this.mouseOver)
+                .on('mouseout', this.mouseOut)
     }
 
     update_points(){
         if(this.current < this.means.length){
+            console.log(this.current - this.means.length)
             while(this.means[this.current].key == this.parent.year0 - this.parent.window){
                 this.buffer.push(this.means[this.current])
                 this.current = this.current+1
@@ -98,8 +99,8 @@ class Roll{
                 .attr('cx', d => this.x(d.key))
                 .attr('r', this.RADIUS)
                 .style('fill', 'red')
-                .on('mouseover', mouseOver)
-                .on('mouseout', mouseOut)
+                .on('mouseover', this.mouseOver)
+                .on('mouseout', this.mouseOut)
                 .transition()
                     .duration(d =>  this.parent.speed * (this.parent.year0 - d.key))
                     .ease(d3.easeLinear)
@@ -108,6 +109,7 @@ class Roll{
                         this.buffer.shift()
                     })
                     .remove()
+
     }
 
     stop_points(){
@@ -159,17 +161,18 @@ class Roll{
             .text(`mean per year of ${this.y_attribute.toLowerCase()} for ${this.type}`)
     }
 
+    mouseOver(d){
+        d3.select(this)
+            .style('fill', 'blue')
+            .attr('r', '9')
+        console.log(2018 - d.key)
+    }
+    
+    mouseOut(){
+        d3.select(this)
+            .style('fill', 'red')
+            .attr('r', '5')
+    }
+
 }
 
-function mouseOver(){
-    d3.select(this)
-        .style('fill', 'blue')
-        .attr('r', '9')
-    console.log(this)
-}
-
-function mouseOut(){
-    d3.select(this)
-        .style('fill', 'red')
-        .attr('r', '3')
-}
