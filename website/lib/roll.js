@@ -52,7 +52,6 @@ class Roll{
                 this.buffer.push(this.data[this.current])
                 this.current = this.current + 1                                       //add point to buffer
             }
-
         }
     }
     /**

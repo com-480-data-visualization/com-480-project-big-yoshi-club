@@ -5,11 +5,12 @@ class Yoshi {
         console.log(this.data[1][10000])
         this.map_svg = map_svg
         this.roll_svgs = roll_svgs
-        this.projection_style = d3.geoNaturalEarth1()
 
         d3.select('#projection-dropdown')
-            .on('click', () => this.projection_select())
+            .on('click', () => this.projection_menu_select())
 
+        d3.select('#myDropdown')
+            .on('click', () => this.projection_select())
         let oldest_v = d3.max(this.data[0], v => v['Last Known Eruption'])
         let oldest_e = d3.max(this.data[1], e => e['Date'])
         let oldest_m = d3.max(this.data[2], m => m['year'])
@@ -36,7 +37,7 @@ class Yoshi {
                 .style('background-size', 'cover')
                 .on('click', () => this.reset())
 
-        //this.map = new Map('map', this.data, this.projection_style)
+        this.map = new Map(this, 'map', data[0], 'Last Known Eruption')
 
         let volcano_roll = new Roll(this, data[0], roll_svgs[0], 'volcanoes', 'Last Known Eruption', 'Elevation')
         //let earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'earthquakes', 'Date', 'Depth')
@@ -56,9 +57,24 @@ class Yoshi {
 
     }
 
-    projection_select() {
+    projection_menu_select() {
         d3.select('#projection-dropdown')
-            .on('click', () => menu())
+            .on('click', () => {
+                document.getElementById("myDropdown").classList.toggle("show");
+            })
+    }
+
+    projection_select() {
+        d3.select("#Gnomonic")
+            .on('click', () => {               
+                this.map.projection_style = d3.geoGnomonic()
+                this.map.update_projection()
+            })
+        d3.select('#Natural')
+            .on('click', () => {
+                this.map.projection_style = d3.geoNaturalEarth1()
+                this.map.update_projection()
+            })
     }
 
     //button functionalities
@@ -108,6 +124,7 @@ class Yoshi {
                 r.update_axis()
                 r.update_points()
         })
+            //this.map.update_points()
         }else{
             this.stop()
         }
@@ -116,24 +133,4 @@ class Yoshi {
 
 }
 
-function menu() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
 
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = function (event) {
-
-    if (event.target.id === "Gnomonic") {
-        this.projection_style = d3.geoGnomonic()
-
-        this.map = new Map('map', this.data, this.projection_style)
-
-    }
-    else if (event.target.id == "Natural") {
-        this.projection_style = d3.geoNaturalEarth1()
-        this.map = new Map('map', this.data, this.projection_style)
-        //this.map = new Map(map_svg, data)
-
-    }
-
-} 
