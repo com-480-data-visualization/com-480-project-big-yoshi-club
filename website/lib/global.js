@@ -12,20 +12,11 @@ class Yoshi {
         d3.select('#projection-dropdown')
             .on('click', () => this.projection_select())
 
-        let oldest_v = d3.max(this.data[0], v => v['date'])
-        let oldest_e = d3.max(this.data[1], e => e['date'])
-        let oldest_m = d3.max(this.data[2], m => m['date'])
-        let oldest = d3.max([oldest_v, oldest_e, oldest_m])
-        this.oldest = oldest
-
-        let youngest_v = d3.min(this.data[0], v => v['date'])
-        let youngest_e = d3.min(this.data[1], e => e['date'])
-        let youngest_m = d3.min(this.data[2], m => m['date'])
-        this.youngest = d3.min([youngest_v, youngest_e, youngest_m])
+        this.get_old_young()
 
         //time management
         this.on = false
-        this.year0 = oldest - 11000
+        this.year0 = this.oldest - 11000
         this.speed = 50
         this.window = 50
         d3.select('#start-stop')
@@ -40,16 +31,7 @@ class Yoshi {
 
         //this.map = new Map('map', this.data, this.projection_style)
 
-
-
-        let volcano_roll = new Roll(this, data[0], roll_svgs[0], 'volcanoes', this.y_attributes[0], this.means[0])
-        let earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'earthquakes', this.y_attributes[1], this.means[1])
-        let meteores_roll = new Roll(this, data[2], roll_svgs[2], 'meteors', this.y_attributes[2], this.means[2])
-        this.rolls = [
-            volcano_roll
-            ,earthquakes_roll
-            ,meteores_roll
-        ]
+        this.make_rolls()
 
         // Add timeline controls and display
         const svgId = "#time-controls"
@@ -119,6 +101,20 @@ class Yoshi {
         }
     }
 
+    //finds the largest-lowest time value of the datasets
+    get_old_young(){
+        let oldest_v = d3.max(this.data[0], v => v['date'])
+        let oldest_e = d3.max(this.data[1], e => e['date'])
+        let oldest_m = d3.max(this.data[2], m => m['date'])
+        this.oldest = d3.max([oldest_v, oldest_e, oldest_m])
+
+        let youngest_v = d3.min(this.data[0], v => v['date'])
+        let youngest_e = d3.min(this.data[1], e => e['date'])
+        let youngest_m = d3.min(this.data[2], m => m['date'])
+        this.youngest = d3.min([youngest_v, youngest_e, youngest_m])
+    }
+
+    //generates the means array per year for all the rolls
     get_means(){ 
         this.means = []
         for(let i = 0; i<this.data.length; i++){
@@ -126,6 +122,16 @@ class Yoshi {
                                 .key(d => d['date'])
                                 .rollup( v => d3.mean(v, d =>  d[this.y_attributes[i]]))
                                 .entries(this.data[i])
+        }
+    }
+
+    //generate the rolls 
+    make_rolls(){
+        let names = ['volcanoes', 'earthquakes', 'meteors']
+        this.rolls = []
+        for(let i = 0; i<3; i++){
+            let roll = new Roll(this, this.data[i], this.roll_svgs[i], names[i], this.y_attributes[i], this.means[i])
+            this.rolls[i] = roll
         }
     }
 }
