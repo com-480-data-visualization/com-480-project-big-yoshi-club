@@ -28,20 +28,25 @@
 
 
 			<div id="map-space">
-				<svg id="map" viewBox="0 0 1000 550" width="550" height="300">
+				<svg id="map" viewBox="0 0 1000 550" width="750" height="500">
 					<style>
 						.country {
 							stroke: rgb(243, 254, 254);
 							stroke-width: 1px;
+						}
+
+						.point {
+							fill: rgb(245, 238, 90);
+							opacity: 1;
 						}
 					</style>
 				</svg>
 			</div>
 
 			<div id="timelines">
-				<svg id='volcano_svg' viewBox='-5 -5 1205 205'></svg>
-				<svg id='earthquakes_svg' viewBox='-5 -5 1205 205'></svg>
-				<svg id='meteores_svg' viewBox='-5 -5 1205 205'></svg>
+				<svg id='volcano_svg' viewBox='-5 -5 1405 205'></svg>
+				<svg id='earthquakes_svg' viewBox='-5 -5 1405 205'></svg>
+				<svg id='meteores_svg' viewBox='-5 -5 1405 205'></svg>
 			</div>
 			<svg id="time-controls"></svg>
 		</div>
@@ -50,6 +55,8 @@
 		<div id="right-col">
 			<div id="filters">
 				<h2>Filters</h2>
+				<button id = 'start-stop'></button>
+				<button id = 'reset'></button>
 				<ul>
 					<li>Volcanoes</li>
 					<li>Earthquakes</li>

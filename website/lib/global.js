@@ -4,42 +4,33 @@ class Yoshi {
         this.data = data
         this.map_svg = map_svg
         this.roll_svgs = roll_svgs
-        this.projection_style = d3.geoNaturalEarth1()
+
+        this.y_attributes = ['Elevation', 'Depth', 'mass']
+        this.get_means()
 
         d3.select('#projection-dropdown')
-            .on('click', () => this.projection_select())
+            .on('click', () => this.projection_menu_select())
 
-        let oldest_v = d3.max(this.data[0], v => v['Last Known Eruption'])
-        let oldest_e = d3.max(this.data[1], e => e['Date'])
-        let oldest_m = d3.max(this.data[2], m => m['year'])
-        this.oldest = d3.max([oldest_v, oldest_e, oldest_m])
+        this.get_old_young()
 
-        let youngest_v = d3.min(this.data[0], v => v['Last Known Eruption'])
-        let youngest_e = d3.min(this.data[1], e => e['Date'])
-        let youngest_m = d3.min(this.data[2], m => m['year'])
-        this.youngest = d3.min([youngest_v, youngest_e, youngest_m])
-
-        console.log(this.oldest)
-        console.log(this.youngest)
         //time management
         this.on = false
-        //this.time_window = 50
-        //this.year0 = this.oldest
+        this.year0 = this.oldest - 11000
+        this.speed = 50
+        this.window = 100
+        d3.select('#start-stop')
+                .style('background-image', 'url(img/play.png)')
+                .style('background-size', 'cover')
+                .on('click', () => this.start())
 
-        //print examples for each data
-        let a = data[0][0]
-        let b = data[1][0]
-        let c = data[2][0]
-        console.log(a)
-        console.log(b)
-        console.log(c)
+        d3.select('#reset')
+                .style('background-image', 'url(img/reset.png)')
+                .style('background-size', 'cover')
+                .on('click', () => this.reset())
 
-        this.map = new Map('map', this.data, this.projection_style)
+        //this.map = new Map(this, 'map', data[0], 'Last Known Eruption')
 
-        this.volcano_roll = new Roll(this, data[0], roll_svgs[0], 'V', 'Last Known Eruption')
-        this.earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'E', 'Date')
-        this.meteores_roll = new Roll(this, data[2], roll_svgs[2], 'M', 'year')
-
+        this.make_rolls()
 
         // Add timeline controls and display
         const svgId = "#time-controls"
@@ -49,67 +40,118 @@ class Yoshi {
         const twUpBnd = new Date(1963, 1, 1)
         this.timelineControl = new TimelineControl(svgId, minDate, maxDate, twLoBnd, twUpBnd)
 
+    }
 
-
+    projection_menu_select() {
+        d3.select('#projection-dropdown')
+            .on('click', () => {
+                document.getElementById("myDropdown").classList.toggle("show");
+            })
     }
 
     projection_select() {
-        d3.select('#projection-dropdown')
-            .on('click', () => menu())
-
-
+        d3.select("#Gnomonic")
+            .on('click', () => {               
+                this.map.projection_style = d3.geoGnomonic()
+                this.map.update_projection()
+            })
+        d3.select('#Natural')
+            .on('click', () => {
+                this.map.projection_style = d3.geoNaturalEarth1()
+                this.map.update_projection()
+            })
     }
 
     //button functionalities
     start() {
+        console.log('start')
         this.on = true
-        while (this.on) {
-            this.tick()
-        }
-    }
+        d3.select('#start-stop')
+            .style('background-image', 'url(img/pause.png)')
+            .on('click', () => this.stop())
+        this.rolls.forEach(r =>  {
+            r.circles.selectAll('circle').remove()
+        })
+        this.interval = setInterval( () => this.tick(), this.speed)
 
+    }
     stop() {
+        console.log('stop')
         this.on = false
-        //draw static points
+        this.rolls.forEach(r =>{
+            r.stop_points()
+        })
+        clearInterval(this.interval)
+        d3.select('#start-stop')
+            .style('background-image', 'url(img/play.png)')
+            .on('click', () => this.start())
     }
 
     reset() {
-        this.on = false
-        //draw static points
+        this.stop()
+        this.year0 = this.oldest
+        this.rolls.forEach(r =>{
+            r.circles.selectAll('circle').remove()
+            r.axis_x.remove()
+            r.draw_axis()
+            r.set_current()
+            r.update_current()
+            r.draw_points()
+        })
+        console.log('reset')
+
     }
 
     tick() {
-        //update map
-        //update rolls
-        // this.map = new Map(data)
-
-
+        if(this.year0 - this.window > 0){
+            this.year0 = this.year0 - 1
+            this.rolls.forEach(r => {
+                r.update_axis()
+                r.update_points()
+        })
+            //this.map.update_points()
+        }else{
+            this.stop()
+        }
     }
 
+    //finds the largest-lowest time value of the datasets
+    get_old_young(){
+        let oldest_v = d3.max(this.data[0], v => v['date'])
+        let oldest_e = d3.max(this.data[1], e => e['date'])
+        let oldest_m = d3.max(this.data[2], m => m['date'])
+        this.oldest = d3.max([oldest_v, oldest_e, oldest_m])
 
+        let youngest_v = d3.min(this.data[0], v => v['date'])
+        let youngest_e = d3.min(this.data[1], e => e['date'])
+        let youngest_m = d3.min(this.data[2], m => m['date'])
+        this.youngest = d3.min([youngest_v, youngest_e, youngest_m])
+    }
+
+    //generates the means array per year for all the rolls
+    get_means(){ 
+        this.means = []
+        for(let i = 0; i<this.data.length; i++){
+            this.means[i] = d3.nest()
+                                .key(d => d['date'])
+                                .rollup( (v) => {
+                                    return {
+                                        mean : d3.mean(v, d =>  d[this.y_attributes[i]])
+                                    }
+                                })
+                                .entries(this.data[i])
+        }
+    }
+
+    //generate the rolls 
+    make_rolls(){
+        let names = ['volcanoes', 'earthquakes', 'meteors']
+        this.rolls = []
+        for(let i = 0; i<3; i++){
+            let roll = new Roll(this, this.data[i], this.roll_svgs[i], names[i], this.y_attributes[i], this.means[i])
+            this.rolls[i] = roll
+        }
+    }
 }
 
-function menu() {
-    document.getElementById("myDropdown").classList.toggle("show");
-}
 
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = function (event) {
-
-    if (event.target.id === "Gnomonic") {
-        this.projection_style = d3.geoGnomonic()
-
-        this.map = new Map('map', this.data, this.projection_style)
-
-    }
-    else if (event.target.id == "Natural") {
-        this.projection_style = d3.geoNaturalEarth1()
-        this.map = new Map('map', this.data, this.projection_style)
-        //this.map = new Map(map_svg, data)
-
-    }
-
-
-
-
-} 

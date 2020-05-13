@@ -1,129 +1,125 @@
 class Roll{
-    constructor(parent, data, svg, type, time_accessor){
+    /**
+     * 
+     * @param { parent class } parent 
+     * @param { data specific to roll } data 
+     * @param { svg id to plot on } svg 
+     * @param { name of the data type (for axis) } type 
+     * @param { name of the attribute on y axis} y_attribute 
+     * @param { means per year wrt y_axis } means 
+     */
+    constructor(parent, data, svg, type, y_attribute, means){
+        this.means = means
+        console.log(this.means)
         this.parent = parent
         this.svg = d3.select('#' + svg)
         this.type = type
-        this.time_accessor = time_accessor
         this.data = data
         const svg_viewbox = this.svg.node().viewBox.animVal;
-        console.log(svg_viewbox)
         this.WIDTH = svg_viewbox.width
         this.HEIGHT = svg_viewbox.height
-        this.YEAR_WINDOW = 1000
-        this.TIME_WINDOW = 1000 * 5
-        this.AXIS_HEIGHT = this.HEIGHT * 0.8
-        this.X0 = 0
-        this.current = 0
+        this.AXIS_HEIGHT = this.HEIGHT * 0.85
+        this.X0 = 55
         this.buffer = []
         this.RADIUS = 5
-        this.on = false
+        this.current = 0
+        this.y_attribute = y_attribute
+        this.label_height = 20
 
         //scalings
         let W = this.RADIUS + this.WIDTH
         this.x = d3.scaleLinear()
-                    .domain([this.parent.oldest, this.parent.oldest - this.YEAR_WINDOW])
+                    .domain([this.parent.year0, this.parent.year0 - this.parent.window])
                     .range([this.X0, W])
 
-        if(this.type = 'V'){
-            this.y = d3.scaleLinear()
-                    .domain([d3.min(this.data, d => d['Elevation']) - 100, d3.max(this.data, d=> d['Elevation']) + 150])
-                    .range([this.AXIS_HEIGHT, 0])
-        } else if(this.type = 'E'){
-            this.y = d3.scaleLinear()
-                .domain([d3.min(this.data, d => d['Depth']) - 100, d3.max(this.data, d=> d['Depth']) + 150])
-                .range([this.AXIS_HEIGHT, 0])
-        } else if(this.type = 'M'){
-            this.y = d3.scaleLinear()
-                .domain([d3.min(this.data, d => d['mass']) - 100, d3.max(this.data, d=> d['mass']) + 150])
-                .range([this.AXIS_HEIGHT, 0])
-        }else{
-            console.error(`type mismatch, ${this.type} is not a valid type of data`)
-        }
+        this.y = d3.scaleLinear()
+                .domain([d3.min(this.data, d => d[this.y_attribute]), d3.max(this.data, d=> d[this.y_attribute])])
+                .range([this.AXIS_HEIGHT, this.label_height])
                     
-        this.svg.append('rect')
-                    .attr('fill', 'cyan')
-                    .attr('x', `${this.X0}`)
-                    .attr('y', '0')
-                    .attr('width', `${W}`)
-                    .attr('height', `${this.AXIS_HEIGHT}`)
         this.circles = this.svg.append('g')
 
-
+        this.set_current()
         this.update_current()
         this.draw_points()
         this.draw_axis()
-        //this.draw_points()
-        //set the button
-        d3.select('#start-stop')
-            .style('background-image', 'url(ressources/imgs/play.png)')
-            .on('click', () => this.start())
-        d3.select('#reset')
-            .style('background-image', 'url(ressources/imgs/reset.png)')
-            .on('click', () => this.reset())
-
-        d3.select('#faster')
-            .style('background-image', 'url(ressources/imgs/faster.png)')
-
-        d3.select('#slower')
-            .style('background-image', 'url(ressources/imgs/slower.png)')
-
+        this.draw_label()
     }
 
+    /**
+     * finds the current index
+     */
+    set_current(){
+        let i = 0
+        while(this.means[i].key >= this.parent.year0 & i < this.means.length){
+            i++
+        }
+        this.current = i
+    }
+    /**
+     * searches for all the points that should be displayed and puts them in the buffer
+     */
     update_current(){
-        while(this.data[this.current][this.time_accessor] >= this.parent.oldest - this.YEAR_WINDOW){  //if before end of window
-            if(parseInt(this.data[this.current][this.time_accessor]) < this.parent.oldest){               //if after start of window
-                this.buffer.push(this.data[this.current])                                           //add point to buffer
+        while(this.means[this.current].key >= this.parent.year0 - this.parent.window){  //if before end of window
+            if(this.means[this.current].key <= this.parent.year0){      //if after start of window
+                this.buffer.push(this.means[this.current])
+                this.current = this.current + 1                                       //add point to buffer
             }
-            this.current++;
+
         }
     }
+
 
     //draws the points that are in the interval [year0, year0 - YEAR_WINDOW]
     draw_points(){
-        while(this.data[this.current]['Last Known Eruption'] == this.year0 - this.YEAR_WINDOW){
-            this.buffer.push(this.data[this.current])
-            this.current = this.current+1
-        }
         this.circles.selectAll('circle')
             .data(this.buffer)
             .enter()
             .append('circle')
-                .attr('cy', d => this.y(d['Elevation']))
-                .attr('cx', d => (this.year0 - d['Last Known Eruption']) * this.WIDTH / this.YEAR_WINDOW)
+                .attr('cy', d => this.y(d.value.mean))
+                .attr('cx', d => this.x(d.key))
                 .attr('r', this.RADIUS)
                 .style('fill', 'red')
-                .on('mouseover', mouseOver)
-                .on('mouseout', mouseOut)
+                .on('mouseover', this.mouseOver)
+                .on('mouseout', this.mouseOut)
     }
 
     update_points(){
-        while(parseInt(this.data[this.current]['Last Known Eruption']) == this.year0 - this.YEAR_WINDOW){
-            this.buffer.push(this.data[this.current])
-            this.current = this.current+1
+        if(this.current < this.means.length){
+            console.log(this.current - this.means.length)
+            while(this.means[this.current].key == this.parent.year0 - this.parent.window){
+                this.buffer.push(this.means[this.current])
+                this.current = this.current+1
+            }
         }
         this.circles.selectAll('circle')
             .data(this.buffer)
             .enter()
             .append('circle')
-                .attr('cy', d => this.y(d['Elevation']))
-                .attr('cx', d => (this.year0 - d['Last Known Eruption']) * this.WIDTH / this.YEAR_WINDOW)
-                .attr('r', '5')
+                .attr('cy', d => this.y(d.value.mean))
+                .attr('cx', d => this.x(d.key))
+                .attr('r', this.RADIUS)
                 .style('fill', 'red')
-                .on('mouseover', mouseOver)
-                .on('mouseout', mouseOut)
+                .on('mouseover', this.mouseOver)
+                .on('mouseout', this.mouseOut)
                 .transition()
-                    .duration(d => 3.4 * this.TIME_WINDOW * (this.year0 - d['Last Known Eruption']) / this.YEAR_WINDOW)
+                    .duration(d =>  this.parent.speed * (this.parent.year0 - d.key))
                     .ease(d3.easeLinear)
-                    .attr('cx', this.X0 + this.RADIUS)
+                    .attr('cx', this.X0)
                     .on('end', () => {
                         this.buffer.shift()
                     })
                     .remove()
+
     }
 
+    stop_points(){
+        this.circles.selectAll('circle')
+            .transition()
+            .duration(0)
+    }
     draw_axis(){
         //axis
-        this.x.domain([this.year0, this.year0 - this.YEAR_WINDOW])
+        this.x.domain([this.parent.year0, this.parent.year0 - this.parent.window])
         let axis_left = d3.axisLeft(this.y)
                             .ticks(5)
         this.svg.append('g')
@@ -134,91 +130,49 @@ class Roll{
             .attr('transform', 'rotate(-90)')
             .attr('x', -250)
             .attr('y', -70)
-            .text('elevation wrt sea level (m)')
+            .text(this.y_attribute)
 
         this.axis_bottom = d3.axisBottom(this.x)
-                            .ticks(this.YEAR_WINDOW / 100)
+                            .ticks(10)
+                            .tickFormat(d => 2018 - d)
         this.axis_x = this.svg.append('g')
                     .attr('transform', `translate(0, ${this.AXIS_HEIGHT})`)
                     .attr('class', 'axis_x')
                     .call(this.axis_bottom)
 
-        this.svg.append('text')
-            .attr('x', this.WIDTH/2 - 120)
-            .attr('y', this.AXIS_HEIGHT + 60)
-            .text('time (years before 2018)')
+
     }
 
     update_axis(){
-        this.x.domain([this.year0, this.year0 - this.YEAR_WINDOW])
+        this.x.domain([this.parent.year0, this.parent.year0 - this.parent.window])
         this.axis_x.transition()
             .ease(d3.easeLinear)
-            .duration((this.TIME_WINDOW / this.YEAR_WINDOW))
+            .duration(this.parent.speed)
             .call(this.axis_bottom)
-            .on('end', () =>  this.tick())
     }
 
-    tick(){
-        if(this.year0 - this.YEAR_WINDOW > 0 && this.on){ //stops when reaching the end
-            this.year0 = this.year0 - 1
+    draw_label(){
+
+        this.svg.append('text')
+            .attr('x', this.WIDTH/2)
+            .attr('text-anchor', 'middle')
+            .attr('y', this.label_height - 5)
+            .style('text-decoration', 'underline')
+            .text(`mean per year of ${this.y_attribute.toLowerCase()} for ${this.type}`)
+    }
+
+    mouseOver(d){
+        d3.select(this)
+            .style('fill', 'blue')
+            .attr('r', '9')
+        console.log(2018 - d.key)
+    }
     
-            //Updating the circles
-            this.update_points()
-
-            //updating the axis
-            this.update_axis()
-            
-        }else{//stops transitions of points when reahing the end
-            this.circles.selectAll('circle')
-                    .transition()
-
-        }
+    mouseOut(){
+        d3.select(this)
+            .style('fill', 'red')
+            .attr('r', '5')
     }
 
-
-    start(){
-        this.on = true
-        this.circles.selectAll('circle')
-                    .remove()
-        d3.select('#start-stop')
-            .style('background-image', 'url(ressources/imgs/pause.png)')
-            .on('click', () => this.stop())
-
-        this.tick()
-    }
-
-
-    stop(){
-        this.on = false
-        d3.select('#start-stop')
-            .style('background-image', 'url(ressources/imgs/play.png)')
-            .on('click', () => this.start())
-    }
-
-    reset(){
-        this.stop()
-        this.current = 0
-        this.year0 = d3.max(this.data, d => parseInt(d['Last Known Eruption']))
-        this.update_current()
-
-        this.circles.selectAll('circle')
-                    .remove()
-        this.draw_points()
-        this.axis_x.remove()
-        this.draw_axis()
-    }
-
-    
 }
 
-function mouseOver(){
-    d3.select(this)
-        .style('fill', 'blue')
-        .attr('r', '9')
-}
-
-function mouseOut(){
-    d3.select(this)
-        .style('fill', 'red')
-        .attr('r', '5')
-}

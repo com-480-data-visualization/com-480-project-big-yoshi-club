@@ -71,7 +71,14 @@
 	margin: 5px;
 }
 
-
+#start-stop{
+	width: 100%;
+	height: 20%;
+}
+#reset{
+	width: 100%;
+	height: 20%;
+}
 
 
   /* Dropdown Button */
