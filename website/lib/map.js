@@ -58,7 +58,7 @@ class Map {
         const projection = this.projection_style
             .rotate([0, 0])
             .center([0, 0])
-            .scale(200)
+            .scale(180)
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
 
@@ -100,7 +100,7 @@ class Map {
         const projection = this.projection_style
             .rotate([0, 0])
             .center([0, 0])
-            .scale(200)
+            .scale(180)
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
 
@@ -124,7 +124,7 @@ class Map {
         const projection = this.projection_style
             .rotate([0, 0])
             .center([0, 0])
-            .scale(200)
+            .scale(180)
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
         this.buffer.forEach((_, idx) => {
@@ -146,9 +146,13 @@ class Map {
             .style("fill", d3.color(colors[idx]))
             .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")")
             .transition()
+                    .style('opacity', 1)
+                    .ease(d3.easeLinear)
+                    .duration(this.parent.speed*10)
+            .transition()
                     .style('opacity', 0)
-                    
-                    .duration(this.parent.speed* this.parent.window*1.3)
+                    .ease(d3.easeLinear)
+                    .duration(this.parent.speed* this.parent.window*1.3 - this.parent.speed*10)
                     .on('end', () => {
                         this.buffer[idx].shift()
                     })
@@ -168,6 +172,12 @@ class Map {
         });
         
         
+    }
+
+    stop_fade(){
+        this.point_container.selectAll('.point')
+            .transition()
+            .duration(0)
     }
 
 

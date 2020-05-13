@@ -77,12 +77,14 @@ class Yoshi {
         this.rolls.forEach(r =>  {
             r.circles.selectAll('circle').remove()
         })
+        this.map.point_container.selectAll('*').remove()
         this.interval = setInterval( () => this.tick(), this.speed)
 
     }
     stop() {
         console.log('stop')
         this.on = false
+        this.map.stop_fade()
         this.rolls.forEach(r =>{
             r.stop_points()
         })
@@ -95,15 +97,21 @@ class Yoshi {
     reset() {
         this.stop()
         this.year0 = this.oldest -11000
-        this.rolls.forEach(r =>{
+        this.map.point_container.selectAll('*').remove()
+        this.map.buffer = [[],[],[]]
+        this.rolls.forEach((r, idx) =>{
             r.circles.selectAll('circle').remove()
             r.axis_x.remove()
             r.draw_axis()
             r.set_current()
             r.update_current()
             r.draw_points()
+            
+            this.map.set_current(idx)
+            this.map.update_current(idx)
         })
-        this.map.update_projection()
+        
+        
         console.log('reset')
 
     }
