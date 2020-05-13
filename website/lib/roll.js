@@ -10,7 +10,6 @@ class Roll{
      */
     constructor(parent, data, svg, type, y_attribute, means){
         this.means = means
-        console.log(this.means)
         this.parent = parent
         this.svg = d3.select('#' + svg)
         this.type = type
@@ -18,13 +17,13 @@ class Roll{
         const svg_viewbox = this.svg.node().viewBox.animVal;
         this.WIDTH = svg_viewbox.width
         this.HEIGHT = svg_viewbox.height
+        this.label_height = 20
         this.AXIS_HEIGHT = this.HEIGHT * 0.85
         this.X0 = 55
         this.buffer = []
         this.RADIUS = 5
         this.current = 0
         this.y_attribute = y_attribute
-        this.label_height = 20
 
         //scalings
         let W = this.RADIUS + this.WIDTH
@@ -33,7 +32,7 @@ class Roll{
                     .range([this.X0, W])
 
         this.y = d3.scaleLinear()
-                .domain([d3.min(this.data, d => d[this.y_attribute]), d3.max(this.data, d=> d[this.y_attribute])])
+                .domain([d3.min(this.data, d => d[this.y_attribute]), d3.max(this.data, d => d[this.y_attribute])])
                 .range([this.AXIS_HEIGHT, this.label_height])
                     
         this.circles = this.svg.append('g')
@@ -84,13 +83,16 @@ class Roll{
     }
 
     update_points(){
-        if(this.current < this.means.length){
-            console.log(this.current - this.means.length)
-            while(this.means[this.current].key == this.parent.year0 - this.parent.window){
+        while(this.current < this.means.length - 2){
+            if(this.means[this.current].key == this.parent.year0 - this.parent.window){
                 this.buffer.push(this.means[this.current])
                 this.current = this.current+1
+            }else{
+                break
             }
         }
+
+
         this.circles.selectAll('circle')
             .data(this.buffer)
             .enter()
@@ -161,11 +163,10 @@ class Roll{
             .text(`mean per year of ${this.y_attribute.toLowerCase()} for ${this.type}`)
     }
 
-    mouseOver(d){
+    mouseOver(){
         d3.select(this)
             .style('fill', 'blue')
             .attr('r', '9')
-        console.log(2018 - d.key)
     }
     
     mouseOut(){

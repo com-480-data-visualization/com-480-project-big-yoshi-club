@@ -18,7 +18,7 @@ class Yoshi {
 
         //time management
         this.on = false
-        this.year0 = this.oldest - 11000
+        this.year0 = this.oldest - 12000
         this.speed = 50
         this.window = 100
         d3.select('#start-stop')
@@ -31,7 +31,7 @@ class Yoshi {
                 .style('background-size', 'cover')
                 .on('click', () => this.reset())
 
-        this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
+        //this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
 
         this.make_rolls()
 
@@ -69,7 +69,6 @@ class Yoshi {
 
     //button functionalities
     start() {
-        console.log('start')
         this.on = true
         d3.select('#start-stop')
             .style('background-image', 'url(img/pause.png)')
@@ -81,12 +80,11 @@ class Yoshi {
 
     }
     stop() {
-        console.log('stop')
+        clearInterval(this.interval)
         this.on = false
         this.rolls.forEach(r =>{
             r.stop_points()
         })
-        clearInterval(this.interval)
         d3.select('#start-stop')
             .style('background-image', 'url(img/play.png)')
             .on('click', () => this.start())
@@ -94,7 +92,7 @@ class Yoshi {
 
     reset() {
         this.stop()
-        this.year0 = this.oldest -11000
+        this.year0 = this.oldest
         this.rolls.forEach(r =>{
             r.circles.selectAll('circle').remove()
             r.axis_x.remove()
@@ -103,19 +101,18 @@ class Yoshi {
             r.update_current()
             r.draw_points()
         })
-        this.map.update_projection()
-        console.log('reset')
+        //this.map.update_projection()
 
     }
 
     tick() {
-        if(this.year0 - this.window > 0){
+        if(this.year0 - this.window >= 0){
             this.year0 = this.year0 - 1
             this.rolls.forEach(r => {
                 r.update_axis()
                 r.update_points()
-        })
-            this.map.update_points()
+            })
+            //this.map.update_points()
         }else{
             this.stop()
         }

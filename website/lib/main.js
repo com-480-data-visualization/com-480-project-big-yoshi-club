@@ -22,9 +22,6 @@ whenDocumentLoaded(() => {
         //earthquakes parsing
         data[1].forEach(elem => {
             elem['date'] = 2018 - elem['Date']
-            // let date = elem['Date'].split('/')
-            // elem['date'] = 2018 - (+date[2])
-            // elem['day-month'] = date[0] + '/' + date[1]
         })
 
         //meteors parsing
