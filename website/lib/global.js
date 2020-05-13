@@ -11,6 +11,9 @@ class Yoshi {
         d3.select('#projection-dropdown')
             .on('click', () => this.projection_menu_select())
 
+        d3.select('#myDropdown')
+            .on('click', () => this.projection_select())
+
         this.get_old_young()
 
         //time management
@@ -28,7 +31,7 @@ class Yoshi {
                 .style('background-size', 'cover')
                 .on('click', () => this.reset())
 
-        this.map = new Map(this, 'map', data[0], 'Last Known Eruption')
+        this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
 
         this.make_rolls()
 
@@ -52,12 +55,14 @@ class Yoshi {
 
     projection_select() {
         d3.select("#Gnomonic")
-            .on('click', () => {               
+            .on('click', () => {      
+                this.stop()         
                 this.map.projection_style = d3.geoGnomonic()
                 this.map.update_projection()
             })
         d3.select('#Natural')
             .on('click', () => {
+                this.stop()
                 this.map.projection_style = d3.geoNaturalEarth1()
                 this.map.update_projection()
             })
@@ -90,7 +95,7 @@ class Yoshi {
 
     reset() {
         this.stop()
-        this.year0 = this.oldest
+        this.year0 = this.oldest -11000
         this.rolls.forEach(r =>{
             r.circles.selectAll('circle').remove()
             r.axis_x.remove()
@@ -99,6 +104,7 @@ class Yoshi {
             r.update_current()
             r.draw_points()
         })
+        this.map.update_projection()
         console.log('reset')
 
     }
@@ -110,7 +116,7 @@ class Yoshi {
                 r.update_axis()
                 r.update_points()
         })
-            //this.map.update_points()
+            this.map.update_points()
         }else{
             this.stop()
         }

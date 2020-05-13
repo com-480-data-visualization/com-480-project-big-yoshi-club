@@ -4,10 +4,10 @@ class Map {
 
 
         this.data = data
-        this.buffer = []
-        this.current = 0
+        this.buffer = [[],[],[]]
+        this.current = [0,0,0]
+        
         this.time_accessor = time_accessor
-
 
         this.projection_style = d3.geoNaturalEarth1();
         this.svg = d3.select('#' + svg_element_id);
@@ -30,69 +30,19 @@ class Map {
         Promise.all([map_promise]).then((results) => {
 
             this.map_data = results[0];
-
-
-            this.set_current()
             this.draw_map()
-            this.update_current()
-            this.draw_points()
+
+            
+            this.data.forEach((_, idx) => {
+                this.set_current(idx)
+                this.update_current(idx)
+            });
+            
+            
 
         })
 
 
-
-        /*
-
-        let volcanoes = data[0]
-        let earthquakes = data[1]
-        let meteors = data[2]
-        this.map_container = this.svg.append('g');
-        this.map_container.selectAll(".country")
-            .data(this.map_data)
-            .enter()
-            .append("path")
-            .classed("country", true)
-            .attr("d", path_generator)
-            .style("fill", (d) => this.silly_color(d.properties.name))
-
-
-
-
-        const r = 3;
-        this.volcano_container = this.svg.append("g");
-        this.volcano_container.selectAll(".point")
-            .data(volcanoes)
-            .enter()
-            .append("circle")
-            .classed("point", true)
-            .attr("r", r)
-            .attr("cx", -r)
-            .attr("cy", -r)
-            .style("fill", d3.color("blue"))
-            .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")");
-
-        this.earthquake_container = this.svg.append("g");
-        this.earthquake_container.selectAll(".point")
-            .data(earthquakes)
-            .enter()
-            .append("circle")
-            .classed("point", true)
-            .attr("r", r)
-            .attr("cx", -r)
-            .attr("cy", -r)
-            .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")");
-
-        this.meteor_container = this.svg.append("g");
-        this.meteor_container.selectAll(".point")
-            .data(meteors)
-            .enter()
-            .append("circle")
-            .classed("point", true)
-            .attr("r", r)
-            .attr("cx", -r)
-            .attr("cy", -r)
-            .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")");
-        */
     }
 
     silly_color(name) {
@@ -126,23 +76,26 @@ class Map {
         this.point_container = this.svg.append("g");
     }
 
-    update_current() {
-        while (this.data[this.current][this.time_accessor] >= this.parent.year0 - this.parent.window) {  //if before end of window
-            if (this.data[this.current][this.time_accessor] <= this.parent.year0) {      //if after start of window
-                this.buffer.push(this.data[this.current])
-                this.current = this.current + 1                                       //add point to buffer
+    update_current(idx) {     
+        
+        while (this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) {  //if before end of window
+            if (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0) {      //if after start of window
+                this.buffer[idx].push(this.data[idx][this.current[idx]])
+                this.current[idx] = this.current[idx] + 1                                       //add point to buffer
             }
         }
+
     }
 
-    set_current() {
+    set_current(idx) {
         let i = 0
-        while (this.data[i][this.time_accessor] >= this.parent.year0 & i < this.data.length) {
+        
+        while (this.data[idx][i][this.time_accessor[idx]] >= this.parent.year0 & i < this.data[idx].length) {
             i++
         }
-        this.current = i
+        this.current[idx] = i
     }
-    draw_points() {
+    draw_points(i) {
         const r = 3;
         const projection = this.projection_style
             .rotate([0, 0])
@@ -151,84 +104,71 @@ class Map {
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
 
-        console.log("BUUUUUUUFFFEFRRRR", this.buffer)
-        //this.buffer.forEach(dat => {
-        
+        const colors = ['yellow', 'blue', 'green']
         this.point_container.selectAll(".point")
-            .data(this.buffer)
+            .data(this.buffer[i])
             .enter()
             .append("circle")
             .classed("point", true)
             .attr("r", r)
             .attr("cx", -r)
             .attr("cy", -r)
-            .style("fill", d3.color("yellow"))
+            .style("fill", d3.color(colors[i]))
             .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")");
-        //})
+        
+    }
+
+    update_points(){
+        const r = 3;
+        const colors = ['yellow', 'blue', 'green']
+        const projection = this.projection_style
+            .rotate([0, 0])
+            .center([0, 0])
+            .scale(200)
+            .translate([this.svg_width / 2, this.svg_height / 2])
+            .precision(0.1)
+        this.buffer.forEach((_, idx) => {
+            if(this.current[idx] < this.data[idx].length){
+                while(this.data[idx][this.current[idx]][this.time_accessor[idx]] == this.parent.year0 - this.parent.window){
+                    this.buffer[idx].push(this.data[idx][this.current[idx]])
+                    this.current[idx] = this.current[idx]+1
+                }
+            }
+           
+            this.point_container.selectAll(".point")
+            .data(this.buffer[idx])
+            .enter()
+            .append("circle")
+            .classed("point", true)
+            .attr("r", r)
+            .attr("cx", -r)
+            .attr("cy", -r)
+            .style("fill", d3.color(colors[idx]))
+            .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")")
+            .transition()
+                    .style('opacity', 0)
+                    
+                    .duration(this.parent.speed* this.parent.window*1.3)
+                    .on('end', () => {
+                        this.buffer[idx].shift()
+                    })
+                    .remove()
+        })
     }
     update_projection() {
 
         this.svg.selectAll('g').remove()
 
         this.draw_map()
-        this.draw_points()
-        /*
-        let volcanoes = this.parent.data[0]
-        let earthquakes = this.parent.data[1]
-        let meteors = this.parent.data[2]
 
-        this.draw_map()
-
-        const r = 3;
-        this.volcano_container = this.svg.append("g");
-        this.volcano_container.selectAll(".point")
-            .data(volcanoes)
-            .enter()
-            .append("circle")
-            .classed("point", true)
-            .attr("r", r)
-            .attr("cx", -r)
-            .attr("cy", -r)
-            .style("fill", d3.color("blue"))
-            .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")");
-
-        this.earthquake_container = this.svg.append("g");
-        this.earthquake_container.selectAll(".point")
-            .data(earthquakes)
-            .enter()
-            .append("circle")
-            .classed("point", true)
-            .attr("r", r)
-            .attr("cx", -r)
-            .attr("cy", -r)
-            .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")");
-
-        this.meteor_container = this.svg.append("g");
-        this.meteor_container.selectAll(".point")
-            .data(meteors)
-            .enter()
-            .append("circle")
-            .classed("point", true)
-            .attr("r", r)
-            .attr("cx", -r)
-            .attr("cy", -r)
-            .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")");
-            */
+        this.data.forEach((_, idx) => {
+            this.set_current(idx)
+            this.update_current(idx)
+            //this.draw_points(idx)
+        });
+        
+        
     }
 
 
 }
-/*
-function whenDocumentLoaded(action) {
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", action);
-	} else {
-		// `DOMContentLoaded` already fired
-		action();
-	}
-}
-whenDocumentLoaded(() => {
-	plot_object = new Map('map');
-	// plot object is global, you can inspect it in the dev-console
-});
-*/
