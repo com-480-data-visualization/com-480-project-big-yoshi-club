@@ -10,6 +10,7 @@ class Roll{
      */
     constructor(parent, data, svg, type, y_attribute, means){
         this.means = means
+        console.log(this.means)
         this.parent = parent
         this.svg = d3.select('#' + svg)
         this.type = type
@@ -38,9 +39,7 @@ class Roll{
         this.circles = this.svg.append('g')
 
         this.set_current()
-        console.log('current: ' + this.current)
         this.update_current()
-        console.log(this.buffer)
         this.draw_points()
         this.draw_axis()
         this.draw_label()
@@ -76,7 +75,7 @@ class Roll{
             .data(this.buffer)
             .enter()
             .append('circle')
-                .attr('cy', d => this.y(d.value))
+                .attr('cy', d => this.y(d.value.mean))
                 .attr('cx', d => this.x(d.key))
                 .attr('r', this.RADIUS)
                 .style('fill', 'red')
@@ -85,15 +84,17 @@ class Roll{
     }
 
     update_points(){
-        while(this.means[this.current].key == this.parent.year0 - this.parent.window){
-            this.buffer.push(this.means[this.current])
-            this.current = this.current+1
+        if(this.current < this.means.length){
+            while(this.means[this.current].key == this.parent.year0 - this.parent.window){
+                this.buffer.push(this.means[this.current])
+                this.current = this.current+1
+            }
         }
         this.circles.selectAll('circle')
             .data(this.buffer)
             .enter()
             .append('circle')
-                .attr('cy', d => this.y(d.value))
+                .attr('cy', d => this.y(d.value.mean))
                 .attr('cx', d => this.x(d.key))
                 .attr('r', this.RADIUS)
                 .style('fill', 'red')
@@ -130,7 +131,8 @@ class Roll{
             .text(this.y_attribute)
 
         this.axis_bottom = d3.axisBottom(this.x)
-                            .ticks(this.parent.window / 100)
+                            .ticks(10)
+                            .tickFormat(d => 2018 - d)
         this.axis_x = this.svg.append('g')
                     .attr('transform', `translate(0, ${this.AXIS_HEIGHT})`)
                     .attr('class', 'axis_x')
@@ -154,7 +156,7 @@ class Roll{
             .attr('text-anchor', 'middle')
             .attr('y', this.label_height - 5)
             .style('text-decoration', 'underline')
-            .text(`means per year of ${this.y_attribute.toLowerCase()} for ${this.type}`)
+            .text(`mean per year of ${this.y_attribute.toLowerCase()} for ${this.type}`)
     }
 
 }
@@ -163,6 +165,7 @@ function mouseOver(){
     d3.select(this)
         .style('fill', 'blue')
         .attr('r', '9')
+    console.log(this)
 }
 
 function mouseOut(){

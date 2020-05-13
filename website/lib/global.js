@@ -8,7 +8,7 @@ class Yoshi {
 
         this.y_attributes = ['Elevation', 'Depth', 'mass']
         this.get_means()
-        console.log(this.means)
+
         d3.select('#projection-dropdown')
             .on('click', () => this.projection_select())
 
@@ -18,7 +18,7 @@ class Yoshi {
         this.on = false
         this.year0 = this.oldest - 11000
         this.speed = 50
-        this.window = 50
+        this.window = 100
         d3.select('#start-stop')
                 .style('background-image', 'url(img/play.png)')
                 .style('background-size', 'cover')
@@ -120,7 +120,11 @@ class Yoshi {
         for(let i = 0; i<this.data.length; i++){
             this.means[i] = d3.nest()
                                 .key(d => d['date'])
-                                .rollup( v => d3.mean(v, d =>  d[this.y_attributes[i]]))
+                                .rollup( (v) => {
+                                    return {
+                                        mean : d3.mean(v, d =>  d[this.y_attributes[i]])
+                                    }
+                                })
                                 .entries(this.data[i])
         }
     }
