@@ -1,17 +1,18 @@
 class Roll{
     /**
      * 
-     * @param {parent object managing time and data} parent 
-     * @param {data to be displayed} data 
-     * @param {svg of the Roll} svg 
-     * @param {type of data (either 'V', 'E' or 'M')} type 
-     * @param {column name for the year of the data} time_accessor 
+     * @param { parent class } parent 
+     * @param { data specific to roll } data 
+     * @param { svg id to plot on } svg 
+     * @param { name of the data type (for axis) } type 
+     * @param { name of the attribute on y axis} y_attribute 
+     * @param { means per year wrt y_axis } means 
      */
-    constructor(parent, data, svg,type, time_accessor, y_attribute){
+    constructor(parent, data, svg, type, y_attribute, means){
+        this.means = means
         this.parent = parent
         this.svg = d3.select('#' + svg)
         this.type = type
-        this.time_accessor = time_accessor
         this.data = data
         const svg_viewbox = this.svg.node().viewBox.animVal;
         this.WIDTH = svg_viewbox.width
@@ -22,7 +23,7 @@ class Roll{
         this.RADIUS = 3
         this.current = 0
         this.y_attribute = y_attribute
-        //this.on = false
+        this.label_height = 20
 
         //scalings
         let W = this.RADIUS + this.WIDTH
@@ -31,40 +32,43 @@ class Roll{
                     .range([this.X0, W])
 
         this.y = d3.scaleLinear()
-                .domain([d3.min(this.data, d => d[this.y_attribute]) - 100, d3.max(this.data, d=> d[this.y_attribute]) + 150])
-                .range([this.AXIS_HEIGHT, 0])
+                .domain([d3.min(this.data, d => d[this.y_attribute]), d3.max(this.data, d=> d[this.y_attribute])])
+                .range([this.AXIS_HEIGHT, this.label_height])
                     
         this.circles = this.svg.append('g')
 
         this.set_current()
+        console.log('current: ' + this.current)
         this.update_current()
+        console.log(this.buffer)
         this.draw_points()
         this.draw_axis()
         this.draw_label()
     }
 
     /**
+     * finds the current index
+     */
+    set_current(){
+        let i = 0
+        while(this.means[i].key >= this.parent.year0 & i < this.means.length){
+            i++
+        }
+        this.current = i
+    }
+    /**
      * searches for all the points that should be displayed and puts them in the buffer
      */
     update_current(){
-        while(this.data[this.current][this.time_accessor] >= this.parent.year0 - this.parent.window){  //if before end of window
-            if(this.data[this.current][this.time_accessor] <= this.parent.year0){      //if after start of window
-                this.buffer.push(this.data[this.current])
+        while(this.means[this.current].key >= this.parent.year0 - this.parent.window){  //if before end of window
+            if(this.means[this.current].key <= this.parent.year0){      //if after start of window
+                this.buffer.push(this.means[this.current])
                 this.current = this.current + 1                                       //add point to buffer
             }
 
         }
     }
-    /**
-     * finds the current index
-     */
-    set_current(){
-        let i = 0
-        while(this.data[i][this.time_accessor] >= this.parent.year0 & i < this.data.length){
-            i++
-        }
-        this.current = i
-    }
+
 
     //draws the points that are in the interval [year0, year0 - YEAR_WINDOW]
     draw_points(){
@@ -72,8 +76,8 @@ class Roll{
             .data(this.buffer)
             .enter()
             .append('circle')
-                .attr('cy', d => this.y(d[this.y_attribute]))
-                .attr('cx', d => this.x(d[this.time_accessor]))
+                .attr('cy', d => this.y(d.value))
+                .attr('cx', d => this.x(d.key))
                 .attr('r', this.RADIUS)
                 .style('fill', 'red')
                 .on('mouseover', mouseOver)
@@ -81,22 +85,22 @@ class Roll{
     }
 
     update_points(){
-        while(this.data[this.current][this.time_accessor] == this.parent.year0 - this.parent.window){
-            this.buffer.push(this.data[this.current])
+        while(this.means[this.current].key == this.parent.year0 - this.parent.window){
+            this.buffer.push(this.means[this.current])
             this.current = this.current+1
         }
         this.circles.selectAll('circle')
             .data(this.buffer)
             .enter()
             .append('circle')
-                .attr('cy', d => this.y(d[this.y_attribute]))
-                .attr('cx', d => this.x(d[this.time_accessor]))
+                .attr('cy', d => this.y(d.value))
+                .attr('cx', d => this.x(d.key))
                 .attr('r', this.RADIUS)
                 .style('fill', 'red')
                 .on('mouseover', mouseOver)
                 .on('mouseout', mouseOut)
                 .transition()
-                    .duration(d =>  this.parent.speed * (this.parent.year0 - d[this.time_accessor]))
+                    .duration(d =>  this.parent.speed * (this.parent.year0 - d.key))
                     .ease(d3.easeLinear)
                     .attr('cx', this.X0)
                     .on('end', () => {
@@ -148,8 +152,9 @@ class Roll{
         this.svg.append('text')
             .attr('x', this.WIDTH/2)
             .attr('text-anchor', 'middle')
-            .attr('y', 20)
-            .text(`${this.y_attribute.toLowerCase()} of ${this.type}`)
+            .attr('y', this.label_height - 5)
+            .style('text-decoration', 'underline')
+            .text(`means per year of ${this.y_attribute.toLowerCase()} for ${this.type}`)
     }
 
 }

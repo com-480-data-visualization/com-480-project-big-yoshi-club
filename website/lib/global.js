@@ -2,30 +2,32 @@ class Yoshi {
 
     constructor(data, map_svg, roll_svgs) {
         this.data = data
-        console.log(this.data[1][10000])
         this.map_svg = map_svg
         this.roll_svgs = roll_svgs
         this.projection_style = d3.geoNaturalEarth1()
 
+        this.y_attributes = ['Elevation', 'Depth', 'mass']
+        this.get_means()
+        console.log(this.means)
         d3.select('#projection-dropdown')
             .on('click', () => this.projection_select())
 
-        let oldest_v = d3.max(this.data[0], v => v['Last Known Eruption'])
-        let oldest_e = d3.max(this.data[1], e => e['Date'])
-        let oldest_m = d3.max(this.data[2], m => m['year'])
+        let oldest_v = d3.max(this.data[0], v => v['date'])
+        let oldest_e = d3.max(this.data[1], e => e['date'])
+        let oldest_m = d3.max(this.data[2], m => m['date'])
         let oldest = d3.max([oldest_v, oldest_e, oldest_m])
         this.oldest = oldest
 
-        let youngest_v = d3.min(this.data[0], v => v['Last Known Eruption'])
-        let youngest_e = d3.min(this.data[1], e => e['Date'])
-        let youngest_m = d3.min(this.data[2], m => m['year'])
+        let youngest_v = d3.min(this.data[0], v => v['date'])
+        let youngest_e = d3.min(this.data[1], e => e['date'])
+        let youngest_m = d3.min(this.data[2], m => m['date'])
         this.youngest = d3.min([youngest_v, youngest_e, youngest_m])
 
         //time management
         this.on = false
-        this.year0 = oldest - 10000
+        this.year0 = oldest - 11000
         this.speed = 50
-        this.window = 500
+        this.window = 50
         d3.select('#start-stop')
                 .style('background-image', 'url(img/play.png)')
                 .style('background-size', 'cover')
@@ -38,12 +40,16 @@ class Yoshi {
 
         //this.map = new Map('map', this.data, this.projection_style)
 
-        let volcano_roll = new Roll(this, data[0], roll_svgs[0], 'volcanoes', 'Last Known Eruption', 'Elevation')
-        //let earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'earthquakes', 'Date', 'Depth')
-        let meteores_roll = new Roll(this, data[2], roll_svgs[2], 'meteors', 'year', 'mass')
-        this.rolls = [volcano_roll
-            //, earthquakes_roll
-            , meteores_roll]
+
+
+        let volcano_roll = new Roll(this, data[0], roll_svgs[0], 'volcanoes', this.y_attributes[0], this.means[0])
+        let earthquakes_roll = new Roll(this, data[1], roll_svgs[1], 'earthquakes', this.y_attributes[1], this.means[1])
+        let meteores_roll = new Roll(this, data[2], roll_svgs[2], 'meteors', this.y_attributes[2], this.means[2])
+        this.rolls = [
+            volcano_roll
+            ,earthquakes_roll
+            ,meteores_roll
+        ]
 
         // Add timeline controls and display
         const svgId = "#time-controls"
@@ -113,7 +119,15 @@ class Yoshi {
         }
     }
 
-
+    get_means(){ 
+        this.means = []
+        for(let i = 0; i<this.data.length; i++){
+            this.means[i] = d3.nest()
+                                .key(d => d['date'])
+                                .rollup( v => d3.mean(v, d =>  d[this.y_attributes[i]]))
+                                .entries(this.data[i])
+        }
+    }
 }
 
 function menu() {
