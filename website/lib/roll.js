@@ -1,3 +1,6 @@
+/**
+ * Represent a timelapse of datapoints per year.
+ */
 class Roll{
     /**
      * 
@@ -25,6 +28,12 @@ class Roll{
         this.current = 0
         this.y_attribute = y_attribute
 
+        this.info_rect = this.svg.append('g')
+                .attr('width', '30px')
+                .attr('height', '40px')
+                .attr('class', 'info_box')
+                .style('opacity', 0)
+
         //scalings
         let W = this.RADIUS + this.WIDTH
         this.x = d3.scaleLinear()
@@ -33,7 +42,7 @@ class Roll{
 
         this.y = d3.scaleLinear()
                 .domain([d3.min(this.data, d => d[this.y_attribute]), d3.max(this.data, d => d[this.y_attribute])])
-                .range([this.AXIS_HEIGHT, this.label_height])
+                .range([this.AXIS_HEIGHT - this.RADIUS, this.label_height + this.RADIUS])
                     
         this.circles = this.svg.append('g')
 
@@ -78,8 +87,32 @@ class Roll{
                 .attr('cx', d => this.x(d.key))
                 .attr('r', this.RADIUS)
                 .style('fill', 'red')
-                .on('mouseover', this.mouseOver)
-                .on('mouseout', this.mouseOut)
+                .on('mouseout', () => {
+                    this.info_rect.transition().duration(300).style('opacity', 0)
+                })
+        
+        const classReference = this
+
+        this.circles.selectAll('circle')
+            .each(function(point_data){
+                d3.select(this).on('mouseover', function(){
+                    let rect = classReference.info_rect
+                    rect.text('')
+                    let x = this.cx.animVal.value
+                    let y = this.cy.animVal.value
+                    rect.attr('transform', `translate(${x}, ${y})`)
+
+                    rect.append('text')
+                        .text(`
+                        Year : ${2018 - point_data.key}
+                        Mean : ${point_data.value.mean}
+                        `)
+
+                    rect.transition()
+                        .duration(500)
+                        .style('opacity',0.9)
+                })
+            })
     }
 
     update_points(){
@@ -102,21 +135,47 @@ class Roll{
                 .attr('r', this.RADIUS)
                 .style('fill', 'red')
                 .on('mouseover', this.mouseOver)
-                .on('mouseout', this.mouseOut)
+                .on('mouseout', () => {
+                    this.info_rect.transition().duration(500).style('opacity', 0)
+                    this.info_rect.text('')
+                })
                 .transition()
                     .duration(d =>  this.parent.speed * (this.parent.year0 - d.key))
                     .ease(d3.easeLinear)
-                    .attr('cx', this.X0)
+                    .attr('cx', this.X0 + this.RADIUS/2)
                     .on('end', () => {
                         this.buffer.shift()
                     })
                     .remove()
 
+        const classReference = this
+
+        this.circles.selectAll('circle')
+            .each(function(point_data){
+                d3.select(this).on('mouseover', function(){
+                    let rect = classReference.info_rect
+                    let x = this.cx.animVal.value
+                    let y = this.cy.animVal.value
+                    rect.attr('transform', `translate(${x}, ${y})`)
+
+                    rect.append('text')
+                        .text(`
+                        Year : ${2018 - point_data.key}
+                        Mean : ${point_data.value.mean}
+                        `)
+
+                    rect.transition()
+                        .duration(500)
+                        .style('opacity',0.9)
+                })
+            })
     }
 
     stop_points(){
         this.circles.selectAll('circle')
             .transition()
+            .duration(0)
+        this.axis_x.transition()
             .duration(0)
     }
     draw_axis(){
@@ -167,6 +226,7 @@ class Roll{
         d3.select(this)
             .style('fill', 'blue')
             .attr('r', '9')
+        console.log(this)
     }
     
     mouseOut(){
@@ -176,4 +236,3 @@ class Roll{
     }
 
 }
-

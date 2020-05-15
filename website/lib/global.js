@@ -18,8 +18,8 @@ class Yoshi {
 
         //time management
         this.on = false
-        this.year0 = this.oldest - 12000
-        this.speed = 50
+        this.year0 = this.oldest
+        this.speed = 100
         this.window = 100
         d3.select('#start-stop')
                 .style('background-image', 'url(img/play.png)')
@@ -38,7 +38,7 @@ class Yoshi {
         // Add timeline controls and display
         const svgId = "#time-controls"
         const minDate = new Date(860, 1, 1)
-        const maxDate = new Date(2020, 1, 1)
+        const maxDate = new Date(2018, 1, 1)
         const twLoBnd = new Date(1245, 1, 1)
         const twUpBnd = new Date(1963, 1, 1)
         this.timelineControl = new TimelineControl(svgId, minDate, maxDate, twLoBnd, twUpBnd)
@@ -76,14 +76,14 @@ class Yoshi {
         this.rolls.forEach(r =>  {
             r.circles.selectAll('circle').remove()
         })
-        this.map.point_container.selectAll('*').remove()
+        //this.map.point_container.selectAll('*').remove()
         this.interval = setInterval( () => this.tick(), this.speed)
 
     }
     stop() {
         clearInterval(this.interval)
         this.on = false
-        this.map.stop_fade()
+        //this.map.stop_fade()
         this.rolls.forEach(r =>{
             r.stop_points()
         })
@@ -94,9 +94,9 @@ class Yoshi {
 
     reset() {
         this.stop()
-        this.year0 = this.oldest -11000
-        this.map.point_container.selectAll('*').remove()
-        this.map.buffer = [[],[],[]]
+        this.year0 = this.oldest
+        //this.map.point_container.selectAll('*').remove()
+        //this.map.buffer = [[],[],[]]
         this.rolls.forEach((r, idx) =>{
             r.circles.selectAll('circle').remove()
             r.axis_x.remove()
@@ -104,14 +104,9 @@ class Yoshi {
             r.set_current()
             r.update_current()
             r.draw_points()
-            
-            this.map.set_current(idx)
-            this.map.update_current(idx)
+            //this.map.set_current(idx)
+            //this.map.update_current(idx)
         })
-        
-        
-        console.log('reset')
-
     }
 
     tick() {
@@ -132,7 +127,8 @@ class Yoshi {
         let oldest_v = d3.max(this.data[0], v => v['date'])
         let oldest_e = d3.max(this.data[1], e => e['date'])
         let oldest_m = d3.max(this.data[2], m => m['date'])
-        this.oldest = d3.max([oldest_v, oldest_e, oldest_m])
+        this.oldest = d3.max([oldest_v, oldest_e, oldest_m]) - 12000
+
 
         let youngest_v = d3.min(this.data[0], v => v['date'])
         let youngest_e = d3.min(this.data[1], e => e['date'])
