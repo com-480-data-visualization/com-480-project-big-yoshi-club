@@ -1,7 +1,6 @@
 #content {
 	width: 80%;
 
-	border: 2px dashed;
 
 	/* Center horizontally */
 	margin: 0 auto;
@@ -21,7 +20,6 @@
 }
 
 #left-col {
-	border: 1px dashed;
 
 	width: 68%;
 
@@ -36,7 +34,6 @@
 }
 
 #right-col {
-	border: 1px dashed;
 
 	width: 30%;
 
@@ -56,16 +53,6 @@
 	width: 100%;
 }
 
-#timelines {
-	display: flex;
-	flex-direction: column;
-}
-
-#timelines svg {
-	margin: 5px;
-
-	border: dashed 1px;
-}
 
 #time-controls {
 	margin: 5px;
@@ -139,15 +126,53 @@
 	height: 70%;
 }
 
+
+/*timelines/rolls style*/
+#timelines {
+	display: flex;
+	flex-direction: column;
+	background-color: rgba(0,0,0,0.5);
+	padding: 2px;
+}
+
+#timelines svg {
+	margin: 5px;
+}
+
+
+.roll_points {
+	position: relative;
+	fill: rebeccapurple;
+}
+
 /*window style when hoovering on points*/
-.info_box {		
-    text-align: center;			
-    width: 60px;					
-    height: 28px;					
-    padding: 2px;				
-    font: 12px sans-serif;		
-    background: lightsteelblue;	
-    border: 0px;		
-    border-radius: 8px;
-    pointer-events: none;			
+.info_box {
+	text-align: center;
+	width: 80px;
+}
+
+.info_box rect {
+	fill: rebeccapurple;
+	stroke-width: 2px;
+	stroke: black;
+}
+
+.info_box text{
+	position: relative;
+	font-family: cursive;
+	text-anchor: middle;
+	left: 10px;
+	top: 10px;
+}
+
+.roll_label{
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	fill: rgba(100, 181, 201, 0.952);
+}
+
+.axis_x {
+	color: steelblue;
+}
+.axis_y {
+	color:steelblue;
 }

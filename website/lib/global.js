@@ -112,7 +112,7 @@ class Yoshi {
     tick() {
         if(this.year0 - this.window >= 0){
             this.year0 = this.year0 - 1
-            this.rolls.forEach(r => {
+            this.rolls.forEach((r,i)=> {
                 r.update_axis()
                 r.update_points()
             })
