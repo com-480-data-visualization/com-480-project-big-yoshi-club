@@ -37,12 +37,11 @@ class Yoshi {
 
         // Add timeline controls and display
         const svgId = "#time-controls"
-        const minDate = new Date(860, 1, 1)
-        const maxDate = new Date(2018, 1, 1)
-        const twLoBnd = new Date(1245, 1, 1)
-        const twUpBnd = new Date(1963, 1, 1)
-        this.timelineControl = new TimelineControl(svgId, minDate, maxDate, twLoBnd, twUpBnd)
-
+        const minDate = 860
+        const maxDate = 2018
+        const twLoBnd = 1245
+        const twUpBnd = 1963
+        this.timelineControl = new TimelineControl(this, svgId, minDate, maxDate, twLoBnd, twUpBnd)
     }
 
     projection_menu_select() {
@@ -114,6 +113,11 @@ class Yoshi {
                 r.update_points()
             })
             //this.map.update_points()
+
+            // Update the timeline control display
+            const loBnd = 2018 - this.year0
+            const upBnd = loBnd + this.window
+            this.timelineControl.update(loBnd, upBnd)
         }else{
             this.stop()
         }
