@@ -19,8 +19,8 @@ class Yoshi {
         //time management
         this.on = false
         this.year0 = this.oldest - 11500
-        this.speed = 100
-        this.window = 200
+        this.speed = 200
+        this.window = 500
         d3.select('#start-stop')
                 .style('background-image', 'url(img/play.png)')
                 .style('background-size', 'cover')
