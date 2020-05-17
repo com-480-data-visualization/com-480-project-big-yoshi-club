@@ -70,12 +70,12 @@ class Yoshi {
     //button functionalities
     start() {
         this.on = true
-        d3.select('#start-stop')
-            .style('background-image', 'url(img/pause.png)')
-            .on('click', () => this.stop())
         this.rolls.forEach(r =>  {
             r.circles.selectAll('circle').remove()
         })
+        d3.select('#start-stop')
+            .style('background-image', 'url(img/pause.png)')
+            .on('click', () => this.stop())
         //this.map.point_container.selectAll('*').remove()
         this.interval = setInterval( () => this.tick(), this.speed)
 
