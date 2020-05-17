@@ -9,10 +9,10 @@ class Yoshi {
         this.get_means()
 
         d3.select('#projection-dropdown')
-            .on('click', () => this.projection_menu_select())
+            .on('mouseover', () => this.projection_menu_select())
 
         d3.select('#myDropdown')
-            .on('click', () => this.projection_select())
+            .on('mouseover', () => this.projection_select())
 
         this.get_old_young()
 
@@ -31,7 +31,7 @@ class Yoshi {
                 .style('background-size', 'cover')
                 .on('click', () => this.reset())
 
-        //this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
+        this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
 
         this.make_rolls()
 
@@ -46,24 +46,32 @@ class Yoshi {
 
     projection_menu_select() {
         d3.select('#projection-dropdown')
-            .on('click', () => {
+            .on('mouseover', () => {
                 document.getElementById("myDropdown").classList.toggle("show");
             })
     }
 
     projection_select() {
-        d3.select("#Gnomonic")
-            .on('click', () => {      
-                this.stop()         
-                this.map.projection_style = d3.geoGnomonic()
-                this.map.update_projection()
-            })
+        
         d3.select('#Natural')
             .on('click', () => {
                 this.stop()
+                
+                this.map.PROJECT_SCALE = 180
+                
                 this.map.projection_style = d3.geoNaturalEarth1()
                 this.map.update_projection()
             })
+        d3.select('#Rectangular')
+            .on('click', () => {
+                this.stop()
+                
+                this.map.PROJECT_SCALE = 150
+                
+                this.map.projection_style = d3.geoEquirectangular()
+                this.map.update_projection()
+            })
+        
     }
 
     //button functionalities
@@ -73,7 +81,7 @@ class Yoshi {
         d3.select('#start-stop')
             .style('background-image', 'url(img/pause.png)')
             .on('click', () => this.stop())
-        //this.map.point_container.selectAll('*').remove()
+        this.map.point_container.selectAll('*').remove()
         this.interval = setInterval( () => this.tick(), this.speed)
 
     }
@@ -92,16 +100,23 @@ class Yoshi {
     reset() {
         this.stop()
         this.year0 = this.oldest
+<<<<<<< HEAD
         //this.map.point_container.selectAll('*').remove()
         //this.map.buffer = [[],[],[]]
         this.rolls.forEach(r =>{
+=======
+        this.map.point_container.selectAll('*').remove()
+        this.map.buffer = [[],[],[]]
+        this.rolls.forEach((r, idx) =>{
+>>>>>>> 97700d93b2ffcb26ef3c2b845c515f806110e163
             r.circles.selectAll('circle').remove()
             r.draw_axis()
             r.set_current()
             r.update_current()
-            r.draw_points()
-            //this.map.set_current(idx)
-            //this.map.update_current(idx)
+            r.draw_points();
+
+            this.map.set_current(idx)
+            this.map.update_current(idx)
         })
     }
 
@@ -112,7 +127,7 @@ class Yoshi {
                 r.update_axis()
                 r.update_points()
             })
-            //this.map.update_points()
+            this.map.update_points()
 
             // Update the timeline control display
             const loBnd = 2018 - this.year0
