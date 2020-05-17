@@ -18,9 +18,9 @@ class Yoshi {
 
         //time management
         this.on = false
-        this.year0 = this.oldest - 12000
+        this.year0 = this.oldest - 11500
         this.speed = 100
-        this.window = 300
+        this.window = 200
         d3.select('#start-stop')
                 .style('background-image', 'url(img/play.png)')
                 .style('background-size', 'cover')
@@ -95,9 +95,8 @@ class Yoshi {
         this.year0 = this.oldest
         //this.map.point_container.selectAll('*').remove()
         //this.map.buffer = [[],[],[]]
-        this.rolls.forEach((r, idx) =>{
+        this.rolls.forEach(r =>{
             r.circles.selectAll('circle').remove()
-            r.axis_x.remove()
             r.draw_axis()
             r.set_current()
             r.update_current()
@@ -110,7 +109,7 @@ class Yoshi {
     tick() {
         if(this.year0 - this.window >= 0){
             this.year0 = this.year0 - 1
-            this.rolls.forEach(r=> {
+            this.rolls.forEach(r => {
                 r.update_axis()
                 r.update_points()
             })

@@ -74,7 +74,7 @@ class Roll{
         this.set_current()
         this.update_current()
         // //draws all the points
-        this.draw_points()
+        this.update_points()
         // //draws the axis
         this.draw_axis()
         // //draws the labels
@@ -109,14 +109,12 @@ class Roll{
         }
     }
     on(){
-        console.log('on')
         this.circles.transition()
-            .duration(this.parent.speed * (this.parent.oldest - this.parent.year0))
+            .duration(this.parent.speed * (this.parent.year0 - this.parent.window))
             .ease(d3.easeLinear)
             .attr('transform', `translate(${-this.g_width + this.W}, ${this.label_height})`)
     }
     off(){
-        console.log('off')
         this.circles.transition().duration(0)
     }
 
@@ -124,14 +122,19 @@ class Roll{
      * draws the points that are in the interval [year0, year0 - YEAR_WINDOW]
      */
     draw_points(){
-        this.circles.selectAll('circle')
+        let c = this.circles.selectAll('circle')
             .data(this.buffer)
-            .enter()
+
+        c.enter()
             .append('circle')
+            .merge(c)
                 .attr('cy', d => this.y(d.value.mean) - this.label_height)
                 .attr('cx', d => this.x(d.key) - this.year_to_x_for_g(this.parent.year0))
                 .attr('r', this.RADIUS)
                 .attr('class','roll_points')
+            
+        c.exit()
+                .remove()
         
         //adds the hover function displaying more information on the point
         const classReference = this
@@ -152,34 +155,27 @@ class Roll{
             }
         }
 
-            //adds all the circles
+                //adds all the circles
         let c = this.circles.selectAll('circle')
-            .data(this.buffer)
+                .data(this.buffer)
+
         c.enter()
             .append('circle')
-            .attr('cy', d => this.y(d.value.mean) - this.label_height)
-            .attr('cx', d => this.x(d.key) - this.year_to_x_for_g(this.parent.year0))
-            .attr('r', this.RADIUS)
-            .attr('class','roll_points')
+                .merge(c)
+                .attr('cy', d => this.y(d.value.mean) - this.label_height)
+                .attr('cx', d => this.x(d.key) - this.year_to_x_for_g(this.parent.year0))
+                .attr('r', this.RADIUS)
+                .attr('class','roll_points')
 
-        while(this.buffer.length > 0){
-            if(this.buffer[0].key == this.parent.year0){
-                this.buffer.shift()
-            }else{
-                break
-            }
-        }
+        this.buffer = this.buffer.filter(d => d.key < this.parent.year0 - 2)
 
         c.exit()
             .remove()
 
 
         const classReference = this
-
         this.circles.selectAll('circle')
-        .each(function(point_data){
-            classReference.add_hover_function(this, point_data)
-        })
+        .each(function(point_data){classReference.add_hover_function(this, point_data)})
     }
 
 
@@ -189,14 +185,15 @@ class Roll{
             d3.select(this).style('fill','rgba(250,0,0,0.7)')
             let info_box = classReference.info_rect
             info_box.text('')
+            let a = classReference.x(point_data.key)
             let x = this.cx.animVal.value
             let y = this.cy.animVal.value
-            if(y - classReference.info_box_height < classReference.label_height){
-                info_box.attr('transform', `translate(${x}, ${y})`)
+            if(y - classReference.info_box_height < 0){
+                 info_box.attr('transform', `translate(${x}, ${y})`)
             }else{
-                info_box.attr('transform', `translate(${x}, ${y - classReference.info_box_height})`)
+                 info_box.attr('transform', `translate(${x}, ${y - classReference.info_box_height})`)
             }
-            if(x + classReference.info_box_width > classReference.WIDTH){
+            if(a + classReference.info_box_width > classReference.WIDTH){
                 info_box.attr('transform', `translate(${x - classReference.info_box_width}, ${y})`)
             }
             info_box.append('rect')
@@ -221,7 +218,7 @@ class Roll{
             
             info_box.transition()
                 .duration(500)
-                .style('opacity',0.5)
+                .style('opacity',0.6)
                 .style('visibility','visible')
 
         })//what happens when unhovering of a point
