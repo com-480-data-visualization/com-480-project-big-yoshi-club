@@ -30,7 +30,7 @@ class Roll{
         this.label_height = 40
         this.AXIS_HEIGHT = this.HEIGHT * 0.87
         //left axis position
-        this.X0 = 75
+        this.X0 = 65
         //point radius
         this.RADIUS = 7
         //size of the infobox
@@ -39,11 +39,11 @@ class Roll{
 
         //scalings
         //right x padding
-        let W = this.WIDTH - this.X0
+        this.W = this.WIDTH - this.X0
         //x scaling
         this.x = d3.scaleLinear()
                     .domain([this.parent.year0, this.parent.year0 - this.parent.window])
-                    .range([this.X0, W])
+                    .range([this.X0, this.W])
 
         //right padding
         let min = d3.min(this.data, d => d[this.y_attribute])
@@ -51,25 +51,36 @@ class Roll{
         let padding = (this.AXIS_HEIGHT - this.label_height) * 0.1
         this.y = d3.scaleLinear()
             .domain([min, max])
-            .range([this.AXIS_HEIGHT + padding, this.label_height + padding])
+            .range([this.AXIS_HEIGHT, this.label_height + padding])
         
         //drawn background color
         this.draw_background()
 
+        this.g_width = Math.ceil(this.WIDTH * this.parent.oldest / this.parent.window)
+
+        //scale to place the current g
+        this.year_to_x_for_g = d3.scaleLinear()
+                            .domain([this.parent.oldest, this.parent.window]) //try 2
+                            .range([this.X0, this.W - this.g_width])
+
         //g containing the circles
         this.circles = this.svg.append('g')
+                                .attr('width', this.g_width)
+                                .attr('height', this.AXIS_HEIGHT - this.label_height)
+                                .attr('transform', `translate(${this.year_to_x_for_g(this.parent.year0)}, ${this.label_height})`)
 
-        //finds current index and sets buffer
+        
+        // //finds current index and sets buffer
         this.set_current()
         this.update_current()
-        //draws all the points
+        // //draws all the points
         this.draw_points()
-        //draws the axis
+        // //draws the axis
         this.draw_axis()
-        //draws the labels
+        // //draws the labels
         this.draw_label()
 
-        this.info_rect = this.svg.append('g')
+        this.info_rect = this.circles.append('g')
                         .attr('class', 'info_box')
                         .attr('height', this.info_box_height)
                         .style('opacity', 0)
@@ -97,7 +108,17 @@ class Roll{
 
         }
     }
-
+    on(){
+        console.log('on')
+        this.circles.transition()
+            .duration(this.parent.speed * (this.parent.oldest - this.parent.year0))
+            .ease(d3.easeLinear)
+            .attr('transform', `translate(${-this.g_width + this.W}, ${this.label_height})`)
+    }
+    off(){
+        console.log('off')
+        this.circles.transition().duration(0)
+    }
 
     /**
      * draws the points that are in the interval [year0, year0 - YEAR_WINDOW]
@@ -107,17 +128,15 @@ class Roll{
             .data(this.buffer)
             .enter()
             .append('circle')
-                .attr('cy', d => this.y(d.value.mean))
-                .attr('cx', d => this.x(d.key))
+                .attr('cy', d => this.y(d.value.mean) - this.label_height)
+                .attr('cx', d => this.x(d.key) - this.year_to_x_for_g(this.parent.year0))
                 .attr('r', this.RADIUS)
                 .attr('class','roll_points')
         
+        //adds the hover function displaying more information on the point
         const classReference = this
-
         this.circles.selectAll('circle')
-            .each(function(point_data){
-                classReference.add_hover_function(this, point_data)
-            })
+            .each(function(point_data){classReference.add_hover_function(this, point_data)})
     }
     /**
      * updates the points according to the current year
@@ -133,27 +152,27 @@ class Roll{
             }
         }
 
-        //adds all the circles
-        this.circles.selectAll('circle')
+            //adds all the circles
+        let c = this.circles.selectAll('circle')
             .data(this.buffer)
-            .enter()
+        c.enter()
             .append('circle')
-                .attr('cy', d => this.y(d.value.mean))
-                .attr('cx', d => this.x(d.key))
-                .attr('r', this.RADIUS)
-                .attr('class','roll_points')
-                .on('mouseout', () => {
-                    this.info_rect.transition().duration(500).style('opacity', 0)
-                    this.info_rect.text('')
-                })
-                .transition()
-                    .duration(d =>  this.parent.speed * (this.parent.year0 - d.key))
-                    .ease(d3.easeLinear)
-                    .attr('cx', this.X0 + this.RADIUS/2)
-                    .on('end', () => {
-                        this.buffer.shift()
-                    })
-                    .remove()
+            .attr('cy', d => this.y(d.value.mean) - this.label_height)
+            .attr('cx', d => this.x(d.key) - this.year_to_x_for_g(this.parent.year0))
+            .attr('r', this.RADIUS)
+            .attr('class','roll_points')
+
+        while(this.buffer.length > 0){
+            if(this.buffer[0].key == this.parent.year0){
+                this.buffer.shift()
+            }else{
+                break
+            }
+        }
+
+        c.exit()
+            .remove()
+
 
         const classReference = this
 
@@ -163,13 +182,6 @@ class Roll{
         })
     }
 
-    stop_points(){
-        this.circles.selectAll('circle')
-            .transition()
-            .duration(0)
-        // this.axis_x.transition()
-        //     .duration(0)
-    }
 
     add_hover_function(circle, point_data){
         const classReference = this
@@ -210,6 +222,8 @@ class Roll{
             info_box.transition()
                 .duration(500)
                 .style('opacity',0.5)
+                .style('visibility','visible')
+
         })//what happens when unhovering of a point
         .on('mouseout', function(){
             d3.select(this)
@@ -217,6 +231,7 @@ class Roll{
             classReference.info_rect.transition()
                             .duration(300)
                             .style('opacity', 0)
+                            .style('visibility','hidden')
         })
     }
 
@@ -254,14 +269,13 @@ class Roll{
     draw_label(){
 
         this.svg.append('path')
-            .attr('d', `M-5 -5 L${this.WIDTH - 40} 0 Q${this.WIDTH} 0 ${this.WIDTH} ${this.label_height} L-5 ${this.label_height} Z`)
+            .attr('d', `M-5 -5 L${this.WIDTH - 15} 0 Q${this.WIDTH} 0 ${this.WIDTH} ${this.label_height} L-5 ${this.label_height} Z`)
             .style('fill', 'red')
 
 
         this.svg.append('text')
             .attr('x', `${this.X0 - 30}`)
             .attr('text-anchor', 'left')
-            .attr('font-size','55')
             .attr('y', this.label_height - 15)
             .attr('class','roll_label')
             .text(`Mean per year of ${this.y_attribute.toLowerCase()} for ${this.type}`)

@@ -18,9 +18,9 @@ class Yoshi {
 
         //time management
         this.on = false
-        this.year0 = this.oldest
+        this.year0 = this.oldest - 12000
         this.speed = 100
-        this.window = 100
+        this.window = 300
         d3.select('#start-stop')
                 .style('background-image', 'url(img/play.png)')
                 .style('background-size', 'cover')
@@ -70,9 +70,7 @@ class Yoshi {
     //button functionalities
     start() {
         this.on = true
-        this.rolls.forEach(r =>  {
-            r.circles.selectAll('circle').remove()
-        })
+        this.rolls.forEach(r => r.on())
         d3.select('#start-stop')
             .style('background-image', 'url(img/pause.png)')
             .on('click', () => this.stop())
@@ -85,7 +83,7 @@ class Yoshi {
         this.on = false
         //this.map.stop_fade()
         this.rolls.forEach(r =>{
-            r.stop_points()
+            r.off()
         })
         d3.select('#start-stop')
             .style('background-image', 'url(img/play.png)')
@@ -112,7 +110,7 @@ class Yoshi {
     tick() {
         if(this.year0 - this.window >= 0){
             this.year0 = this.year0 - 1
-            this.rolls.forEach((r,i)=> {
+            this.rolls.forEach(r=> {
                 r.update_axis()
                 r.update_points()
             })
@@ -127,7 +125,7 @@ class Yoshi {
         let oldest_v = d3.max(this.data[0], v => v['date'])
         let oldest_e = d3.max(this.data[1], e => e['date'])
         let oldest_m = d3.max(this.data[2], m => m['date'])
-        this.oldest = d3.max([oldest_v, oldest_e, oldest_m]) - 12000
+        this.oldest = d3.max([oldest_v, oldest_e, oldest_m])
 
 
         let youngest_v = d3.min(this.data[0], v => v['date'])
