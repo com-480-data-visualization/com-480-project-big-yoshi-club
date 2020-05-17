@@ -11,13 +11,14 @@ class Roll{
      * @param { name of the attribute on y axis} y_attribute 
      * @param { means per year wrt y_axis } means 
      */
-    constructor(parent, data, svg, type, y_attribute, means){
+    constructor(parent, data, svg, type, y_attribute, means, unit){
         this.means = means
         this.parent = parent
         this.svg = d3.select('#' + svg)
         this.type = type
         this.data = data
         this.y_attribute = y_attribute
+        this.unit = unit
         const svg_viewbox = this.svg.node().viewBox.animVal;
         //width & height of the containing svg
         this.WIDTH = svg_viewbox.width
@@ -32,7 +33,7 @@ class Roll{
         //left axis position
         this.X0 = 65
         //point radius
-        this.RADIUS = 7
+        this.RADIUS = 5
         //size of the infobox
         this.info_box_height = 80
         this.info_box_width = 120
@@ -73,10 +74,10 @@ class Roll{
         // //finds current index and sets buffer
         this.set_current()
         this.update_current()
-        // //draws all the points
-        this.update_points()
         // //draws the axis
         this.draw_axis()
+        // //draws all the points
+        this.update_points()
         // //draws the labels
         this.draw_label()
 
@@ -127,25 +128,21 @@ class Roll{
 
         c.enter()
             .append('circle')
-            .merge(c)
                 .attr('cy', d => this.y(d.value.mean) - this.label_height)
                 .attr('cx', d => this.x(d.key) - this.year_to_x_for_g(this.parent.year0))
                 .attr('r', this.RADIUS)
                 .attr('class','roll_points')
             
         c.exit()
-                .remove()
+            .remove()
         
         //adds the hover function displaying more information on the point
         const classReference = this
         this.circles.selectAll('circle')
             .each(function(point_data){classReference.add_hover_function(this, point_data)})
     }
-    /**
-     * updates the points according to the current year
-     */
-    update_points(){
-        //first finds the current elements in the buffer 
+
+    get_buffer(){
         while(this.current < this.means.length - 2){
             if(this.means[this.current].key == this.parent.year0 - this.parent.window){
                 this.buffer.push(this.means[this.current])
@@ -154,10 +151,18 @@ class Roll{
                 break
             }
         }
-
-                //adds all the circles
+        this.buffer = this.buffer.filter(d => d.key < this.parent.year0 - 1)
+    }
+    /**
+     * updates the points according to the current year
+     */
+    update_points(){
+        this.get_buffer()
+        //adds all the circles
         let c = this.circles.selectAll('circle')
                 .data(this.buffer)
+        
+
 
         c.enter()
             .append('circle')
@@ -167,15 +172,14 @@ class Roll{
                 .attr('r', this.RADIUS)
                 .attr('class','roll_points')
 
-        this.buffer = this.buffer.filter(d => d.key < this.parent.year0 - 2)
-
         c.exit()
-            .remove()
+         .remove()
+
 
 
         const classReference = this
         this.circles.selectAll('circle')
-        .each(function(point_data){classReference.add_hover_function(this, point_data)})
+            .each(function(point_data){classReference.add_hover_function(this, point_data)})
     }
 
 
@@ -188,37 +192,37 @@ class Roll{
             let a = classReference.x(point_data.key)
             let x = this.cx.animVal.value
             let y = this.cy.animVal.value
-            if(y - classReference.info_box_height < 0){
-                 info_box.attr('transform', `translate(${x}, ${y})`)
-            }else{
-                 info_box.attr('transform', `translate(${x}, ${y - classReference.info_box_height})`)
-            }
-            if(a + classReference.info_box_width > classReference.WIDTH){
-                info_box.attr('transform', `translate(${x - classReference.info_box_width}, ${y})`)
-            }
+
+            //if pannel too high
+            if(y - classReference.info_box_height > 0){y = y - classReference.info_box_height}
+            //if pannel too right
+            if(a + classReference.info_box_width > classReference.WIDTH){x = x - classReference.info_box_width}
+            info_box.attr('transform', `translate(${x}, ${y})`)
+
             info_box.append('rect')
                 .attr('width',classReference.info_box_width)
                 .attr('height', classReference.info_box_height)
                 .attr('rx', 10)
 
+            //text container
             let text = info_box.append('text')
                 .attr('x', '5px')
                 .attr('dy', 0)
                 .attr('y', '10')
 
+            //paragraphs
             text.append('tspan')
                 .text(`Year: ${2018 - point_data.key}`)
                 .attr('dy', `${classReference.info_box_height/5}`)
                 .attr('x', `${classReference.info_box_width/2}`)
-                
             text.append('tspan')
-                .text(`Mean: ${point_data.value.mean}`)
+                .text(`Mean: ${d3.format(".0f")(point_data.value.mean)}`)
                 .attr('dy', `${classReference.info_box_height/2}`)
                 .attr('x', `${classReference.info_box_width/2}`)
             
             info_box.transition()
                 .duration(500)
-                .style('opacity',0.6)
+                .style('opacity', 0.9)
                 .style('visibility','visible')
 
         })//what happens when unhovering of a point
@@ -232,9 +236,9 @@ class Roll{
         })
     }
 
+
     draw_axis(){
-        //axis
-        this.x.domain([this.parent.year0, this.parent.year0 - this.parent.window])
+        //Y-axis and horizontal grid
         let axis_left = d3.axisLeft(this.y)
                             .ticks(4)
         this.svg.append('g')
@@ -242,14 +246,26 @@ class Roll{
             .attr('class', 'axis_y')
             .call(axis_left)
 
-        // this.axis_bottom = d3.axisBottom(this.x)
-        //         .ticks(10)
-        //         .tickFormat(d => 2018 - d)
+        let h_grid = d3.axisLeft(this.y)
+                        .tickSize(-this.W + this.X0)
+                        .tickFormat('')
+                        .ticks(4)
 
-        // this.axis_x = this.svg.append('g')
-        //     .attr('transform', `translate(0, ${this.AXIS_HEIGHT})`)
-        //     .attr('class', 'axis_x')
-        //     .call(this.axis_bottom)
+        this.svg.append('g')
+                .attr('transform', `translate(${this.X0}, 0)`)
+                .attr('class', 'h_grid')
+                .call(h_grid)
+
+
+        //X-axis and vertical grid
+        this.axis_bottom = d3.axisBottom(this.x)
+                 .ticks(10)
+                 .tickFormat(d => 2018 - d)
+
+        this.axis_x = this.svg.append('g')
+             .attr('transform', `translate(0, ${this.AXIS_HEIGHT})`)
+             .attr('class', 'axis_x')
+             .call(this.axis_bottom)
 
 
 
@@ -257,10 +273,10 @@ class Roll{
 
     update_axis(){
         this.x.domain([this.parent.year0, this.parent.year0 - this.parent.window])
-        // this.axis_x.transition()
-        //     .ease(d3.easeLinear)
-        //     .duration(this.parent.speed)
-        //     .call(this.axis_bottom)
+        this.axis_x.transition()
+             .ease(d3.easeLinear)
+             .duration(this.parent.speed)
+             .call(this.axis_bottom)
     }
 
     draw_label(){
@@ -275,7 +291,7 @@ class Roll{
             .attr('text-anchor', 'left')
             .attr('y', this.label_height - 15)
             .attr('class','roll_label')
-            .text(`Mean per year of ${this.y_attribute.toLowerCase()} for ${this.type}`)
+            .text(`Mean per year of ${this.y_attribute.toLowerCase()} for ${this.type} in ${this.unit}`)
 
     }
     

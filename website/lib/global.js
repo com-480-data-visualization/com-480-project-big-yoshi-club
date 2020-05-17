@@ -20,7 +20,7 @@ class Yoshi {
         this.on = false
         this.year0 = this.oldest - 11500
         this.speed = 200
-        this.window = 500
+        this.window = 200
         d3.select('#start-stop')
                 .style('background-image', 'url(img/play.png)')
                 .style('background-size', 'cover')
@@ -37,11 +37,11 @@ class Yoshi {
 
         // Add timeline controls and display
         const svgId = "#time-controls"
-        const minDate = 860
+        const minDate = this.youngest
         const maxDate = 2018
-        const twLoBnd = 1245
-        const twUpBnd = 1963
-        this.timelineControl = new TimelineControl(this, svgId, minDate, maxDate, twLoBnd, twUpBnd)
+        const twLoBnd = this.year0
+        const twUpBnd = this.year0 + this.window
+        //this.timelineControl = new TimelineControl(this, svgId, minDate, maxDate, twLoBnd, twUpBnd)
     }
 
     projection_menu_select() {
@@ -100,15 +100,9 @@ class Yoshi {
     reset() {
         this.stop()
         this.year0 = this.oldest
-<<<<<<< HEAD
-        //this.map.point_container.selectAll('*').remove()
-        //this.map.buffer = [[],[],[]]
-        this.rolls.forEach(r =>{
-=======
         this.map.point_container.selectAll('*').remove()
         this.map.buffer = [[],[],[]]
         this.rolls.forEach((r, idx) =>{
->>>>>>> 97700d93b2ffcb26ef3c2b845c515f806110e163
             r.circles.selectAll('circle').remove()
             r.draw_axis()
             r.set_current()
@@ -132,7 +126,7 @@ class Yoshi {
             // Update the timeline control display
             const loBnd = 2018 - this.year0
             const upBnd = loBnd + this.window
-            this.timelineControl.update(loBnd, upBnd)
+            //this.timelineControl.update(loBnd, upBnd)
         }else{
             this.stop()
         }
@@ -170,9 +164,10 @@ class Yoshi {
     //generate the rolls 
     make_rolls(){
         let names = ['volcanoes', 'earthquakes', 'meteors']
+        let units = ['meters', 'kilometers', 'grams']
         this.rolls = []
         for(let i = 0; i<3; i++){
-            let roll = new Roll(this, this.data[i], this.roll_svgs[i], names[i], this.y_attributes[i], this.means[i])
+            let roll = new Roll(this, this.data[i], this.roll_svgs[i], names[i], this.y_attributes[i], this.means[i], units[i])
             this.rolls[i] = roll
         }
     }
