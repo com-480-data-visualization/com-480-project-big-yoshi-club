@@ -41,10 +41,11 @@ class Roll{
         //scalings
         //right x padding
         this.W = this.WIDTH - this.X0
-        //x scaling
-        this.x = d3.scaleLinear()
-                    .domain([this.parent.year0, this.parent.year0 - this.parent.window])
-                    .range([this.X0, this.W])
+
+        //width of the whole roll
+        this.g_width = Math.ceil(this.WIDTH * this.parent.oldest / this.parent.window)
+
+
 
         //right padding
         let min = d3.min(this.data, d => d[this.y_attribute])
@@ -54,16 +55,21 @@ class Roll{
             .domain([min, max])
             .range([this.AXIS_HEIGHT, this.label_height + padding])
         
-        //drawn background color
-        this.draw_background()
+        this.setup()
+    }
 
-        this.g_width = Math.ceil(this.WIDTH * this.parent.oldest / this.parent.window)
+    setup(){
+        //x scaling
+        this.x = d3.scaleLinear()
+                    .domain([this.parent.year0, this.parent.year0 - this.parent.window])
+                    .range([this.X0, this.W])
 
         //scale to place the current g
         this.year_to_x_for_g = d3.scaleLinear()
-                            .domain([this.parent.oldest, this.parent.window]) //try 2
-                            .range([this.X0, this.W - this.g_width])
-
+                .domain([this.parent.oldest, this.parent.window]) //try 2
+                .range([this.X0, this.W - this.g_width])
+        //drawn background color
+        this.draw_background()
         //g containing the circles
         this.circles = this.svg.append('g')
                                 .attr('width', this.g_width)
@@ -111,7 +117,7 @@ class Roll{
     }
     on(){
         this.circles.transition()
-            .duration(this.parent.speed * (this.parent.year0 - this.parent.window))
+            .duration(this.parent.speed * (this.parent.year0 - this.parent.window ))
             .ease(d3.easeLinear)
             .attr('transform', `translate(${-this.g_width + this.W}, ${this.label_height})`)
     }
@@ -302,6 +308,12 @@ class Roll{
             .attr('width', `${this.WIDTH}`)
             .attr('height', '100%')
             .style('fill','rgba(0,0,0,0.7)')
+    }
+
+    reset(){
+        this.buffer = []
+        this.svg.selectAll('*').remove()
+        this.setup()
     }
 
 }

@@ -49,6 +49,11 @@ body {
 	height: 50%;
 }
 
+/*
+* map and options div
+*/
+
+
 #map {
 	align-self: center;
 	width: 100%;
