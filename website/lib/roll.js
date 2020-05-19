@@ -32,6 +32,7 @@ class Roll{
         this.AXIS_HEIGHT = this.HEIGHT * 0.87
         //left axis position
         this.X0 = 65
+        this.TICKS = 5
         //point radius
         this.RADIUS = 5
         //size of the infobox
@@ -59,7 +60,7 @@ class Roll{
         //right padding
         let min = d3.min(this.data, d => d[this.y_attribute])
         let max = d3.max(this.data, d => d[this.y_attribute])
-        let padding = (this.AXIS_HEIGHT - this.label_height) * 0.0
+        let padding = (this.AXIS_HEIGHT - this.label_height) * 0.1
         this.y = d3.scaleLinear()
                 .domain([min, max])
                 .range([this.AXIS_HEIGHT - padding, this.label_height + padding])
@@ -83,22 +84,22 @@ class Roll{
         //drawn background color
         this.draw_background()
 
-        //g containing the circles
-        this.circles = this.svg.append('g')
-                                .attr('width', this.g_width)
-                                .attr('height', this.AXIS_HEIGHT - this.label_height)
-                                .attr('transform', `translate(${this.year_to_x_for_g(this.parent.year0)}, ${this.label_height})`)
-
+        // //finds current index and sets buffer
+        this.set_current()
+        this.update_current()
 
         this.distribution_graph = this.svg.append('g')
                         .attr('transform', `rotate(-90) translate(${-this.AXIS_HEIGHT}, ${this.X0})`)
                         .attr('width', `${this.AXIS_HEIGHT - this.label_height}`)
                         .attr('height', `${this.W / 4}`)
+
         this.draw_graph()                            
-        
-        // //finds current index and sets buffer
-        this.set_current()
-        this.update_current()
+        //g containing the circles
+        this.circles = this.svg.append('g')
+                        .attr('width', this.g_width)
+                        .attr('height', this.AXIS_HEIGHT - this.label_height)
+                        .attr('transform', `translate(${this.year_to_x_for_g(this.parent.year0)}, ${this.label_height})`)
+
         // //draws the axis
         this.draw_axis()
         // //draws all the points
@@ -200,7 +201,7 @@ class Roll{
                 .attr('class','roll_points')
 
         c.exit()
-         .remove()
+            .remove()
 
 
 
@@ -267,7 +268,7 @@ class Roll{
     draw_axis(){
         //Y-axis and horizontal grid
         let axis_left = d3.axisLeft(this.y)
-                            .ticks(4)
+                            .ticks(this.TICKS)
         this.svg.append('g')
             .attr('transform', `translate(${this.X0}, 0)`)
             .style('font', '14px times')
@@ -277,7 +278,7 @@ class Roll{
         let h_grid = d3.axisLeft(this.y)
                         .tickSize(-this.W + this.X0)
                         .tickFormat('')
-                        .ticks(4)
+                        .ticks(this.TICKS)
 
         this.svg.append('g')
                 .attr('transform', `translate(${this.X0}, 0)`)
@@ -340,45 +341,55 @@ class Roll{
     }
 
     draw_graph(){
-        var kde = kernelDensityEstimator(kernelEpanechnikov(7), this.y.ticks(50))
-        let density = kde(this.data.map(d => d[this.y_attribute]))
-        density[0][1] = 0
-        density[density.length-1][1]=0
-
-
-        let y_scale = d3.scaleLinear()
-                        .domain([0, d3.max(density, d=>d[1])])
-                        .range([0,this.W/5])
-
         let classRef = this
-        this.distribution_graph.append('path')
-                                .attr('class', 'mypath')
-                                .datum(density)
-                                .attr("fill", this.rgb)
-                                .style('opacity','0.4')
-                                .attr("stroke", "#000")
-                                .attr("stroke-width", 1)
-                                .attr("stroke-linejoin", "round")
-                                .attr("d",  d3.line()
-                                .curve(d3.curveBasis)
-                                  .x(function(d) { return classRef.y_mirrored(d[0]) - classRef.label_height; })
-                                  .y(function(d) { return y_scale(d[1]); })
-                              );
+        if(this.buffer.length > 0){
+            let temp = this.data.filter(d => (d['date'] < this.parent.year0) && (d['date'] > this.parent.year0 - this.parent.window))
+            this.hist = d3.histogram()
+                            .value(d => d[classRef.y_attribute])
+                            .domain(classRef.y.domain())
+                            .thresholds(classRef.y.ticks(this.TICKS * 4))
+
+            let bins = this.hist(temp)
+            let height_scale = d3.scaleLinear()
+                            .domain([0, d3.max(bins, b => b.length)])
+                            .range([0, this.W / 5])
+            console.log(bins)
+            this.distribution_graph.selectAll("rect")
+                                    .data(bins)
+                                    .enter()
+                                    .append("rect")
+                                        .attr("x", 1)
+                                        .attr("transform", d => `translate(${classRef.y(d.x0) - this.label_height - 5}, 0)`)
+                                        .attr("width", d => classRef.y(d.x0) - classRef.y(d.x1))
+                                        .attr("height", d => height_scale(d.length))
+                                        .style("fill", this.rgb)
+                                        .style('opacity', 0.4)
+        }
+
     }
 
+    update_graph(){
+        this.distribution_graph.selectAll('rect').remove()
+        let classRef = this
+        let temp = this.data.filter(d => (d['date'] < this.parent.year0) && (d['date'] > this.parent.year0 - this.parent.window))
+        this.hist = d3.histogram()
+            .value(d => d[classRef.y_attribute])
+            .domain(classRef.y.domain())
+            .thresholds(classRef.y.ticks(this.TICKS * 4))
+        let bins = this.hist(temp)
+        let height_scale = d3.scaleLinear()
+            .domain([0, d3.max(bins, b => b.length)])
+            .range([0, this.W / 5])
 
-}
-//code from https://www.d3-graph-gallery.com/graph/density_double.html
-// Function to compute density
-function kernelDensityEstimator(kernel, X) {
-    return function(V) {
-        return X.map(function(x) {
-        return [x, d3.mean(V, function(v) { return kernel(x - v); })];
-        });
-    };
-}
-function kernelEpanechnikov(k) {
-    return function(v) {
-        return Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+        this.distribution_graph.selectAll("rect")
+                                    .data(bins)
+                                    .enter()
+                                    .append("rect")
+                                        .attr("x", 1)
+                                        .attr("transform", d => `translate(${classRef.y(d.x0) - this.label_height - 5}, 0)`)
+                                        .attr("width", d => classRef.y(d.x0) - classRef.y(d.x1))
+                                        .attr("height", d => height_scale(d.length))
+                                        .style("fill", this.rgb)
+                                        .style('opacity', 0.4)
     }
 }

@@ -111,6 +111,7 @@ class Yoshi {
             r.update_axis()
             r.update_points()
             r.update_roll()
+            r.update_graph()
         })
         this.map.update_points()
         // Update the timeline control display
