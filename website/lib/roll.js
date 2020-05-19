@@ -38,6 +38,15 @@ class Roll{
         this.info_box_height = 80
         this.info_box_width = 120
 
+        this.rgb = 'steelblue'
+
+        if(this.type == 'volcanoes'){
+            this.rgb = 'rgb(100,200,100)'
+        }else if(this.type == 'meteors'){
+            this.rgb = 'rgb(100,100,100)'
+        }else{
+            this.rgb = 'rgb(100,100,200)'
+        }
         //scalings
         //right x padding
         this.W = this.WIDTH - this.X0
@@ -50,11 +59,14 @@ class Roll{
         //right padding
         let min = d3.min(this.data, d => d[this.y_attribute])
         let max = d3.max(this.data, d => d[this.y_attribute])
-        let padding = (this.AXIS_HEIGHT - this.label_height) * 0.1
+        let padding = (this.AXIS_HEIGHT - this.label_height) * 0.0
         this.y = d3.scaleLinear()
-            .domain([min, max])
-            .range([this.AXIS_HEIGHT, this.label_height + padding])
+                .domain([min, max])
+                .range([this.AXIS_HEIGHT - padding, this.label_height + padding])
         
+        this.y_mirrored = d3.scaleLinear()
+                .domain([min, max])
+                .range([this.label_height + padding, this.AXIS_HEIGHT - padding])
         this.setup()
     }
 
@@ -70,12 +82,19 @@ class Roll{
                 .range([this.X0, this.W - this.g_width])
         //drawn background color
         this.draw_background()
+
         //g containing the circles
         this.circles = this.svg.append('g')
                                 .attr('width', this.g_width)
                                 .attr('height', this.AXIS_HEIGHT - this.label_height)
                                 .attr('transform', `translate(${this.year_to_x_for_g(this.parent.year0)}, ${this.label_height})`)
 
+
+        this.distribution_graph = this.svg.append('g')
+                        .attr('transform', `rotate(-90) translate(${-this.AXIS_HEIGHT}, ${this.X0})`)
+                        .attr('width', `${this.AXIS_HEIGHT - this.label_height}`)
+                        .attr('height', `${this.W / 4}`)
+        this.draw_graph()                            
         
         // //finds current index and sets buffer
         this.set_current()
@@ -91,6 +110,8 @@ class Roll{
                         .attr('class', 'info_box')
                         .attr('height', this.info_box_height)
                         .style('opacity', 0)
+
+
     }
 
     /**
@@ -115,14 +136,12 @@ class Roll{
 
         }
     }
-    on(){
+
+    update_roll(){
         this.circles.transition()
-            .duration(this.parent.speed * (this.parent.year0 - this.parent.window ))
+            .duration(this.parent.speed)
             .ease(d3.easeLinear)
-            .attr('transform', `translate(${-this.g_width + this.W}, ${this.label_height})`)
-    }
-    off(){
-        this.circles.transition().duration(0)
+            .attr('transform', `translate(${this.year_to_x_for_g(this.parent.year0)}, ${this.label_height})`)
     }
 
     /**
@@ -150,14 +169,14 @@ class Roll{
 
     get_buffer(){
         while(this.current < this.means.length - 2){
-            if(this.means[this.current].key == this.parent.year0 - this.parent.window){
+            if(this.means[this.current].key == this.parent.year0 - this.parent.window+1){
                 this.buffer.push(this.means[this.current])
                 this.current = this.current+1
             }else{
                 break
             }
         }
-        this.buffer = this.buffer.filter(d => d.key < this.parent.year0 - 1)
+        this.buffer = this.buffer.filter(d => d.key < this.parent.year0+1)
     }
     /**
      * updates the points according to the current year
@@ -176,6 +195,8 @@ class Roll{
                 .attr('cy', d => this.y(d.value.mean) - this.label_height)
                 .attr('cx', d => this.x(d.key) - this.year_to_x_for_g(this.parent.year0))
                 .attr('r', this.RADIUS)
+                .style('fill', this.rgb)
+                .style('opacity', '0.8')
                 .attr('class','roll_points')
 
         c.exit()
@@ -234,7 +255,7 @@ class Roll{
         })//what happens when unhovering of a point
         .on('mouseout', function(){
             d3.select(this)
-                .style('fill', 'rebeccapurple')
+                .style('fill', classReference.rgb)
             classReference.info_rect.transition()
                             .duration(300)
                             .style('opacity', 0)
@@ -249,6 +270,7 @@ class Roll{
                             .ticks(4)
         this.svg.append('g')
             .attr('transform', `translate(${this.X0}, 0)`)
+            .style('font', '14px times')
             .attr('class', 'axis_y')
             .call(axis_left)
 
@@ -269,6 +291,7 @@ class Roll{
                  .tickFormat(d => 2018 - d)
 
         this.axis_x = this.svg.append('g')
+            .style('font', '14px times')
              .attr('transform', `translate(0, ${this.AXIS_HEIGHT})`)
              .attr('class', 'axis_x')
              .call(this.axis_bottom)
@@ -316,4 +339,46 @@ class Roll{
         this.setup()
     }
 
+    draw_graph(){
+        var kde = kernelDensityEstimator(kernelEpanechnikov(7), this.y.ticks(50))
+        let density = kde(this.data.map(d => d[this.y_attribute]))
+        density[0][1] = 0
+        density[density.length-1][1]=0
+
+
+        let y_scale = d3.scaleLinear()
+                        .domain([0, d3.max(density, d=>d[1])])
+                        .range([0,this.W/5])
+
+        let classRef = this
+        this.distribution_graph.append('path')
+                                .attr('class', 'mypath')
+                                .datum(density)
+                                .attr("fill", this.rgb)
+                                .style('opacity','0.4')
+                                .attr("stroke", "#000")
+                                .attr("stroke-width", 1)
+                                .attr("stroke-linejoin", "round")
+                                .attr("d",  d3.line()
+                                .curve(d3.curveBasis)
+                                  .x(function(d) { return classRef.y_mirrored(d[0]) - classRef.label_height; })
+                                  .y(function(d) { return y_scale(d[1]); })
+                              );
+    }
+
+
+}
+//code from https://www.d3-graph-gallery.com/graph/density_double.html
+// Function to compute density
+function kernelDensityEstimator(kernel, X) {
+    return function(V) {
+        return X.map(function(x) {
+        return [x, d3.mean(V, function(v) { return kernel(x - v); })];
+        });
+    };
+}
+function kernelEpanechnikov(k) {
+    return function(v) {
+        return Math.abs(v /= k) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+    }
 }

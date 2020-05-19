@@ -23,7 +23,7 @@ class Yoshi {
         this.max_speed = 100
         this.min_speed = 300
         this.speed = 200
-        this.window = 100
+        this.window = 200
 
         this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
 
@@ -72,15 +72,17 @@ class Yoshi {
     //button functionalities
     start() {
         this.on = true
-        this.rolls.forEach(r => r.on())
+
         d3.select('#start-stop')
             .style('background-image', 'url(img/pause.png)')
             .on('click', () => this.stop())
         this.map.point_container.selectAll('*').remove()
+        this.tick()
         this.interval = setInterval( () => this.tick(), this.speed)
+        //this.rolls.forEach(r => r.on())
     }
     stop() {
-        this.rolls.forEach(r =>r.off())
+        //this.rolls.forEach(r =>r.off())
         clearInterval(this.interval)
         this.on = false
         this.map.stop_fade()
@@ -108,6 +110,7 @@ class Yoshi {
         this.rolls.forEach(r => {
             r.update_axis()
             r.update_points()
+            r.update_roll()
         })
         this.map.update_points()
         // Update the timeline control display
@@ -183,8 +186,10 @@ class Yoshi {
                         .range([this.min_speed, this.max_speed])
 
         d3.select('#speed').on('change', function(d){
+            let wasOn = classRef.on
             classRef.stop()
             classRef.speed = scale_speed(this.value)
+            if(wasOn){classRef.start()}
         })
     }
 }

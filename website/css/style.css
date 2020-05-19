@@ -165,22 +165,24 @@ body {
 
 .info_box text{
 	position: relative;
-	font-family: cursive;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	text-anchor: middle;
 	left: 10px;
 	top: 10px;
 }
 
 .roll_label{
-	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	fill: rgba(134, 177, 218, 0.952);
 }
 
 .axis_x {
 	color: steelblue;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 .axis_y {
 	color:steelblue;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	stroke-width: 0;
 }
 .h_grid .domain{
