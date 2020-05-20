@@ -19,8 +19,12 @@
 	<div id="vis-box">
 		<!-- Map, timelines and controls -->
 		<div id="left-col">
-				<div id="projection">
-					<button id="projection-dropdown" class="dropbtn">Dropdown</button>
+			<div id = 'map_and_buttons'>
+				<div id="options">
+					<button id = 'start-stop' class = 'option_button'></button>
+					<button id = 'reset' class = 'option_button'></button>
+					<input autocomplete="off" id = 'speed' class = 'option_button' type = 'range' min = '0' max = '100' value = '20'></input>
+					<button id="projection-dropdown" class="button">Dropdown</button>
 					<div id="myDropdown" class="dropdown-content">
 						<a id="Natural">geoNaturalEarth1</a>
 						<a id="Rectangular">Rectangular</a>
@@ -29,7 +33,7 @@
 
 
 				<div id="map-space">
-					<svg id="map" viewBox="0 0 1000 550" width="750" height="500">
+					<svg id="map" viewBox="0 0 1000 550">
 						<style>
 							.country {
 								stroke: steelblue;
@@ -43,7 +47,7 @@
 						</style>
 					</svg>
 				</div>
-
+			</div>
 			<div id="timelines">
 				<svg id='volcano_svg' viewBox='-5 -5 1405 305'></svg>
 				<svg id='earthquakes_svg' viewBox='-5 -5 1405 305'></svg>
@@ -56,9 +60,6 @@
 		<div id="right-col">
 			<div id="filters">
 				<h2>Filters</h2>
-				<button id = 'start-stop'></button>
-				<button id = 'reset'></button>
-				<input autocomplete="off" id = 'speed' type = 'range' min = '0' max = '100' value = '20'></input>
 				<ul>
 					<li>Volcanoes</li>
 					<li>Earthquakes</li>
