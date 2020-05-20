@@ -9,10 +9,11 @@ class Yoshi {
         this.get_means()
 
         d3.select('#projection-dropdown')
-            .on('mouseover', () => this.projection_menu_select())
+            .on('mouseover', () => document.getElementById("myDropdown").classList.toggle("show"))
 
         d3.select('#myDropdown')
             .on('mouseover', () => this.projection_select())
+            .on('mouseout', () => document.getElementById("myDropdown").classList.toggle("show"))
 
         this.get_old_young()
 
@@ -26,7 +27,7 @@ class Yoshi {
         this.window = 200
 
         this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
-
+        this.make_stats()
         this.make_rolls()
 
         this.make_buttons()
@@ -39,12 +40,6 @@ class Yoshi {
         //this.timelineControl = new TimelineControl(this, svgId, minDate, maxDate, twLoBnd, twUpBnd)
     }
 
-    projection_menu_select() {
-        d3.select('#projection-dropdown')
-            .on('mouseover', () => {
-                document.getElementById("myDropdown").classList.toggle("show");
-            })
-    }
 
     projection_select() {
         
@@ -169,6 +164,16 @@ class Yoshi {
         }
     }
 
+    make_stats(){
+        let names = ['volcano_stats', 'earthquake_stats', 'meteor_stats']
+        let y_vals = ['Elevation', 'Depth', 'mass']
+        let x_vals = ['Dominant Rock Type', 'Magnitude', 'recclass']
+        this.stats = []
+        for(let i = 0; i<3; i++){
+            let stat = new Statistics(this, names[i], this.data[i], y_vals[i], x_vals[i])
+            this.stats[i] = stat
+        }
+    }
 
     make_buttons(){
         d3.select('#start-stop')

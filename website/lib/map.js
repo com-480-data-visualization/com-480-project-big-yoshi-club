@@ -3,7 +3,7 @@ class Map {
         this.parent = parent;
         //keep only earthquakes with magnitude > 0
         data[1] = data[1].filter(function (d) { if (parseFloat(d.Magnitude) > 6.2) { return d } })
-        
+
         /* filter more data if needed per year
         let y = 0
         let c = 0
@@ -23,7 +23,8 @@ class Map {
         */
 
         //keep 1 out of 10 meteors
-        data[2] = data[2].filter(function (d) { 
+
+        data[2] = data[2].filter(function (d) {
             let rand = Math.random() <= 0.1 //probability to keep row
             if (rand) {
                 return d
@@ -39,14 +40,14 @@ class Map {
         //projection params
         this.projection_style = d3.geoNaturalEarth1();
         this.PROJECT_SCALE = 180
-        
+
 
         //brush
-        this.brush = d3.brush().on("end",  () => {
-			this.selection = d3.event.selection;
-			this.get_points(this.selection);
+        this.brush = d3.brush().on("end", () => {
+            this.selection = d3.event.selection;
+            this.get_points(this.selection);
         });
-        
+
 
         this.svg = d3.select('#' + svg_element_id);
         const svg_viewbox = this.svg.node().viewBox.animVal;
@@ -70,7 +71,7 @@ class Map {
             this.map_data = results[0];
             this.draw_map()
 
-            
+
 
             this.data.forEach((_, idx) => {
 
@@ -83,11 +84,11 @@ class Map {
 
     }
 
-    get_points(selection){
+    get_points(selection) {
         //selection [[x_min, y_min], [x_max, y_max]]    
         const projection = this.projection_style
             .rotate([0, 0])
-            .center([0,0])
+            .center([0, 0])
             .scale(this.PROJECT_SCALE)
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
@@ -99,30 +100,32 @@ class Map {
         let lat_max = 0
         let lon_min = 0
         let lon_max = 0
-        if (min[0] < max[0]){
+        if (min[0] < max[0]) {
             lon_min = min[0]
             lon_max = max[0]
-        }else{
+        } else {
             lon_min = max[0]
             lon_max = min[0]
         }
-        if (min[1] < max[1]){
+        if (min[1] < max[1]) {
             lat_min = min[1]
             lat_max = max[1]
-        }else{
+        } else {
             lat_min = max[1]
             lat_max = min[1]
         }
-        
+
         //get all points between min and max
-        this.buffer.forEach((_, idx) =>{
-            console.log(this.buffer[idx].filter(function (d) {
-               
+        this.buffer.forEach((_, idx) => {
+            var selected = this.buffer[idx].filter(function (d) {
+
                 if (d.Latitude <= lat_max && d.Latitude >= lat_min &&
-                    d.Longitude <= lon_max && d.Longitude >= lon_min){
+                    d.Longitude <= lon_max && d.Longitude >= lon_min) {
                     return d
                 }
-            }).length)
+            })
+
+            this.parent.stats[idx].draw_hist(selected)
         })
 
     }
@@ -138,12 +141,12 @@ class Map {
 
     draw_map() {
 
-        
+
 
 
         const projection = this.projection_style
             .rotate([0, 0])
-            .center([0,0])
+            .center([0, 0])
             .scale(this.PROJECT_SCALE)
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
@@ -154,9 +157,9 @@ class Map {
         this.map_container = this.svg.append('g');
 
         this.svg.append("g") // this group with class .brush will be the visual indicator of our brush
-                .attr("class", "brush") 
-                
-                .call(this.brush);
+            .attr("class", "brush")
+
+            .call(this.brush);
 
         this.map_container.selectAll(".country")
             .data(this.map_data)
@@ -182,15 +185,15 @@ class Map {
     set_current(idx) {
         let i = 0
 
-        while (this.data[idx][i][this.time_accessor[idx]] >= this.parent.year0 & i < this.data[idx].length -2) {
+        while (this.data[idx][i][this.time_accessor[idx]] >= this.parent.year0 & i < this.data[idx].length - 2) {
             i++
         }
         this.current[idx] = i
     }
     draw_points(i) {
         const r = 3;
-        const projection = this.projection_style            
-            .center([0,0])
+        const projection = this.projection_style
+            .center([0, 0])
             .scale(this.PROJECT_SCALE)
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
@@ -213,12 +216,12 @@ class Map {
     update_points() {
         const r = 3;
         const colors = ['yellow', 'blue', 'green']
-        const projection = this.projection_style                   
-            .center([0,0])
+        const projection = this.projection_style
+            .center([0, 0])
             .scale(this.PROJECT_SCALE)
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
-        
+
         this.buffer.forEach((_, idx) => {
             if (this.current[idx] < this.data[idx].length - 2) {
 
@@ -238,21 +241,21 @@ class Map {
                 .attr("cy", -r)
                 .style("fill", d3.color(colors[idx]))
                 .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")")
-                
+
                 .transition()
-                    .style('opacity', 1)
-                    .ease(d3.easeLinear)
-                    .duration(this.parent.speed * 10)
+                .style('opacity', 1)
+                .ease(d3.easeLinear)
+                .duration(this.parent.speed * 10)
                 .transition()
-                    .style('opacity', 0)
-                    .ease(d3.easeLinear)
-                    .duration(this.parent.speed * this.parent.window * 1.3 - this.parent.speed * 10)
-                    .on('end', () => {
-                        this.buffer[idx].shift()
-                    })
-                    .remove()
+                .style('opacity', 0)
+                .ease(d3.easeLinear)
+                .duration(this.parent.speed * this.parent.window * 1.3 - this.parent.speed * 10)
+                .on('end', () => {
+                    this.buffer[idx].shift()
+                })
+                .remove()
         })
-        if (this.selection != null){
+        if (this.selection != null) {
             this.get_points(this.selection);
         }
     }
@@ -277,4 +280,125 @@ class Map {
     }
 
 
+
+
+
 }
+
+class Statistics {
+    constructor(parent, svg_element_id, data, y_val, x_val) {
+        this.parent = parent;
+
+        this.y_val = y_val
+        this.x_val = x_val
+        this.data = data
+        this.svg = d3.select('#' + svg_element_id);
+        const svg_viewbox = this.svg.node().viewBox.animVal;
+        this.svg_width = svg_viewbox.width;
+        this.svg_height = svg_viewbox.height;
+        this.svg.append('rect')
+            .attr('fill', 'rgba(0,0,0,0.7)')
+            .attr('width', `${this.svg_width}`)
+            .attr('height', `${this.svg_height}`)
+
+        this.svg.append('g')
+            .attr('x', 10)
+            .attr('y', 10);
+
+        
+
+        let group = d3.nest()
+            .key(d => d[x_val])
+            .rollup((v) => {
+                return {
+                    mean: d3.mean(v, d => d[y_val])
+                }
+            })
+            .entries(data)
+
+        let keys = group.map(g => g.key)
+
+
+        let x_value_range = [0, keys.length];
+
+
+        let pointX_to_svgX = d3.scaleLinear()
+            .domain(x_value_range)
+            .range([0, this.svg_width]);
+
+        
+        let xAxisTranslate = this.svg_height / 2;
+
+
+        let x_axis = d3.axisBottom()
+            .scale(pointX_to_svgX);
+
+        this.svg.append('g')
+            .style('font', '14px times')
+            
+            .attr("transform", "translate(50, " + xAxisTranslate + ")")
+            .style('color', d3.color('white'))
+            .call(x_axis);
+        //this.draw_hist(this.data)
+    }
+
+    draw_hist(data) {
+        if (data.length > 1) {
+
+
+            this.svg.selectAll("circle").remove()
+            const x_val = this.x_val
+            const y_val = this.y_val
+
+            let group = d3.nest()
+                .key(d => d[x_val])
+                .rollup((v) => {
+                    return {
+                        mean: d3.mean(v, d => d[y_val])
+                    }
+                })
+                .entries(data)
+
+            let keys = group.map(g => g.key)
+            let vals = group.map(g => g.value.mean)
+
+
+            let x_value_range = [0, keys.length];
+
+            let y_value_range = [d3.min(vals), d3.max(vals)];
+
+            let pointX_to_svgX = d3.scaleLinear()
+                .domain(x_value_range)
+                .range([0, this.svg_width]);
+
+            let pointY_to_svgY = d3.scaleLinear()
+                .domain(y_value_range)
+                .range([this.svg_height, 0]);
+
+            let xAxisTranslate = this.svg_height / 2;
+
+
+            let x_axis = d3.axisBottom()
+                .scale(pointX_to_svgX);
+
+            this.svg.append('g')
+                .style('font', '14px times')
+                .attr("transform", "translate(50, " + xAxisTranslate + ")")
+                .style('color', d3.color('white'))
+                .call(x_axis);
+            this.svg.selectAll("circle")
+                .data(group)
+                .enter()
+                .append("circle")
+                .attr("r", 3) // radius
+                .attr("cx", d => pointX_to_svgX(keys.indexOf(d.key))) // position, rescaled
+                .attr("cy", d => pointY_to_svgY(d.value.mean))
+                .attr('fill', d3.color('white'))
+
+        }
+    }
+
+
+
+}
+
