@@ -252,8 +252,9 @@ class Map {
                     })
                     .remove()
         })
-
-    	this.get_points(this.selection);
+        if (this.selection != null){
+            this.get_points(this.selection);
+        }
     }
     update_projection() {
 
