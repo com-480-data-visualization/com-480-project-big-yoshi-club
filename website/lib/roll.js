@@ -371,6 +371,7 @@ class Roll{
         this.distribution_graph.selectAll('rect').remove()
         let classRef = this
         let temp = this.data.filter(d => (d['date'] < this.parent.year0) && (d['date'] > this.parent.year0 - this.parent.window))
+        console.log(temp)
         if(temp.length > 0){
             this.hist = d3.histogram()
             .value(d => d[classRef.y_attribute])
