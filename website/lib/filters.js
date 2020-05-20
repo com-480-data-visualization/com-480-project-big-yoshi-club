@@ -180,9 +180,51 @@ function filter_data(data, yoshi){
         .attr('name', filter_data['name'])
         .attr('min', filter_data['min'])
         .attr('max', filter_data['max'])
+
+
     //--------meteors filters display--------
     let meteors_div = d3.select('#' + 'meteors_filters')
                         .style('background-color', 'green')
+
     //---- first filters ----
+    filter_data = FILTERS[2][0]
+    let div_31 = meteors_div.append('div')
+    div_31.append('h4')
+        .text(filter_data['name'])
+    filter_data['categories'].forEach(elem => {
+        div_31.append('input')
+            .attr('value', elem)
+            .attr('name', elem)
+            .attr('id', elem)
+            .attr('type', 'checkbox')
+            .attr('height', '12px')
+
+        div_31.append('label')
+                .text(elem)
+                .attr('for', elem)
+                .style('font-size', '12px')
+    })   
     //---- second filters ----
+    filter_data = FILTERS[2][1]
+    let div_32 = meteors_div.append('div')
+    div_32.append('h4')
+        .text(filter_data['name'])
+
+    div_32.append('label')
+        .text('min')
+    div_32.append('input')
+        .attr('type', 'number')
+        .attr('id', filter_data['name'])
+        .attr('name', filter_data['name'])
+        .attr('min', filter_data['min'])
+        .attr('max', filter_data['max'])
+
+    div_32.append('label')
+        .text('max')
+    div_32.append('input')
+        .attr('type', 'number')
+        .attr('id', filter_data['name'])
+        .attr('name', filter_data['name'])
+        .attr('min', filter_data['min'])
+        .attr('max', filter_data['max'])
 }
