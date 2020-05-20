@@ -7,7 +7,6 @@ class Yoshi {
 
         this.y_attributes = ['Elevation', 'Depth', 'mass']
         this.get_means()
-
         d3.select('#projection-dropdown')
             .on('mouseover', () => this.projection_menu_select())
 
@@ -23,7 +22,7 @@ class Yoshi {
         this.max_speed = 100
         this.min_speed = 300
         this.speed = 200
-        this.window = 200
+        this.window = 500
 
         this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
 
@@ -69,6 +68,18 @@ class Yoshi {
         
     }
 
+    /**
+     * 
+     * @param {can either be volcanoes, earthquakes or meteors} type 
+     * @param {year to be highlighted on the map} year 
+     */
+    highlight_points(type, year){
+        // TODO
+    }
+    unhighlight_points(){
+        // TODO
+    }
+
     //button functionalities
     start() {
         this.on = true
@@ -79,10 +90,8 @@ class Yoshi {
         this.map.point_container.selectAll('*').remove()
         this.tick()
         this.interval = setInterval( () => this.tick(), this.speed)
-        //this.rolls.forEach(r => r.on())
     }
     stop() {
-        //this.rolls.forEach(r =>r.off())
         clearInterval(this.interval)
         this.on = false
         this.map.stop_fade()
@@ -163,6 +172,10 @@ class Yoshi {
         let names = ['volcanoes', 'earthquakes', 'meteors']
         let units = ['meters', 'kilometers', 'grams']
         this.rolls = []
+        console.log('data')
+        console.log(this.data)
+        console.log('means')
+        console.log(this.means)
         for(let i = 0; i<3; i++){
             let roll = new Roll(this, this.data[i], this.roll_svgs[i], names[i], this.y_attributes[i], this.means[i], units[i])
             this.rolls[i] = roll
