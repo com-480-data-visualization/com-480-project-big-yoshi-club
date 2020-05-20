@@ -172,8 +172,8 @@ class TimelineControl {
 	 * @param {number} upBnd 
 	 */
 	_updateTWBounds(loBnd, upBnd) {
-		this.twLoBnd = loBnd
-		this.twUpBnd = upBnd
+		this.twLoBnd = Math.floor(loBnd)
+		this.twUpBnd = Math.floor(upBnd)
 	}
 
 	/**

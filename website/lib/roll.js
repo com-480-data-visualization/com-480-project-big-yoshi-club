@@ -87,6 +87,7 @@ class Roll{
         this.set_current()
         this.update_current()
 
+
         this.distribution_graph = this.svg.append('g')
                         .attr('transform', `rotate(90) translate(${this.label_height}, ${-this.X0})`)
                         .attr('width', `${this.AXIS_HEIGHT - this.label_height}`)
@@ -128,12 +129,15 @@ class Roll{
      * searches for all the points that should be displayed and puts them in the buffer
      */
     update_current(){
-        while(this.means[this.current].key >= this.parent.year0 - this.parent.window){  //if before end of window
-            if(this.means[this.current].key <= this.parent.year0){      //if after start of window
-                this.buffer.push(this.means[this.current])
-                this.current = this.current + 1                                       //add point to buffer
+        while(this.current < this.means.length){
+            if((this.means[this.current].key >= this.parent.year0 - this.parent.window) && (this.means[this.current].key <= this.parent.year0)){  
+                //if before end of window
+                //if after start of window
+                    this.buffer.push(this.means[this.current])
+                    this.current = this.current + 1                                       //add point to buffer
+            }else{
+                break
             }
-
         }
     }
 
