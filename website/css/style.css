@@ -1,11 +1,11 @@
 body {
-	background-color: rgba(0,0,0,0.93);
+	background-color: rgb(0, 0, 0, 0.93);
 }
+
 #content {
 	width: 80%;
 	/* Center horizontally */
 	margin: 0 auto;
-
 	padding: 15px;
 }
 
@@ -21,11 +21,8 @@ body {
 }
 
 #left-col {
-
 	width: 68%;
-
 	padding: 5px;
-
 	display: flex;
 	flex-direction: column;
 }
@@ -35,11 +32,8 @@ body {
 }
 
 #right-col {
-
 	width: 30%;
-
 	padding: 5px;
-
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -53,50 +47,49 @@ body {
 * map and options div
 */
 
-
 #map {
 	align-self: center;
 	width: 100%;
 	height: 100%;
 }
 
-
 #time-controls {
 	margin: 5px;
 }
 
+/* Dropdown Button */
 
-
-  /* Dropdown Button */
 #projection-dropdown {
-	background-color:steelblue;
+	background-color: steelblue;
 	color: white;
 	padding: 16px;
 	font-size: 16px;
 	border: none;
 	cursor: default;
 	align-content: center;
-  }
-  
-  
-  /* The container <div> - needed to position the dropdown content */
-  .dropdown {
+}
+
+/* The container <div> - needed to position the dropdown content */
+
+.dropdown {
 	position: relative;
 	display: inline-block;
-  }
-  
-  /* Dropdown Content (Hidden by Default) */
-  .dropdown-content {
+}
+
+/* Dropdown Content (Hidden by Default) */
+
+.dropdown-content {
 	display: none;
 	position: absolute;
 	background-color: red;
 	width: 100px;
-	box-shadow: 0px 8px 16px 0px rgba(100,100,100,1);
+	box-shadow: 0px 8px 16px 0px rgba(100, 100, 100, 1);
 	z-index: 1;
-  }
-  
-  /* Links inside the dropdown */
-  #myDropdown a {
+}
+
+/* Links inside the dropdown */
+
+#myDropdown a {
 	color: black;
 	padding: 12px 16px;
 	text-decoration: none;
@@ -104,15 +97,34 @@ body {
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	display: block;
 	cursor: pointer;
-  }
-  
-  /* Change color of dropdown links on hover */
-  .dropdown-content a:hover {background-color: steelblue}
-  
-  /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
-  .show {display:block;}
+}
 
-#options{
+/* Change color of dropdown links on hover */
+
+.dropdown-content a:hover {
+	background-color: steelblue
+}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+
+.show {
+	display: block;
+}
+
+#map_and_buttons {
+	width: 100%;
+	height: 40%;
+	background-color: #F9F8F8;
+	padding: 10px;
+}
+
+#map_and_buttons #map-space {
+	float: right;
+	width: 90%;
+	height: 100%;
+}
+
+#options {
 	width: 10%;
 	height: 100%;
 	float: left;
@@ -120,7 +132,7 @@ body {
 	padding-top: 5%;
 }
 
-.option_button{
+.option_button {
 	height: 15%;
 	width: 75%;
 	padding: 0px 0px 0px;
@@ -131,21 +143,12 @@ body {
 	cursor: pointer;
 }
 
-#map_and_buttons {
-	width: 100%;
-	height: 40%;
-}
-#map_and_buttons #map-space{
-	float: right;
-	width: 90%;
-	height: 100%;
-}
-
 #myDropdown {
 	align-self: center;
 }
 
 /* ----- TIME CONTROL STYLE ----- */
+
 #time-span rect {
 	fill: bisque;
 	width: 100%;
@@ -158,12 +161,12 @@ body {
 	height: 70%;
 }
 
-
 /*timelines/rolls style*/
+
 #timelines {
 	display: flex;
 	flex-direction: column;
-	background-color: rgba(0,0,0,0.3);
+	background-color: rgba(0, 0, 0, 0.3);
 	padding: 2px;
 }
 
@@ -172,12 +175,14 @@ body {
 }
 
 /*--------Roll style-------*/
+
 .roll_points {
 	position: relative;
 	fill: rebeccapurple;
 }
 
 /*window style when hoovering on points*/
+
 .info_box {
 	text-align: center;
 	width: 80px;
@@ -189,7 +194,7 @@ body {
 	stroke: red;
 }
 
-.info_box text{
+.info_box text {
 	position: relative;
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	text-anchor: middle;
@@ -197,7 +202,7 @@ body {
 	top: 10px;
 }
 
-.roll_label{
+.roll_label {
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	fill: rgba(134, 177, 218, 0.952);
 }
@@ -206,14 +211,17 @@ body {
 	color: steelblue;
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
+
 .axis_y {
-	color:steelblue;
+	color: steelblue;
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	stroke-width: 0;
 }
-.h_grid .domain{
+
+.h_grid .domain {
 	stroke-width: 0;
 }
-.h_grid line{
+
+.h_grid line {
 	stroke: steelblue;
 }
