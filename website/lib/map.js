@@ -153,7 +153,7 @@ class Map {
 
         this.map_container = this.svg.append('g');
 
-        this.map_container.append("g") // this group with class .brush will be the visual indicator of our brush
+        this.svg.append("g") // this group with class .brush will be the visual indicator of our brush
                 .attr("class", "brush") 
                 
                 .call(this.brush);

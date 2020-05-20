@@ -58,9 +58,9 @@ class Roll{
 
 
         //right padding
-        let min = d3.min(this.data, d => d[this.y_attribute])
-        let max = d3.max(this.data, d => d[this.y_attribute])
-        let padding = (this.AXIS_HEIGHT - this.label_height) * 0.1
+        let min = d3.min(this.data, d => d[this.y_attribute]) - 100
+        let max = d3.max(this.data, d => d[this.y_attribute]) + 100
+        let padding = (this.AXIS_HEIGHT - this.label_height) * 0
         this.y = d3.scaleLinear()
                 .domain([min, max])
                 .range([this.AXIS_HEIGHT - padding, this.label_height + padding])
@@ -89,7 +89,7 @@ class Roll{
         this.update_current()
 
         this.distribution_graph = this.svg.append('g')
-                        .attr('transform', `rotate(-90) translate(${-this.AXIS_HEIGHT}, ${this.X0})`)
+                        .attr('transform', `rotate(90) translate(${this.label_height}, ${-this.X0})`)
                         .attr('width', `${this.AXIS_HEIGHT - this.label_height}`)
                         .attr('height', `${this.W / 4}`)
 
@@ -353,13 +353,12 @@ class Roll{
             let height_scale = d3.scaleLinear()
                             .domain([0, d3.max(bins, b => b.length)])
                             .range([0, this.W / 5])
-            console.log(bins)
             this.distribution_graph.selectAll("rect")
                                     .data(bins)
                                     .enter()
                                     .append("rect")
                                         .attr("x", 1)
-                                        .attr("transform", d => `translate(${classRef.y(d.x0) - this.label_height - 5}, 0)`)
+                                        .attr("transform", d => `translate(${classRef.y(d.x0) - classRef.label_height}, ${-height_scale(d.length)})`)
                                         .attr("width", d => classRef.y(d.x0) - classRef.y(d.x1))
                                         .attr("height", d => height_scale(d.length))
                                         .style("fill", this.rgb)
@@ -372,24 +371,27 @@ class Roll{
         this.distribution_graph.selectAll('rect').remove()
         let classRef = this
         let temp = this.data.filter(d => (d['date'] < this.parent.year0) && (d['date'] > this.parent.year0 - this.parent.window))
-        this.hist = d3.histogram()
+        if(temp.length > 0){
+            this.hist = d3.histogram()
             .value(d => d[classRef.y_attribute])
             .domain(classRef.y.domain())
             .thresholds(classRef.y.ticks(this.TICKS * 4))
-        let bins = this.hist(temp)
-        let height_scale = d3.scaleLinear()
-            .domain([0, d3.max(bins, b => b.length)])
-            .range([0, this.W / 5])
+            let bins = this.hist(temp)
+            let height_scale = d3.scaleLinear()
+                .domain([0, d3.max(bins, b => b.length)])
+                .range([0, this.W / 5])
 
-        this.distribution_graph.selectAll("rect")
-                                    .data(bins)
-                                    .enter()
-                                    .append("rect")
-                                        .attr("x", 1)
-                                        .attr("transform", d => `translate(${classRef.y(d.x0) - this.label_height - 5}, 0)`)
-                                        .attr("width", d => classRef.y(d.x0) - classRef.y(d.x1))
-                                        .attr("height", d => height_scale(d.length))
-                                        .style("fill", this.rgb)
-                                        .style('opacity', 0.4)
+                this.distribution_graph.selectAll("rect")
+                                .data(bins)
+                                .enter()
+                                .append("rect")
+                                    .attr("x", 1)
+                                    .attr("transform", d => `translate(${classRef.y(d.x0) - classRef.label_height}, ${-height_scale(d.length)})`)
+                                    .attr("width", d => classRef.y(d.x0) - classRef.y(d.x1))
+                                    .attr("height", d => height_scale(d.length))
+                                    .style("fill", this.rgb)
+                                    .style('opacity', 0.4)
+        }
+
     }
 }
