@@ -50,14 +50,14 @@ class TimelineControl {
 		// Use https://stackoverflow.com/questions/21990857/d3-js-how-to-get-the-computed-width-and-height-for-an-arbitrary-element
 		// TODO: update this BBox when the viewport is resized
 		// TODO: modify this to get absolute coordinates
-		const tsBBox = this.svg.select("#time-span rect").node().getBBox()
-		const tsXStart_px = tsBBox.x
-		const tsXEnd_px = tsBBox.x + tsBBox.width
+		const tsBBox = this.svg.select("#time-span rect").node().getBoundingClientRect()
+		const tsXStart_px = tsBBox.left
+		const tsXEnd_px = tsBBox.right
 
 		// 2. Create useful scales for conversions
-		// TODO use these to clamp!
 		this.pxToPC = d3.scaleLinear().domain([tsXStart_px, tsXEnd_px]).range([0, 100]).clamp(true)
 		this.yearToPc = d3.scaleLinear().domain([this.minYear, this.maxYear]).range([0, 100]).clamp(true)
+		this.pxToYear = d3.scaleLinear().domain([tsXStart_px, tsXEnd_px]).range([this.minYear, this.maxYear]).clamp(true)
 
 		// 3. Do selections in advance
 		const tw = this.svg.select("#time-window")
@@ -83,18 +83,29 @@ class TimelineControl {
 				move(event) {
 					// -- Update x position of lower and upper bound texts
 					// -- Update lower and upper bound class attributes
-					const bbox = twRect.node().getBBox()
-					// Get original left side position
-					const left_px = bbox.x
-					// Get original width
-					const w_px = bbox.width
-					// Add drag delta x to get new x position
-					// clamp between limits of the time span
-					// Convert in percentage
-					const new_left_pc = thisClass.pxToPC(_.clamp(left_px + event.dx, tsXStart_px, tsXEnd_px - w_px))
-					const new_right_pc = new_left_pc + thisClass.pxToPC(w_px)
+					const bbox = twRect.node().getBoundingClientRect()
+					// Get original left position
+					const left_px = bbox.left
+					// Get original right position
+					const right_px = bbox.right
+					// Compute new left position by adding delta x
+					// And making sure this does not go under 0 or make the right bound overflow
+					// This might be a terrible way to prevent the range from shifting beyond the bounds
+					// But I don't have time to look into something cleaner
+					const min_px = thisClass.pxToYear.invert(thisClass.minYear)
+					const max_px = thisClass.pxToYear.invert(thisClass.maxYear)
+					const newLoBnd = thisClass.pxToYear(_.clamp(
+						left_px + event.dx, min_px, max_px - (right_px - left_px)
+					))
+					// Compute new right position by adding delta x
+					// And making sure we do not go over 100 or make the left bound underflow
+					// This might be a terrible way to prevent the range from shifting beyond the bounds
+					// But I don't have time to look into something cleaner
+					const newUpBnd = thisClass.pxToYear(_.clamp(
+						right_px + event.dx, min_px + (right_px - left_px), max_px
+					))
 
-					thisClass._updateTWBounds(thisClass.yearToPc.invert(new_left_pc), thisClass.yearToPc.invert(new_right_pc))
+					thisClass._updateTWBounds(newLoBnd, newUpBnd)
 					thisClass._redrawTW()
 					thisClass._redrawTWBounds()
 				},
@@ -111,22 +122,36 @@ class TimelineControl {
 				listeners: {
 					start(event) {
 						thisClass.inResize = true
+
+						// Dirty fix for weird px shift bug
+						// If we resize from left, save right value
+						// If we resize from right, save left value
+						if (event.edges.left) {
+							// this.oldLoBnd = null
+							thisClass.oldUpBnd = thisClass.twUpBnd
+						} else if (event.edges.right) {
+							// this.oldUpBnd = null
+							thisClass.oldLoBnd = thisClass.twLoBnd
+						}
 					},
 					move(event) {
-						// Update x position of lower and upper bound texts
-						// Update lower and upper bound class attributes
-						// https://stackoverflow.com/questions/26049488/how-to-get-absolute-coordinates-of-object-inside-a-g-group
-						const offset_px = thisClass.svg.select("#time-span").node().getBoundingClientRect().x
-						const new_left_pc = thisClass.pxToPC(event.rect.left - offset_px)
-						const new_right_pc = thisClass.pxToPC(event.rect.right - offset_px)
+						// -- Update x position of lower and upper bound texts
+						// -- Update lower and upper bound class attributes
 
-						thisClass._updateTWBounds(thisClass.yearToPc.invert(new_left_pc), thisClass.yearToPc.invert(new_right_pc))
+						// I don't know why, I don't want to know why, I shouldn't have to wonder why,
+						// but for whatever reason the goddamn time window's opposite side won't stay put
+						// unless we do this terribleness
+						const newLoBnd = event.edges.left ? thisClass.pxToYear(event.rect.left) : thisClass.oldLoBnd
+						const newUpBnd = event.edges.right ? thisClass.pxToYear(event.rect.right) : thisClass.oldUpBnd
+
+						thisClass._updateTWBounds(newLoBnd, newUpBnd)
 						thisClass._redrawTWBounds()
 
 						// Update time window display
 						thisClass._redrawTW()
 					},
 					end(event) {
+						// Update Yoshi
 						thisClass.inResize = false
 						thisClass._updateYoshi()
 					}
