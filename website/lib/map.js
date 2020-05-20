@@ -42,9 +42,9 @@ class Map {
         
 
         //brush
-        var brush = d3.brush().on("end",  () => {
-			const selection = d3.event.selection;
-			this.get_points(selection);
+        this.brush = d3.brush().on("end",  () => {
+			this.selection = d3.event.selection;
+			this.get_points(this.selection);
         });
         
 
@@ -70,10 +70,7 @@ class Map {
             this.map_data = results[0];
             this.draw_map()
 
-            this.map_container.append("g") // this group with class .brush will be the visual indicator of our brush
-                .attr("class", "brush") 
-                
-                .call(brush);
+            
 
             this.data.forEach((_, idx) => {
 
@@ -118,8 +115,8 @@ class Map {
         }
         
         //get all points between min and max
-        this.data.forEach((_, idx) =>{
-            console.log(this.data[idx].filter(function (d) {
+        this.buffer.forEach((_, idx) =>{
+            console.log(this.buffer[idx].filter(function (d) {
                
                 if (d.Latitude <= lat_max && d.Latitude >= lat_min &&
                     d.Longitude <= lon_max && d.Longitude >= lon_min){
@@ -140,7 +137,10 @@ class Map {
     }
 
     draw_map() {
-        console.log(this.ROTATE_X)
+
+        
+
+
         const projection = this.projection_style
             .rotate([0, 0])
             .center([0,0])
@@ -152,6 +152,12 @@ class Map {
             .projection(projection);
 
         this.map_container = this.svg.append('g');
+
+        this.map_container.append("g") // this group with class .brush will be the visual indicator of our brush
+                .attr("class", "brush") 
+                
+                .call(this.brush);
+
         this.map_container.selectAll(".country")
             .data(this.map_data)
             .enter()
@@ -246,6 +252,8 @@ class Map {
                     })
                     .remove()
         })
+
+    	this.get_points(this.selection);
     }
     update_projection() {
 
