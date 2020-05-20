@@ -33,16 +33,15 @@ class Yoshi {
         this.make_buttons()
         // Add timeline controls and display
         const svgId = "#time-controls"
-        const minDate = this.youngest
-        const maxDate = 2018
-        const twLoBnd = this.year0
-        const twUpBnd = this.year0 + this.window
-        //this.timelineControl = new TimelineControl(this, svgId, minDate, maxDate, twLoBnd, twUpBnd)
+        const minDate = 2018 - this.oldest
+        const maxDate = 2018 - this.youngest
+        const twLoBnd = 2018 - this.year0
+        const twUpBnd = twLoBnd + this.window
+        this.timelineControl = new TimelineControl(this, svgId, minDate, maxDate, twLoBnd, twUpBnd)
     }
 
 
     projection_select() {
-        
         d3.select('#Natural')
             .on('click', () => {
                 this.stop()
@@ -97,11 +96,14 @@ class Yoshi {
             .on('click', () => this.start())
     }
 
-    reset() {
+    reset(year0, window) {
         this.stop()
-        this.year0 = this.oldest
+        this.year0 = 2018 - year0
+        this.window = window
         this.map.point_container.selectAll('*').remove()
         this.map.buffer = [[],[],[]]
+
+        console.log(`Reset set this.year0 = ${this.year0}, this.window = ${this.window} (called with year0 = ${year0}, window = ${window})`);
 
         this.rolls.forEach((r, idx) =>{
             r.reset()
@@ -122,7 +124,7 @@ class Yoshi {
         // Update the timeline control display
         const loBnd = 2018 - this.year0
         const upBnd = loBnd + this.window
-        //this.timelineControl.update(loBnd, upBnd)
+        this.timelineControl.update(loBnd, upBnd)
     }
 
     tick() {

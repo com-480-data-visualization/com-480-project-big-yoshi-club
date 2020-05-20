@@ -375,17 +375,8 @@ class Statistics {
                 .domain(y_value_range)
                 .range([this.svg_height, 0]);
 
-            let xAxisTranslate = this.svg_height / 2;
-
-
-            let x_axis = d3.axisBottom()
-                .scale(pointX_to_svgX);
-
-            this.svg.append('g')
-                .style('font', '14px times')
-                .attr("transform", "translate(50, " + xAxisTranslate + ")")
-                .style('color', d3.color('white'))
-                .call(x_axis);
+            
+           
             this.svg.selectAll("circle")
                 .data(group)
                 .enter()
