@@ -49,13 +49,15 @@ class TimelineControl {
 		// 1. Compute global time span width in pixels
 		// Use https://stackoverflow.com/questions/21990857/d3-js-how-to-get-the-computed-width-and-height-for-an-arbitrary-element
 		// TODO: update this BBox when the viewport is resized
+		// TODO: modify this to get absolute coordinates
 		const tsBBox = this.svg.select("#time-span rect").node().getBBox()
 		const tsXStart_px = tsBBox.x
 		const tsXEnd_px = tsBBox.x + tsBBox.width
 
 		// 2. Create useful scales for conversions
-		this.pxToPC = d3.scaleLinear().domain([tsXStart_px, tsXEnd_px]).range([0, 100])
-		this.yearToPc = d3.scaleLinear().domain([this.minYear, this.maxYear]).range([0, 100])
+		// TODO use these to clamp!
+		this.pxToPC = d3.scaleLinear().domain([tsXStart_px, tsXEnd_px]).range([0, 100]).clamp(true)
+		this.yearToPc = d3.scaleLinear().domain([this.minYear, this.maxYear]).range([0, 100]).clamp(true)
 
 		// 3. Do selections in advance
 		const tw = this.svg.select("#time-window")
@@ -63,12 +65,6 @@ class TimelineControl {
 
 		// I wish I was doing Scala, or Rust, or even C would be better
 		const thisClass = this
-		function clamp(v, lo, up) {
-			if (up < lo) throw new Error("Invalid clamps")
-			if (v < lo) return lo
-			if (v > up) return up
-			return v
-		}
 
 		// These flag determine if the time window is being dragged or resized
 		// This allows us to prevent the global class from updating the time window
@@ -93,9 +89,9 @@ class TimelineControl {
 					// Get original width
 					const w_px = bbox.width
 					// Add drag delta x to get new x position
-					// Clamp between limits of the time span
+					// clamp between limits of the time span
 					// Convert in percentage
-					const new_left_pc = thisClass.pxToPC(clamp(left_px + event.dx, tsXStart_px, tsXEnd_px - w_px))
+					const new_left_pc = thisClass.pxToPC(_.clamp(left_px + event.dx, tsXStart_px, tsXEnd_px - w_px))
 					const new_right_pc = new_left_pc + thisClass.pxToPC(w_px)
 
 					thisClass._updateTWBounds(thisClass.yearToPc.invert(new_left_pc), thisClass.yearToPc.invert(new_right_pc))
@@ -119,11 +115,11 @@ class TimelineControl {
 					move(event) {
 						// Update x position of lower and upper bound texts
 						// Update lower and upper bound class attributes
-						const bbox = twRect.node().getBBox()
-						const left_px = bbox.x
-						const new_left_pc = thisClass.pxToPC(left_px + event.deltaRect.left)
-						const new_width_pc = thisClass.pxToPC(event.rect.width)
-						const new_right_pc = new_left_pc + new_width_pc
+						// https://stackoverflow.com/questions/26049488/how-to-get-absolute-coordinates-of-object-inside-a-g-group
+						const offset_px = thisClass.svg.select("#time-span").node().getBoundingClientRect().x
+						const new_left_pc = thisClass.pxToPC(event.rect.left - offset_px)
+						const new_right_pc = thisClass.pxToPC(event.rect.right - offset_px)
+
 						thisClass._updateTWBounds(thisClass.yearToPc.invert(new_left_pc), thisClass.yearToPc.invert(new_right_pc))
 						thisClass._redrawTWBounds()
 
@@ -139,15 +135,9 @@ class TimelineControl {
 				modifiers: [
 					interact.modifiers.restrictSize({
 						min: { width: 100 } // Limit width to 100 px
-					}),
-					interact.modifiers.restrictEdges({
-						restriction: '#time-window rect' // TODO: doesn't work
 					})
 				]
 			})
-
-		// Ask Yoshi to redraw data within the range the class was initialized
-		this._updateYoshi()
 	}
 
 	/**
@@ -195,12 +185,10 @@ class TimelineControl {
 
 		// -- Update roll display with lower bound and upper bound --
 
-		// Stop the rolls
-		this.parent.stop()
-
 		// Update roll display bounds
-		this.parent.year0 = 2018 - this.twLoBnd
-		this.parent.window = this.twUpBnd - this.twLoBnd
+		const year0 = this.twLoBnd
+		const window = this.twUpBnd - this.twLoBnd
+		this.parent.reset(year0, window)
 
 		// Restart the rolls if they were running
 		if (wasOn) {
