@@ -7,13 +7,13 @@ class Yoshi {
 
         this.y_attributes = ['Elevation', 'Depth', 'mass']
         this.get_means()
-
         d3.select('#projection-dropdown')
-            .on('mouseover', () => document.getElementById("myDropdown").classList.toggle("show"))
+        .on('mouseover', () => document.getElementById("myDropdown").classList.toggle("show"))
+        .on('mouseout', () => document.getElementById("myDropdown").classList.toggle("show"))
 
         d3.select('#myDropdown')
-            .on('mouseover', () => this.projection_select())
-            .on('mouseout', () => document.getElementById("myDropdown").classList.toggle("show"))
+        .on('mouseover', () => this.projection_select())
+        .on('mouseout', () => document.getElementById("myDropdown").classList.toggle("show"))
 
         this.get_old_young()
 
@@ -24,7 +24,7 @@ class Yoshi {
         this.max_speed = 100
         this.min_speed = 300
         this.speed = 200
-        this.window = 200
+        this.window = 500
 
         this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
         this.make_stats()
@@ -64,6 +64,18 @@ class Yoshi {
         
     }
 
+    /**
+     * 
+     * @param {can either be volcanoes, earthquakes or meteors} type 
+     * @param {year to be highlighted on the map} year 
+     */
+    highlight_points(type, year){
+        // TODO
+    }
+    unhighlight_points(){
+        // TODO
+    }
+
     //button functionalities
     start() {
         this.on = true
@@ -74,10 +86,8 @@ class Yoshi {
         this.map.point_container.selectAll('*').remove()
         this.tick()
         this.interval = setInterval( () => this.tick(), this.speed)
-        //this.rolls.forEach(r => r.on())
     }
     stop() {
-        //this.rolls.forEach(r =>r.off())
         clearInterval(this.interval)
         this.on = false
         this.map.stop_fade()

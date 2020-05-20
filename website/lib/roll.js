@@ -54,12 +54,11 @@ class Roll{
 
         //width of the whole roll
         this.g_width = Math.ceil(this.WIDTH * this.parent.oldest / this.parent.window)
-
-
+ 
 
         //right padding
         let min = d3.min(this.data, d => d[this.y_attribute]) - 100
-        let max = d3.max(this.data, d => d[this.y_attribute]) + 100
+        let max = d3.max(this.data, d => d[this.y_attribute]) * 1.1
         let padding = (this.AXIS_HEIGHT - this.label_height) * 0
         this.y = d3.scaleLinear()
                 .domain([min, max])
@@ -79,7 +78,7 @@ class Roll{
 
         //scale to place the current g
         this.year_to_x_for_g = d3.scaleLinear()
-                .domain([this.parent.oldest, this.parent.window]) //try 2
+                .domain([this.parent.oldest, this.parent.window])
                 .range([this.X0, this.W - this.g_width])
         //drawn background color
         this.draw_background()
@@ -253,6 +252,7 @@ class Roll{
                 .style('opacity', 0.9)
                 .style('visibility','visible')
 
+            classReference.parent.highlight_points(classReference.type, point_data.key)
         })//what happens when unhovering of a point
         .on('mouseout', function(){
             d3.select(this)
@@ -261,6 +261,8 @@ class Roll{
                             .duration(300)
                             .style('opacity', 0)
                             .style('visibility','hidden')
+
+            classReference.parent.unhighlight_points()
         })
     }
 
@@ -331,7 +333,7 @@ class Roll{
             .attr('x', -5)
             .attr('width', `${this.WIDTH}`)
             .attr('height', '100%')
-            .style('fill','rgba(0,0,0,0.7)')
+            .style('fill','rgba(10,10,10,0.5)')
     }
 
     reset(){
@@ -343,7 +345,7 @@ class Roll{
     draw_graph(){
         let classRef = this
         if(this.buffer.length > 0){
-            let temp = this.data.filter(d => (d['date'] < this.parent.year0) && (d['date'] > this.parent.year0 - this.parent.window))
+            let temp = this.data.filter(d => (parseInt(d['date']) < this.parent.year0) && (parseInt(d['date']) > this.parent.year0 - this.parent.window))
             this.hist = d3.histogram()
                             .value(d => d[classRef.y_attribute])
                             .domain(classRef.y.domain())
@@ -370,13 +372,13 @@ class Roll{
     update_graph(){
         this.distribution_graph.selectAll('rect').remove()
         let classRef = this
-        let temp = this.data.filter(d => (d['date'] < this.parent.year0) && (d['date'] > this.parent.year0 - this.parent.window))
-        
+        let temp = this.data.filter(d => (d['date'] < this.parent.year0) && (d['date'] > this.parent.year0 - this.parent.window)).map(d => d[classRef.y_attribute])
         if(temp.length > 0){
             this.hist = d3.histogram()
-            .value(d => d[classRef.y_attribute])
+            .value(d => d)
             .domain(classRef.y.domain())
             .thresholds(classRef.y.ticks(this.TICKS * 4))
+
             let bins = this.hist(temp)
             let height_scale = d3.scaleLinear()
                 .domain([0, d3.max(bins, b => b.length)])
