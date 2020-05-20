@@ -28,6 +28,7 @@ class Yoshi {
 
         this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
         this.make_stats()
+        this.make_filters()
         this.make_rolls()
 
         this.make_buttons()
@@ -210,6 +211,11 @@ class Yoshi {
             if(wasOn){classRef.start()}
         })
     }
+
+    make_filters(){
+        filter_data(this.data, this)
+    }
+
 }
 
 
