@@ -103,6 +103,8 @@ class Yoshi {
         this.map.point_container.selectAll('*').remove()
         this.map.buffer = [[],[],[]]
 
+        console.log(`Reset set this.year0 = ${this.year0}, this.window = ${this.window} (called with year0 = ${year0}, window = ${window})`);
+
         this.rolls.forEach((r, idx) =>{
             r.reset()
             this.map.set_current(idx)

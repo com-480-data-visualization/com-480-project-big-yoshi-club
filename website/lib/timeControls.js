@@ -213,6 +213,7 @@ class TimelineControl {
 		// Update roll display bounds
 		const year0 = this.twLoBnd
 		const window = this.twUpBnd - this.twLoBnd
+
 		this.parent.reset(year0, window)
 
 		// Restart the rolls if they were running
