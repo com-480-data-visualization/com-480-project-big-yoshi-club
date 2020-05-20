@@ -311,93 +311,122 @@ class Statistics {
         this.svg.append('rect')
             .attr('fill', 'rgba(0,0,0,0.7)')
             .attr('width', `${this.svg_width}`)
-            .attr('height', `${this.svg_height}`)
-
-        this.svg.append('g')
-            .attr('x', 10)
-            .attr('y', 10);
-
+            .attr('height', `${this.svg_height}`)   
 
 
         let group = d3.nest()
             .key(d => d[x_val])
             .rollup((v) => {
+
                 return {
-                    mean: d3.mean(v, d => d[y_val])
+                    count: v.length
                 }
+
             })
             .entries(data)
 
-        let keys = group.map(g => g.key)
+        this.keys = group.map(g => g.key)
+        let vals = group.map(g => g.value.count)
+
+        this.x_value_range = [0, this.keys.length];
+        let y_value_range = [0, d3.max(vals)];
 
 
-        let x_value_range = [0, keys.length];
+        this.pointX_to_svgX = d3.scaleLinear()
+            .domain(this.x_value_range)
+            .range([50, this.svg_width - 20]);
+
+        let pointY_to_svgY = d3.scaleLinear()
+            .domain(y_value_range)
+            .range([this.svg_height-20, 10]);
 
 
-        let pointX_to_svgX = d3.scaleLinear()
-            .domain(x_value_range)
-            .range([0, this.svg_width]);
-
-
-        let xAxisTranslate = this.svg_height / 2;
+        let xAxisTranslate = this.svg_height - 20;
 
 
         let x_axis = d3.axisBottom()
-            .scale(pointX_to_svgX);
+            .scale(this.pointX_to_svgX);
+        
+        let y_axis = d3.axisLeft()
+            .scale(pointY_to_svgY);
 
         this.svg.append('g')
+            .attr("class", "x axis")
             .style('font', '14px times')
 
-            .attr("transform", "translate(50, " + xAxisTranslate + ")")
+            .attr("transform", "translate(0, " + xAxisTranslate + ")")
             .style('color', d3.color('white'))
             .call(x_axis);
-        //this.draw_hist(this.data)
+ 
+
+        this.svg.append("g")
+            .attr('class', 'y_axis')
+            .style('color', d3.color('white'))
+            .style('font', '14px times')
+            .attr("transform", "translate(50, 0)")
+            .call(y_axis);
     }
 
     draw_hist(data) {
-        if (data.length > 1) {
+        if (data.length > 0) {
 
 
-            this.svg.selectAll("circle").remove()
+            this.svg.selectAll("rect.statis").remove()
+            this.svg.selectAll('g.y_axis').remove()
             const x_val = this.x_val
-            const y_val = this.y_val
 
             let group = d3.nest()
                 .key(d => d[x_val])
                 .rollup((v) => {
                     return {
-                        mean: d3.mean(v, d => d[y_val])
+                        count: v.length
                     }
                 })
                 .entries(data)
 
-            let keys = group.map(g => g.key)
-            let vals = group.map(g => g.value.mean)
+            let vals = group.map(g => g.value.count)
+            
+            
 
 
-            let x_value_range = [0, keys.length];
-
-            let y_value_range = [d3.min(vals), d3.max(vals)];
-
-            let pointX_to_svgX = d3.scaleLinear()
-                .domain(x_value_range)
-                .range([0, this.svg_width]);
-
+            let y_value_range = [0, d3.max(vals)];
             let pointY_to_svgY = d3.scaleLinear()
                 .domain(y_value_range)
-                .range([this.svg_height, 0]);
+                .range([this.svg_height-20, 10]);        
+            
 
+            var y_axis = d3.axisLeft()
+                .scale(pointY_to_svgY);
 
+            this.svg.append("g")
+                .attr('class', 'y_axis')
+                .style('color', d3.color('white'))
+                .style('font', '14px times')
+                .attr("transform", "translate(50, 0)")
+                .call(y_axis);
 
+            this.svg.selectAll("rect")
+                .data(group)
+                .enter()
+                .append("rect")
+                .attr('class', 'statis')
+                .attr('fill', d3.color('white'))
+                .attr('width', 3)
+                .attr('height', d => pointY_to_svgY(d.value.count))
+                .attr('transform', d => 'translate(' + this.pointX_to_svgX(this.keys.indexOf(d.key)) + ','+  (this.svg_height - 20) + ') scale(1, -1)' ) 
+                
+            /* if want to go back
             this.svg.selectAll("circle")
                 .data(group)
                 .enter()
                 .append("circle")
                 .attr("r", 3) // radius
-                .attr("cx", d => pointX_to_svgX(keys.indexOf(d.key))) // position, rescaled
-                .attr("cy", d => pointY_to_svgY(d.value.mean))
+                .attr("cx", d => this.pointX_to_svgX(this.keys.indexOf(d.key))) // position, rescaled
+                .attr("cy", d => pointY_to_svgY(d.value.count))
                 .attr('fill', d3.color('white'))
-
+            */
+        } else {
+            this.svg.selectAll("rect.statis").remove()
         }
     }
 
