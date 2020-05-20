@@ -153,7 +153,7 @@ class Map {
 
         this.map_container = this.svg.append('g');
 
-        this.svg.append("g") // this group with class .brush will be the visual indicator of our brush
+        this.map_container.append("g") // this group with class .brush will be the visual indicator of our brush
                 .attr("class", "brush") 
                 
                 .call(this.brush);
@@ -252,9 +252,8 @@ class Map {
                     })
                     .remove()
         })
-        if (this.selection != null){
-            this.get_points(this.selection);
-        }
+
+    	this.get_points(this.selection);
     }
     update_projection() {
 

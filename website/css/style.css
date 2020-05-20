@@ -1,5 +1,5 @@
 body {
-	background-color: rgba(0,0,0,0.7);
+	background-color: rgba(0,0,0,0.93);
 }
 #content {
 	width: 80%;
@@ -57,6 +57,7 @@ body {
 #map {
 	align-self: center;
 	width: 100%;
+	height: 100%;
 }
 
 
@@ -64,18 +65,10 @@ body {
 	margin: 5px;
 }
 
-#start-stop{
-	width: 100%;
-	height: 20%;
-}
-#reset{
-	width: 100%;
-	height: 20%;
-}
 
 
   /* Dropdown Button */
-.dropbtn {
+#projection-dropdown {
 	background-color: #3498DB;
 	color: white;
 	padding: 16px;
@@ -101,7 +94,7 @@ body {
 	position: absolute;
 	background-color: #f1f1f1;
 	min-width: 160px;
-	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	box-shadow: 0px 8px 16px 0px rgba(100,100,100,1);
 	z-index: 1;
   }
   
@@ -118,6 +111,33 @@ body {
   
   /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
   .show {display:block;}
+
+#options{
+	width: 10%;
+	height: 100%;
+	float: left;
+	text-align: center;
+	padding-top: 5%;
+}
+
+.option_button{
+	height: 15%;
+	width: 75%;
+	padding: 0px 0px 0px;
+	border: 0px;
+	margin-top: 5%;
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+#map_and_buttons {
+	width: 100%;
+	height: 40%;
+}
+#map_and_buttons #map-space{
+	float: right;
+	width: 90%;
+	height: 100%;
+}
 
 /* ----- TIME CONTROL STYLE ----- */
 #time-span rect {
@@ -137,7 +157,7 @@ body {
 #timelines {
 	display: flex;
 	flex-direction: column;
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0,0,0,0.3);
 	padding: 2px;
 }
 
@@ -145,7 +165,7 @@ body {
 	margin: 5px;
 }
 
-
+/*--------Roll style-------*/
 .roll_points {
 	position: relative;
 	fill: rebeccapurple;
@@ -158,9 +178,9 @@ body {
 }
 
 .info_box rect {
-	fill: rebeccapurple;
-	stroke-width: 2px;
-	stroke: black;
+	fill: steelblue;
+	stroke-width: 1px;
+	stroke: red;
 }
 
 .info_box text{

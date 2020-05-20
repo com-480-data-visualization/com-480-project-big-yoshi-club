@@ -54,8 +54,6 @@ class Roll{
 
         //width of the whole roll
         this.g_width = Math.ceil(this.WIDTH * this.parent.oldest / this.parent.window)
-
-        if(this.type == 'meteors'){console.log(this.data)}
  
 
         //right padding
@@ -254,7 +252,7 @@ class Roll{
                 .style('opacity', 0.9)
                 .style('visibility','visible')
 
-            this.parent.highlight_points(classReference.type, point_data.key)
+            classReference.parent.highlight_points(classReference.type, point_data.key)
         })//what happens when unhovering of a point
         .on('mouseout', function(){
             d3.select(this)
@@ -264,7 +262,7 @@ class Roll{
                             .style('opacity', 0)
                             .style('visibility','hidden')
 
-            this.parent.unhighlight_points()
+            classReference.parent.unhighlight_points()
         })
     }
 
@@ -335,7 +333,7 @@ class Roll{
             .attr('x', -5)
             .attr('width', `${this.WIDTH}`)
             .attr('height', '100%')
-            .style('fill','rgba(0,0,0,0.7)')
+            .style('fill','rgba(10,10,10,0.5)')
     }
 
     reset(){
@@ -382,12 +380,6 @@ class Roll{
             .thresholds(classRef.y.ticks(this.TICKS * 4))
 
             let bins = this.hist(temp)
-            if(this.type == 'meteors'){
-                console.log('temp')
-                console.log(temp)
-                console.log('bins')
-                console.log(bins)
-            }
             let height_scale = d3.scaleLinear()
                 .domain([0, d3.max(bins, b => b.length)])
                 .range([0, this.W / 5])
