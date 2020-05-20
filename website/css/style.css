@@ -69,18 +69,15 @@ body {
 
   /* Dropdown Button */
 #projection-dropdown {
-	background-color: #3498DB;
+	background-color:steelblue;
 	color: white;
 	padding: 16px;
 	font-size: 16px;
 	border: none;
-	cursor: pointer;
+	cursor: default;
+	align-content: center;
   }
   
-  /* Dropdown button on hover & focus */
-  .dropbtn:hover, .dropbtn:focus {
-	background-color: #2980B9;
-  }
   
   /* The container <div> - needed to position the dropdown content */
   .dropdown {
@@ -92,22 +89,25 @@ body {
   .dropdown-content {
 	display: none;
 	position: absolute;
-	background-color: #f1f1f1;
-	min-width: 160px;
+	background-color: red;
+	width: 100px;
 	box-shadow: 0px 8px 16px 0px rgba(100,100,100,1);
 	z-index: 1;
   }
   
   /* Links inside the dropdown */
-  .dropdown-content a {
+  #myDropdown a {
 	color: black;
 	padding: 12px 16px;
 	text-decoration: none;
+	font-size: 12px;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	display: block;
+	cursor: pointer;
   }
   
   /* Change color of dropdown links on hover */
-  .dropdown-content a:hover {background-color: #ddd}
+  .dropdown-content a:hover {background-color: steelblue}
   
   /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
   .show {display:block;}
@@ -126,7 +126,9 @@ body {
 	padding: 0px 0px 0px;
 	border: 0px;
 	margin-top: 5%;
+	padding-top: 10px;
 	background-color: rgba(0, 0, 0, 0.1);
+	cursor: pointer;
 }
 
 #map_and_buttons {
@@ -137,6 +139,10 @@ body {
 	float: right;
 	width: 90%;
 	height: 100%;
+}
+
+#myDropdown {
+	align-self: center;
 }
 
 /* ----- TIME CONTROL STYLE ----- */
