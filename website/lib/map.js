@@ -173,12 +173,19 @@ class Map {
 
     update_current(idx) {
 
-        while (this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) {  //if before end of window
-            if (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0) {      //if after start of window
+        while (this.current[idx] < this.data[idx].length) {
+
+            if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
+                (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0)) {
+
+
                 this.buffer[idx].push(this.data[idx][this.current[idx]])
                 this.current[idx] = this.current[idx] + 1                                       //add point to buffer
+            } else {
+                break
             }
         }
+
 
     }
 
@@ -222,12 +229,17 @@ class Map {
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
 
-        this.buffer.forEach((_, idx) => {
-            if (this.current[idx] < this.data[idx].length - 2) {
 
-                while (this.data[idx][this.current[idx]][this.time_accessor[idx]] == this.parent.year0 - this.parent.window) {
+        this.buffer.forEach((_, idx) => {
+            while (this.current[idx] < this.data[idx].length) {
+
+                if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
+                    (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0)) {
+
                     this.buffer[idx].push(this.data[idx][this.current[idx]])
                     this.current[idx] = this.current[idx] + 1
+                } else {
+                    break
                 }
             }
 
@@ -305,7 +317,7 @@ class Statistics {
             .attr('x', 10)
             .attr('y', 10);
 
-        
+
 
         let group = d3.nest()
             .key(d => d[x_val])
@@ -326,7 +338,7 @@ class Statistics {
             .domain(x_value_range)
             .range([0, this.svg_width]);
 
-        
+
         let xAxisTranslate = this.svg_height / 2;
 
 
@@ -335,7 +347,7 @@ class Statistics {
 
         this.svg.append('g')
             .style('font', '14px times')
-            
+
             .attr("transform", "translate(50, " + xAxisTranslate + ")")
             .style('color', d3.color('white'))
             .call(x_axis);
@@ -375,8 +387,8 @@ class Statistics {
                 .domain(y_value_range)
                 .range([this.svg_height, 0]);
 
-            
-           
+
+
             this.svg.selectAll("circle")
                 .data(group)
                 .enter()
