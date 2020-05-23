@@ -140,7 +140,7 @@ function append_categories(filter_data, div, yoshi, i, k){
             .property('checked', true)
             .on('change', function(){
                 filter_data['categories'][this.name] = !filter_data['categories'][this.name]
-                filter(yoshi, i, k)
+                filter(yoshi, i)
             })
 
         div.append('label')
@@ -168,7 +168,7 @@ function append_number(filter_data, div, yoshi, i, k){
                 this.value = filter_data['current_max']
             }else{
                 filter_data['current_min'] = this.value
-                filter(yoshi, i, k)
+                filter(yoshi, i)
             }
         })
 
@@ -185,7 +185,7 @@ function append_number(filter_data, div, yoshi, i, k){
                 this.value = filter_data['current_min']
             }else{
                 filter_data['current_max'] = this.value
-                filter(yoshi, idx)
+                filter(yoshi, i)
             }
         })
 }
