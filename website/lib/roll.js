@@ -327,7 +327,7 @@ class Roll{
             .attr('text-anchor', 'left')
             .attr('y', this.label_height - 15)
             .attr('class','roll_label')
-            .text(`Mean per year of ${this.y_attribute.toLowerCase()} for ${this.type} in ${this.unit}`)
+            .text(`Mean per year of ${this.y_attribute.toLowerCase()} of ${this.type} in ${this.unit}`)
 
     }
     

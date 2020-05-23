@@ -1,6 +1,7 @@
 class Yoshi {
 
     constructor(data, map_svg, roll_svgs) {
+        this.full_data = [...data]
         this.data = data
         this.map_svg = map_svg
         this.roll_svgs = roll_svgs

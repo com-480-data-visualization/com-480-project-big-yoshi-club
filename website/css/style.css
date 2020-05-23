@@ -225,13 +225,19 @@ body {
 	border: 1px solid red;
 }
 
+#filters h4{
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+}
+
 #filters div{
 	border: 1px solid blue;
-	height: 20%;
+	height: 30%;
+	padding : 1%;
 }
 
 #filters .A{
-	height: 30%;
+	height: 20%;
 }
 
 /*----graphs style-------*/
