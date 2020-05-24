@@ -8,13 +8,26 @@ class Yoshi {
 
         this.y_attributes = ['Elevation', 'Depth', 'mass']
         this.get_means()
-        d3.select('#projection-dropdown')
-        .on('mouseover', () => document.getElementById("myDropdown").classList.toggle("show"))
-        .on('mouseout', () => document.getElementById("myDropdown").classList.toggle("show"))
 
-        d3.select('#myDropdown')
-        .on('mouseover', () => this.projection_select())
-        .on('mouseout', () => document.getElementById("myDropdown").classList.toggle("show"))
+        // Setup drop down menu
+        // 1. On dropdown button hover, display dropdown
+        d3.select('#dropdown-button')
+            .on('mouseover', () => {
+                d3.select('#dropdown-content').style('display', 'block')
+            })
+            .on('mouseout', () => {
+                d3.select('#dropdown-content').style('display', 'none')
+            })
+        // 2. On dropdown content hover, keep it displayed
+        d3.select('#dropdown-content')
+            .on('mouseover', () => {
+                d3.select('#dropdown-content').style('display', 'block')
+            })
+            .on('mouseout', () => {
+                d3.select('#dropdown-content').style('display', 'none')
+            })
+        // 3. Change map projection depending on which button is pressed
+        this.projection_select()
 
         this.get_old_young()
 
@@ -47,22 +60,22 @@ class Yoshi {
         d3.select('#Natural')
             .on('click', () => {
                 this.stop()
-                
+
                 this.map.PROJECT_SCALE = 180
-                
+
                 this.map.projection_style = d3.geoNaturalEarth1()
                 this.map.update_projection()
             })
         d3.select('#Rectangular')
             .on('click', () => {
                 this.stop()
-                
+
                 this.map.PROJECT_SCALE = 150
-                
+
                 this.map.projection_style = d3.geoEquirectangular()
                 this.map.update_projection()
             })
-        
+
     }
 
     /**
@@ -70,10 +83,10 @@ class Yoshi {
      * @param {can either be volcanoes, earthquakes or meteors} type 
      * @param {year to be highlighted on the map} year 
      */
-    highlight_points(type, year){
+    highlight_points(type, year) {
         // TODO
     }
-    unhighlight_points(){
+    unhighlight_points() {
         // TODO
     }
 
@@ -86,7 +99,7 @@ class Yoshi {
             .on('click', () => this.stop())
         this.map.point_container.selectAll('*')
         this.tick()
-        this.interval = setInterval( () => this.tick(), this.speed)
+        this.interval = setInterval(() => this.tick(), this.speed)
     }
     stop() {
         clearInterval(this.interval)
@@ -103,13 +116,13 @@ class Yoshi {
         this.year0 = 2018 - year0
         this.window = window
         this.map.point_container.selectAll('*').remove()
-        this.map.buffer = [[],[],[]]
+        this.map.buffer = [[], [], []]
 
         console.log(`Reset set this.year0 = ${this.year0}, this.window = ${this.window} (called with year0 = ${year0}, window = ${window})`);
 
         this.timelineControl.update(year0, year0 + window)
 
-        this.rolls.forEach((r, idx) =>{
+        this.rolls.forEach((r, idx) => {
             r.reset()
             this.map.set_current(idx)
             this.map.update_current(idx)
@@ -117,7 +130,7 @@ class Yoshi {
         })
     }
 
-    update(){
+    update() {
         this.rolls.forEach(r => {
             r.update_axis()
             r.update_points()
@@ -132,16 +145,16 @@ class Yoshi {
     }
 
     tick() {
-        if(this.year0 - this.window >= 0){
+        if (this.year0 - this.window >= 0) {
             this.year0 = this.year0 - 1
             this.update()
-        }else{
+        } else {
             this.stop()
         }
     }
 
     //finds the largest-lowest time value of the datasets
-    get_old_young(){
+    get_old_young() {
         let oldest_v = d3.max(this.data[0], v => v['date'])
         let oldest_e = d3.max(this.data[1], e => e['date'])
         let oldest_m = d3.max(this.data[2], m => m['date'])
@@ -155,43 +168,43 @@ class Yoshi {
     }
 
     //generates the means array per year for all the rolls
-    get_means(){ 
+    get_means() {
         this.means = []
-        for(let i = 0; i<this.data.length; i++){
+        for (let i = 0; i < this.data.length; i++) {
             this.means[i] = d3.nest()
-                                .key(d => d['date'])
-                                .rollup( (v) => {
-                                    return {
-                                        mean : d3.mean(v, d =>  d[this.y_attributes[i]])
-                                    }
-                                })
-                                .entries(this.data[i])
+                .key(d => d['date'])
+                .rollup((v) => {
+                    return {
+                        mean: d3.mean(v, d => d[this.y_attributes[i]])
+                    }
+                })
+                .entries(this.data[i])
         }
     }
 
     //generate the rolls 
-    make_rolls(){
+    make_rolls() {
         let names = ['volcanoes', 'earthquakes', 'meteors']
         let units = ['meters', 'kilometers', 'grams']
         this.rolls = []
-        for(let i = 0; i<3; i++){
+        for (let i = 0; i < 3; i++) {
             let roll = new Roll(this, this.data[i], this.roll_svgs[i], names[i], this.y_attributes[i], this.means[i], units[i])
             this.rolls[i] = roll
         }
     }
 
-    make_stats(){
+    make_stats() {
         let names = ['volcano_stats', 'earthquake_stats', 'meteor_stats']
         let y_vals = ['Elevation', 'Depth', 'mass']
         let x_vals = ['Dominant Rock Type', 'Magnitude', 'recclass']
         this.stats = []
-        for(let i = 0; i<3; i++){
+        for (let i = 0; i < 3; i++) {
             let stat = new Statistics(this, names[i], this.data[i], y_vals[i], x_vals[i])
             this.stats[i] = stat
         }
     }
 
-    make_buttons(){
+    make_buttons() {
         d3.select('#start-stop')
             .style('background-image', 'url(img/play.png)')
             .style('background-size', 'cover')
@@ -204,18 +217,18 @@ class Yoshi {
 
         let classRef = this
         let scale_speed = d3.scaleLinear()
-                        .domain([0, 100])
-                        .range([this.min_speed, this.max_speed])
+            .domain([0, 100])
+            .range([this.min_speed, this.max_speed])
 
-        d3.select('#speed').on('change', function(d){
+        d3.select('#speed').on('change', function (d) {
             let wasOn = classRef.on
             classRef.stop()
             classRef.speed = scale_speed(this.value)
-            if(wasOn){classRef.start()}
+            if (wasOn) { classRef.start() }
         })
     }
 
-    make_filters(){
+    make_filters() {
         filter_data(this.data, this)
     }
 
