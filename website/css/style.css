@@ -135,6 +135,7 @@ body {
 /* ----- TIME CONTROL STYLE ----- */
 
 #time-controls {
+	height: 100px;
 	margin: 10px 0;
 	padding: 10px;
 
@@ -150,18 +151,16 @@ body {
 
 #time-span path {
 	stroke: steelblue;
-	stroke-width: 2px;
-	stroke-dasharray: 10, 3;
+	stroke-width: 1px;
 }
 
 #time-window rect {
 	fill: rgba(70, 131, 180, 0.25);
 
-	height: 75%;
+	height: 70%;
 
 	stroke: steelblue;
 	stroke-width: 1px;
-	stroke-dasharray: 5, 5;
 }
 
 /*timelines/rolls style*/
@@ -263,9 +262,24 @@ body {
 	margin-bottom: 0;
 }
 
-#filters h4 {
+#filters h4, #filters h2 {
 	margin: 0 0 10px 0;
 	text-transform: capitalize;
 }
 
 /*----graphs style-------*/
+
+/* Select graph background */
+#controls svg .bg {
+	fill: whitesmoke;
+}
+
+/* Select color of graph bars */
+#controls svg .statis {
+	fill: gray;
+}
+
+/* Select color of graph axes */
+#controls svg .x_axis, #controls svg .y_axis {
+	stroke: gray;
+}

@@ -174,8 +174,8 @@ class TimelineControl {
 		if (loBnd > upBnd) throw new Error(`update tw bounds: Error: lower bound cannot be greater than upper bound! (lo = ${loBnd}, up = ${upBnd})`)
 		if (loBnd < this.minYear) throw new Error(`update tw bounds: Error: lower bound cannot be lower than min year! (lo = ${loBnd}, this.minYear = ${this.minYear})`)
 		if (upBnd > this.maxYear) throw new Error(`update tw bounds: Error: upper bound cannot be greater than max year! (up = ${upBnd}, this.maxYear = ${this.maxYear})`)
-		this.twLoBnd = Math.floor(loBnd)
-		this.twUpBnd = Math.floor(upBnd)
+		this.twLoBnd = loBnd
+		this.twUpBnd = upBnd
 	}
 
 	/**
@@ -317,12 +317,12 @@ class TimelineControl {
 			.attr("class", "time-window-lo-year")
 			.attr("text-anchor", "start")
 			.attr("x", `${tcw_lox}%`)
-			.attr("y", "88%")
+			.attr("y", "84%")
 		timeControlWindow.append("text")
 			.text(`${this.twUpBnd}`)
 			.attr("class", "time-window-up-year")
 			.attr("text-anchor", "end")
 			.attr("x", `${tcw_upx}%`)
-			.attr("y", "88%")
+			.attr("y", "84%")
 	}
 }

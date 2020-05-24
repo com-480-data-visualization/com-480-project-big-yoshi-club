@@ -53,6 +53,20 @@ class Yoshi {
         const twLoBnd = 2018 - this.year0
         const twUpBnd = twLoBnd + this.window
         this.timelineControl = new TimelineControl(this, svgId, minDate, maxDate, twLoBnd, twUpBnd)
+
+        // Force statistics to be aligned with the rolls
+        // Align the one placed higher with the one placed lower
+        const rolls = d3.select("#timelines")
+        const stats = d3.select("#controls")
+        const rollsRect = rolls.node().getBoundingClientRect()
+        const statsRect = stats.node().getBoundingClientRect()
+        if (rollsRect.y > statsRect.y) {
+            const diff_px = rollsRect.y - statsRect.y
+            stats.style("margin-top", `${diff_px}px`)
+        } else {
+            const diff_px = statsRect.y - rollsRect.y
+            rolls.style("margin-top", `${diff_px}px`)
+        }
     }
 
 

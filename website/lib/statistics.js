@@ -10,7 +10,7 @@ class Statistics {
         this.svg_width = svg_viewbox.width;
         this.svg_height = svg_viewbox.height;
         this.svg.append('rect')
-            .attr('fill', 'rgba(0,0,0,0.7)')
+            .attr("class", "bg")
             .attr('width', `${this.svg_width}`)
             .attr('height', `${this.svg_height}`)
 
@@ -55,7 +55,7 @@ class Statistics {
             .scale(pointY_to_svgY);
 
         this.svg.append('g')
-            .attr("class", "x axis")
+            .attr("class", "x_axis")
             .style('font', '14px times')
 
             .attr("transform", "translate(0, " + xAxisTranslate + ")")
