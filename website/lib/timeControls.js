@@ -49,7 +49,6 @@ class TimelineControl {
 		// 1. Compute global time span width in pixels
 		// Use https://stackoverflow.com/questions/21990857/d3-js-how-to-get-the-computed-width-and-height-for-an-arbitrary-element
 		// TODO: update this BBox when the viewport is resized
-		// TODO: modify this to get absolute coordinates
 		const tsBBox = this.svg.select("#time-span rect").node().getBoundingClientRect()
 		const tsXStart_px = tsBBox.left
 		const tsXEnd_px = tsBBox.right
@@ -272,19 +271,28 @@ class TimelineControl {
 		// (Style that does not depend on time window bounds is handled in CSS)
 		timeControl.append("rect")
 
-		// Add minDate and maxDate labels to top level group
-		timeControl.append("text")
-			.text(`${this.minYear}`)
-			.attr("class", "time-span-min-year")
-			.attr("text-anchor", "start")
-			.attr("x", "0%")
-			.attr("y", "100%")
-		timeControl.append("text")
-			.text(`${this.maxYear}`)
-			.attr("class", "time-span-max-year")
-			.attr("text-anchor", "end")
-			.attr("x", "100%")
-			.attr("y", "100%")
+		// Add date labels with vertical lines to top level group
+		const numLabels = 8
+		const yearLabels = [...Array(numLabels).keys()].map(i => {
+			return Math.round(this.minYear + (this.maxYear - this.minYear) * i / (numLabels - 1))
+		})
+		yearLabels.forEach(y => {
+			// Add text
+			const textAnchor = y === this.minYear ? "start" : (y === this.maxYear ? "end" : "middle")
+			const yearPos_pc = 100 * (y - this.minYear) / (this.maxYear - this.minYear)
+			timeControl.append("text")
+				.text(y)
+				.attr("text-anchor", textAnchor)
+				.attr("x", `${yearPos_pc}%`)
+				.attr("y", "100%")
+
+			// Add vertical marker
+			const tsBBox = this.svg.select("#time-span rect").node().getBoundingClientRect()
+			const tsWidth = tsBBox.right - tsBBox.left
+			const tsHeight = tsBBox.bottom - tsBBox.top
+			timeControl.append("path")
+				.attr("d", `M ${yearPos_pc * tsWidth / 100} 0 V ${0.95 * tsHeight}`)
+		})
 
 		// Create time window group, contains time window and text
 		timeControl.append("g")

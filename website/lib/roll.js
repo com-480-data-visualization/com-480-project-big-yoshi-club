@@ -317,10 +317,12 @@ class Roll{
 
     draw_label(){
 
-        this.svg.append('path')
-            .attr('d', `M-5 -5 L${this.WIDTH - 15} 0 Q${this.WIDTH} 0 ${this.WIDTH} ${this.label_height} L-5 ${this.label_height} Z`)
-            .style('fill', 'red')
-
+        this.svg.append('rect')
+            .attr("class", "timeline-label")
+            .attr("x", "0")
+            .attr("y", "0")
+            .attr("width", `${this.WIDTH}`)
+            .attr("height", `${this.label_height}`)
 
         this.svg.append('text')
             .attr('x', `${this.X0 - 30}`)
@@ -333,11 +335,11 @@ class Roll{
     
     draw_background(){
         this.svg.append('rect')
+            .attr("class", "timeline-bg")
             .attr('y', `${this.label_height - 5}`)
             .attr('x', -5)
             .attr('width', `${this.WIDTH}`)
             .attr('height', '100%')
-            .style('fill','rgba(10,10,10,0.5)')
     }
 
     reset(){

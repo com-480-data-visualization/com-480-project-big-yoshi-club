@@ -172,6 +172,8 @@ function append_number(filter_data, div, yoshi, i, k){
             }
         })
 
+    div.append("br")
+
     div.append('label')
         .text(`max (${Math.ceil(filter_data['max'])}): `)
     div.append('input')
