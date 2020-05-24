@@ -216,8 +216,8 @@ class TimelineControl {
 		const year0 = this.twLoBnd
 		const window = this.twUpBnd - this.twLoBnd
 
-		this.parent.reset(year0, window)
-
+		this.parent.reset(Math.floor(year0), Math.floor(window))
+		
 		// Restart the rolls if they were running
 		if (wasOn) {
 			this.parent.start()
