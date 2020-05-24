@@ -3,26 +3,12 @@ class Map {
         this.parent = parent;
         this.data = _.clone(data)
         //keep only earthquakes with magnitude > 0
-        this.data[1] = this.data[1].filter(function (d) { if (parseFloat(d.Magnitude) > 5.9) { return d } })
+        this.data[1] = this.data[1].filter(function (d) { if (parseFloat(d.Magnitude) > 6.2) { return d } })
 
-        //filter more data if needed per year
-        let y = 0
-        let c = 0
-        this.data[1] = this.data[1].filter(function (d) {
-            if (d.Date > y) {
-                y = d.Date
-                c = 0
-            } else if (d.Date == y) {
-                c += 1
-            }
-            if (c < 120) {
-                return d
-            }
-        })
+
 
 
         //keep 1 out of 10 meteors
-
         this.data[2] = this.data[2].filter(function (d) {
             let rand = Math.random() <= 0.1 //probability to keep row
             if (rand) {
@@ -30,7 +16,7 @@ class Map {
             }
         })
         this.data[1] = this.data[1].filter(function (d) {
-            let rand = Math.random() <= 0.4 //probability to keep row
+            let rand = Math.random() <= 0.7 //probability to keep row
             if (rand) {
                 return d
             }
@@ -59,7 +45,7 @@ class Map {
         this.svg_width = svg_viewbox.width;
         this.svg_height = svg_viewbox.height;
         this.svg.append('rect')
-            .attr('fill', 'rgba(0,0,0,0.7)')
+            .attr('fill', '#404258')
             .attr('width', `${this.svg_width}`)
             .attr('height', `${this.svg_height}`)
 
@@ -136,18 +122,11 @@ class Map {
     }
 
 
-    silly_color(name) {
-        if (name[0] == "A") {
-            return d3.color("rgb(255, 0,0)")
-        } else {
-            return d3.color("rgb(205, 0,10)")
-        }
-    }
+
 
     draw_map() {
-
-
-
+        
+        
 
         const projection = this.projection_style
             .rotate([0, 0])
@@ -172,7 +151,7 @@ class Map {
             .append("path")
             .classed("country", true)
             .attr("d", path_generator)
-            .style("fill", (d) => this.silly_color(d.properties.name))
+            .style("fill" , "#195B51")
         this.point_container = this.svg.append("g");
     }
 
@@ -183,8 +162,9 @@ class Map {
             if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
                 (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0)) {
 
-
                 this.buffer[idx].push(this.data[idx][this.current[idx]])
+
+
                 this.current[idx] = this.current[idx] + 1 //add point to buffer
             } else {
                 break
@@ -210,12 +190,12 @@ class Map {
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
 
-        const colors = ['yellow', 'blue', 'green']
-        this.point_container.selectAll(".point")
+        const colors = ['#F5BCF2','#8FDEB9','#F6C68D']
+        this.point_container.selectAll(".static_point")
             .data(this.buffer[i])
             .enter()
             .append("circle")
-            .classed("point", true)
+            .classed("static_point", true)
             .attr("r", r)
             .attr("cx", -r)
             .attr("cy", -r)
@@ -227,7 +207,7 @@ class Map {
 
     update_points() {
         const r = 3;
-        const colors = ['yellow', 'blue', 'green']
+        const colors = ['#F5BCF2','#8FDEB9','#F6C68D']
         const projection = this.projection_style
             .center([0, 0])
             .scale(this.PROJECT_SCALE)
@@ -236,18 +216,21 @@ class Map {
 
 
         this.buffer.forEach((_, idx) => {
+
             while (this.current[idx] < this.data[idx].length) {
 
                 if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
                     (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0)) {
 
                     this.buffer[idx].push(this.data[idx][this.current[idx]])
+
+
+
                     this.current[idx] = this.current[idx] + 1
                 } else {
                     break
                 }
             }
-            
             this.point_container.selectAll(".point")
                 .data(this.buffer[idx])
                 .enter()
@@ -285,6 +268,7 @@ class Map {
         this.data.forEach((_, idx) => {
             this.set_current(idx)
             this.update_current(idx)
+            this.draw_points(idx)
         });
 
 

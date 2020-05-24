@@ -111,7 +111,7 @@ class Yoshi {
         d3.select('#start-stop')
             .style('background-image', 'url(img/pause.png)')
             .on('click', () => this.stop())
-        this.map.point_container.selectAll('*')
+        this.map.point_container.selectAll('.static_point').remove()
         this.tick()
         this.interval = setInterval(() => this.tick(), this.speed)
     }
@@ -140,7 +140,7 @@ class Yoshi {
             r.reset()
             this.map.set_current(idx)
             this.map.update_current(idx)
-            this.map.update_points()
+            this.map.draw_points(idx)
         })
     }
 
@@ -154,12 +154,12 @@ class Yoshi {
         this.map.update_points()
         // Update the timeline control display
         const loBnd = 2018 - this.year0
-        const upBnd = loBnd + this.window
+        const upBnd = Math.floor(loBnd + this.window)
         this.timelineControl.update(loBnd, upBnd)
     }
 
     tick() {
-        if (this.year0 - this.window >= 0) {
+        if (this.year0 - this.window > 0) {
             this.year0 = this.year0 - 1
             this.update()
         } else {
@@ -213,7 +213,7 @@ class Yoshi {
         let x_vals = ['Dominant Rock Type', 'Magnitude', 'recclass']
         this.stats = []
         for (let i = 0; i < 3; i++) {
-            let stat = new Statistics(this, names[i], this.data[i], y_vals[i], x_vals[i])
+            let stat = new Statistics(this, names[i], this.map.data[i], y_vals[i], x_vals[i])
             this.stats[i] = stat
         }
     }
