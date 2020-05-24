@@ -364,7 +364,7 @@ class Roll{
                                     .enter()
                                     .append("rect")
                                         .attr("x", 1)
-                                        .attr("transform", d => `translate(${classRef.y(d.x0) - classRef.label_height}, ${-height_scale(d.length)})`)
+                                        .attr("transform", d => `translate(${classRef.y(d.x1) - classRef.label_height}, ${-height_scale(d.length)})`)
                                         .attr("width", d => classRef.y(d.x0) - classRef.y(d.x1))
                                         .attr("height", d => height_scale(d.length))
                                         .style("fill", this.rgb)
