@@ -1,6 +1,7 @@
 class Yoshi {
 
     constructor(data, map_svg, roll_svgs) {
+        this.full_data = [...data]
         this.data = data
         this.map_svg = map_svg
         this.roll_svgs = roll_svgs
@@ -28,6 +29,7 @@ class Yoshi {
 
         this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
         this.make_stats()
+        this.make_filters()
         this.make_rolls()
 
         this.make_buttons()
@@ -82,7 +84,7 @@ class Yoshi {
         d3.select('#start-stop')
             .style('background-image', 'url(img/pause.png)')
             .on('click', () => this.stop())
-        this.map.point_container.selectAll('*').remove()
+        this.map.point_container.selectAll('*')
         this.tick()
         this.interval = setInterval( () => this.tick(), this.speed)
     }
@@ -111,6 +113,7 @@ class Yoshi {
             r.reset()
             this.map.set_current(idx)
             this.map.update_current(idx)
+            this.map.update_points()
         })
     }
 
@@ -211,6 +214,11 @@ class Yoshi {
             if(wasOn){classRef.start()}
         })
     }
+
+    make_filters(){
+        filter_data(this.data, this)
+    }
+
 }
 
 
