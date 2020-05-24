@@ -158,6 +158,11 @@ class Yoshi {
         this.timelineControl.update(loBnd, upBnd)
     }
 
+    
+    update_data(){
+        //TODO
+    }
+
     tick() {
         if (this.year0 - this.window >= 0) {
             this.year0 = this.year0 - 1
