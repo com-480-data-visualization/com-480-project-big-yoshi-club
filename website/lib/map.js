@@ -8,30 +8,35 @@ class Map {
         //filter more data if needed per year
         let y = 0
         let c = 0
-        this.data[1] = this.data[1].filter(function(d) {
+        this.data[1] = this.data[1].filter(function (d) {
             if (d.Date > y) {
-                 y = d.Date
-                 c = 0
-            } else if(d.Date == y) {
+                y = d.Date
+                c = 0
+            } else if (d.Date == y) {
                 c += 1
             }
-            if (c < 120){
+            if (c < 120) {
                 return d
             }
         })
-        
+
 
         //keep 1 out of 10 meteors
-        
+
         this.data[2] = this.data[2].filter(function (d) {
             let rand = Math.random() <= 0.1 //probability to keep row
             if (rand) {
                 return d
             }
         })
-        
-        
-        console.log(this.data[0].length, this.data[1].length, this.data[2].length)
+        this.data[1] = this.data[1].filter(function (d) {
+            let rand = Math.random() <= 0.4 //probability to keep row
+            if (rand) {
+                return d
+            }
+        })
+
+
         this.buffer = [[], [], []]
         this.current = [0, 0, 0]
 
@@ -178,7 +183,7 @@ class Map {
             if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
                 (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0)) {
 
-                
+
                 this.buffer[idx].push(this.data[idx][this.current[idx]])
                 this.current[idx] = this.current[idx] + 1 //add point to buffer
             } else {
@@ -235,20 +240,14 @@ class Map {
 
                 if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
                     (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0)) {
-                
+
                     this.buffer[idx].push(this.data[idx][this.current[idx]])
                     this.current[idx] = this.current[idx] + 1
                 } else {
                     break
                 }
             }
-            var l = this.buffer[idx].length
-            this.buffer[idx] = this.buffer[idx].filter(function (d) {
-                let rand = Math.random() <= 120/ l //probability to keep row
-                if (rand) {
-                    return d
-                }
-            })
+            
             this.point_container.selectAll(".point")
                 .data(this.buffer[idx])
                 .enter()
@@ -306,7 +305,7 @@ class Map {
 class Statistics {
     constructor(parent, svg_element_id, data, y_val, x_val) {
         this.parent = parent;
-
+        this.name = svg_element_id
         this.y_val = y_val
         this.x_val = x_val
         this.data = data
@@ -317,34 +316,37 @@ class Statistics {
         this.svg.append('rect')
             .attr('fill', 'rgba(0,0,0,0.7)')
             .attr('width', `${this.svg_width}`)
-            .attr('height', `${this.svg_height}`)   
+            .attr('height', `${this.svg_height}`)
 
+        if (this.name.indexOf("meteor") !== -1) {
+            console.log("meteor")
 
+        }
         let group = d3.nest()
             .key(d => d[x_val])
-            .rollup((v) => {
-
-                return {
-                    count: v.length
-                }
-
-            })
+            .rollup(function (d) { return d.length; })
             .entries(data)
+            .sort(function (a, b) { return d3.descending(a.value, b.value); })
 
-        this.keys = group.map(g => g.key)
-        let vals = group.map(g => g.value.count)
-
+        const keys = group.map(g => g.key).slice(0, 10)
+        group = group.filter(function (d) {
+            if (keys.indexOf(d.key) > -1) {
+                return d
+            }
+        })
+        this.keys = keys
+        let vals = group.map(g => g.value)
         this.x_value_range = [0, this.keys.length];
         let y_value_range = [0, d3.max(vals)];
 
 
         this.pointX_to_svgX = d3.scaleLinear()
             .domain(this.x_value_range)
-            .range([50, this.svg_width - 20]);
+            .range([70, this.svg_width - 20]);
 
         let pointY_to_svgY = d3.scaleLinear()
             .domain(y_value_range)
-            .range([this.svg_height-20, 10]);
+            .range([this.svg_height - 20, 10]);
 
 
         let xAxisTranslate = this.svg_height - 20;
@@ -352,7 +354,7 @@ class Statistics {
 
         let x_axis = d3.axisBottom()
             .scale(this.pointX_to_svgX);
-        
+
         let y_axis = d3.axisLeft()
             .scale(pointY_to_svgY);
 
@@ -363,7 +365,7 @@ class Statistics {
             .attr("transform", "translate(0, " + xAxisTranslate + ")")
             .style('color', d3.color('white'))
             .call(x_axis);
- 
+
 
         this.svg.append("g")
             .attr('class', 'y_axis')
@@ -371,6 +373,7 @@ class Statistics {
             .style('font', '14px times')
             .attr("transform", "translate(50, 0)")
             .call(y_axis);
+        this.draw_hist(data)
     }
 
     draw_hist(data) {
@@ -383,23 +386,24 @@ class Statistics {
 
             let group = d3.nest()
                 .key(d => d[x_val])
-                .rollup((v) => {
-                    return {
-                        count: v.length
-                    }
-                })
+                .rollup(function (d) { return d.length; })
                 .entries(data)
 
-            let vals = group.map(g => g.value.count)
-            
-            
+            const keys = this.keys
+            group = group.filter(function (d) {
+                if (keys.indexOf(d.key) > -1) {
+                    return d
+                }
+            })
+            let vals = group.map(g => g.value)
+            const w = 18
 
 
             let y_value_range = [0, d3.max(vals)];
             let pointY_to_svgY = d3.scaleLinear()
                 .domain(y_value_range)
-                .range([this.svg_height-20, 10]);        
-            
+                .range([this.svg_height - 20, 10]);
+
 
             var y_axis = d3.axisLeft()
                 .scale(pointY_to_svgY);
@@ -417,10 +421,10 @@ class Statistics {
                 .append("rect")
                 .attr('class', 'statis')
                 .attr('fill', d3.color('white'))
-                .attr('width', 3)
-                .attr('height', d => pointY_to_svgY(d.value.count))
-                .attr('transform', d => 'translate(' + this.pointX_to_svgX(this.keys.indexOf(d.key)) + ','+  (this.svg_height - 20) + ') scale(1, -1)' ) 
-                
+                .attr('width', w)
+                .attr('height', d => pointY_to_svgY(d.value))
+                .attr('transform', d => 'translate(' + (-(w / 2) + this.pointX_to_svgX(this.keys.indexOf(d.key))) + ',' + (this.svg_height - 20) + ') scale(1, -1)')
+
             /* if want to go back
             this.svg.selectAll("circle")
                 .data(group)
