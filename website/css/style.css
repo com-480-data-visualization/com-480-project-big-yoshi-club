@@ -1,5 +1,7 @@
+/* --- COLUMNS AND GENERAL CONTENT LAYOUT ----- */
+
 body {
-	background-color: white;
+	background-color: rgb(0, 0, 0);
 }
 
 #content {
@@ -7,10 +9,6 @@ body {
 	/* Center horizontally */
 	margin: 0 auto;
 	padding: 15px;
-}
-
-#content h1 {
-	text-align: center;
 }
 
 #vis-box {
@@ -27,10 +25,6 @@ body {
 	flex-direction: column;
 }
 
-#left-col svg text, #time-controls text {
-	font-size: large;
-}
-
 #right-col {
 	width: 30%;
 	padding: 5px;
@@ -41,54 +35,78 @@ body {
 	height: 100%;
 }
 
+/* ----- MAP AND BUTTON CONTROLS ----- */
 
-/*
-* map and options div
-*/
+#map_and_buttons {
+	width: 100%;
+	height: 40%;
+	background-color: #F9F8F8;
+}
+
+#map_and_buttons #map-space {
+	width: 100%;
+}
 
 #map {
-	align-self: center;
 	width: 100%;
 	height: 100%;
 }
 
-#time-controls {
-	margin: 5px;
+#options {
+	width: 100%;
+	padding: 10px;
+
+	/* Use flex for horizontal display */
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
+.option_button {
+	height: 80px;
+	width: 80px;
+	border: 0px;
+	cursor: pointer;
+}
+
+#speed-wrapper label {
+	text-align: center;
+	display: block;
+}
+
+#speed {
+	height: 40px;
 }
 
 /* Dropdown Button */
-
-#projection-dropdown {
+#dropdown-button {
 	background-color: steelblue;
 	color: white;
 	padding: 10px;
-	font-size: 12px;
+	font-size: 20px;
 	text-transform: uppercase;
 	border: none;
-	cursor: default;
-}
-
-/* The container <div> - needed to position the dropdown content */
-
-.dropdown {
-	position: relative;
-	display: inline-block;
+	cursor: pointer;
 }
 
 /* Dropdown Content (Hidden by Default) */
-
-.dropdown-content {
+#dropdown-content {
 	display: none;
 	position: absolute;
 	background-color: red;
-	width: 100px;
+	width: 200px;
 	box-shadow: 0px 8px 16px 0px rgba(100, 100, 100, 1);
 	z-index: 1;
 }
 
-/* Links inside the dropdown */
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {
+	display: block;
+}
 
-#myDropdown a {
+/* Links inside the dropdown */
+#dropdown-content a {
 	color: black;
 	padding: 12px 16px;
 	text-decoration: none;
@@ -99,57 +117,15 @@ body {
 }
 
 /* Change color of dropdown links on hover */
-
-.dropdown-content a:hover {
+#dropdown-content a:hover {
 	background-color: steelblue
 }
 
-/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
-
-.show {
-	display: block;
-}
-
-#map_and_buttons {
-	width: 100%;
-	height: 40%;
-	background-color: #F9F8F8;
-}
-
-#map_and_buttons #map-space {
-	float: right;
-	width: 90%;
-	height: 100%;
-}
-
-#options {
-	width: 10%;
-	height: 100%;
-	float: left;
-	text-align: center;
-}
-
-.option_button {
-	height: 15%;
-	width: 75%;
-	border: 0px;
-	cursor: pointer;
-
-	/* Center horizontally and add some space between buttons */
-	margin: 15% auto;
-}
-
-/* Override speed button margin because of its weird shape */
-#speed {
-	margin: 0 auto;
-	height: 200px;
-}
-
-#myDropdown {
-	align-self: center;
-}
-
 /* ----- TIME CONTROL STYLE ----- */
+
+#time-controls {
+	margin: 5px;
+}
 
 #time-span rect {
 	fill: bisque;
