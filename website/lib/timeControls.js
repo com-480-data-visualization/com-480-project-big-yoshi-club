@@ -172,8 +172,11 @@ class TimelineControl {
 	 * @param {number} upBnd 
 	 */
 	_updateTWBounds(loBnd, upBnd) {
-		this.twLoBnd = loBnd
-		this.twUpBnd = upBnd
+		if (loBnd > upBnd) throw new Error(`update tw bounds: Error: lower bound cannot be greater than upper bound! (lo = ${loBnd}, up = ${upBnd})`)
+		if (loBnd < this.minYear) throw new Error(`update tw bounds: Error: lower bound cannot be lower than min year! (lo = ${loBnd}, this.minYear = ${this.minYear})`)
+		if (upBnd > this.maxYear) throw new Error(`update tw bounds: Error: upper bound cannot be greater than max year! (up = ${upBnd}, this.maxYear = ${this.maxYear})`)
+		this.twLoBnd = Math.floor(loBnd)
+		this.twUpBnd = Math.floor(upBnd)
 	}
 
 	/**

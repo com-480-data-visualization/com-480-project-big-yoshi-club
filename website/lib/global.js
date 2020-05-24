@@ -105,12 +105,13 @@ class Yoshi {
 
         console.log(`Reset set this.year0 = ${this.year0}, this.window = ${this.window} (called with year0 = ${year0}, window = ${window})`);
 
+        this.timelineControl.update(year0, year0 + window)
+
         this.rolls.forEach((r, idx) =>{
             r.reset()
             this.map.set_current(idx)
             this.map.update_current(idx)
         })
-
     }
 
     update(){
@@ -196,7 +197,7 @@ class Yoshi {
         d3.select('#reset')
             .style('background-image', 'url(img/reset.png)')
             .style('background-size', 'cover')
-            .on('click', () => this.reset())
+            .on('click', () => this.reset(2018 - this.oldest, this.window))
 
         let classRef = this
         let scale_speed = d3.scaleLinear()
