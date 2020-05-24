@@ -23,15 +23,15 @@ class Map {
         */
 
         //keep 1 out of 10 meteors
-
-        data[2] = data[2].filter(function (d) {
+        this.data = _.clone(data)
+        this.data[2] = this.data[2].filter(function (d) {
             let rand = Math.random() <= 0.1 //probability to keep row
             if (rand) {
                 return d
             }
         })
-        this.data = data
-
+        
+        
         this.buffer = [[], [], []]
         this.current = [0, 0, 0]
 
