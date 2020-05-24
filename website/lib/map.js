@@ -1,14 +1,14 @@
 class Map {
     constructor(parent, svg_element_id, data, time_accessor) {
         this.parent = parent;
+        this.data = _.clone(data)
         //keep only earthquakes with magnitude > 0
-        data[1] = data[1].filter(function (d) { if (parseFloat(d.Magnitude) > 6.2) { return d } })
+        this.data[1] = this.data[1].filter(function (d) { if (parseFloat(d.Magnitude) > 5.9) { return d } })
 
-        /* filter more data if needed per year
+        //filter more data if needed per year
         let y = 0
         let c = 0
-        console.log(data[1].length)
-        data[1] = data[1].filter(function(d) {
+        this.data[1] = this.data[1].filter(function(d) {
             if (d.Date > y) {
                  y = d.Date
                  c = 0
@@ -19,11 +19,10 @@ class Map {
                 return d
             }
         })
-        console.log(data[1].length)
-        */
+        
 
         //keep 1 out of 10 meteors
-        this.data = _.clone(data)
+        
         this.data[2] = this.data[2].filter(function (d) {
             let rand = Math.random() <= 0.1 //probability to keep row
             if (rand) {
@@ -32,6 +31,7 @@ class Map {
         })
         
         
+        console.log(this.data[0].length, this.data[1].length, this.data[2].length)
         this.buffer = [[], [], []]
         this.current = [0, 0, 0]
 
@@ -178,9 +178,9 @@ class Map {
             if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
                 (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0)) {
 
-
+                
                 this.buffer[idx].push(this.data[idx][this.current[idx]])
-                this.current[idx] = this.current[idx] + 1                                       //add point to buffer
+                this.current[idx] = this.current[idx] + 1 //add point to buffer
             } else {
                 break
             }
@@ -235,14 +235,20 @@ class Map {
 
                 if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
                     (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0)) {
-
+                
                     this.buffer[idx].push(this.data[idx][this.current[idx]])
                     this.current[idx] = this.current[idx] + 1
                 } else {
                     break
                 }
             }
-
+            var l = this.buffer[idx].length
+            this.buffer[idx] = this.buffer[idx].filter(function (d) {
+                let rand = Math.random() <= 120/ l //probability to keep row
+                if (rand) {
+                    return d
+                }
+            })
             this.point_container.selectAll(".point")
                 .data(this.buffer[idx])
                 .enter()
