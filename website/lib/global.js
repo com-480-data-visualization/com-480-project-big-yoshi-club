@@ -163,7 +163,7 @@ class Yoshi {
     
     update_data(){
         this.get_means()
-        this.rolls.forEach((r, i)=> {r.update_data(this.means[i])})
+        this.rolls.forEach((r, i)=> {r.update_data(this.data[i], this.means[i])})
         
 
         this.map.point_container.selectAll('*').remove()

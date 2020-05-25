@@ -59,8 +59,8 @@ class Roll{
     }
 
     setup(){
-        let min = d3.min(this.means, d => d.value.mean)
-        let max = d3.max(this.means, d => d.value.mean) * 1.1 //we here assume the max is highe than 0
+        let min = d3.min(this.data, d => d[this.y_attribute])
+        let max = d3.max(this.data, d => d[this.y_attribute]) * 1.1 //we here assume the max is highe than 0
         let padding = (this.AXIS_HEIGHT - this.label_height) * 0
         this.y = d3.scaleLinear()
                 .domain([min, max])
@@ -212,8 +212,9 @@ class Roll{
     }
 
 
-    update_data(data){
-        this.means = data
+    update_data(data, means){
+        this.means = means
+        this.data = data
         this.reset()
     }
 
