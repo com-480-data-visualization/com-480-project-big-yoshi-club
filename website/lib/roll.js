@@ -59,9 +59,8 @@ class Roll{
     }
 
     setup(){
-        let min = d3.min(this.data, d => d[this.y_attribute])
-        let max = d3.max(this.data, d => d[this.y_attribute]) * 1.1 //we here assume the max is highe than 0
-        let padding = (this.AXIS_HEIGHT - this.label_height) * 0
+        let min = d3.min(this.data, d => parseInt(d[this.y_attribute]))
+        let max = d3.max(this.data, d => parseInt(d[this.y_attribute])) * 1.1 //we here assume the max is highe than 0
         this.y = d3.scaleLinear()
                 .domain([min, max])
                 .range([this.AXIS_HEIGHT, this.label_height])
@@ -213,6 +212,9 @@ class Roll{
 
 
     update_data(data, means){
+        if(this.means.length == 0){
+
+        }
         this.means = means
         this.data = data
         this.reset()
@@ -260,7 +262,7 @@ class Roll{
                 .style('opacity', 0.9)
                 .style('visibility','visible')
 
-            classReference.parent.highlight_points(classReference.type, point_data.key)
+            classReference.parent.map.highlight_points(classReference.type, point_data.key)
         })//what happens when unhovering of a point
         .on('mouseout', function(){
             d3.select(this)
@@ -270,7 +272,7 @@ class Roll{
                             .style('opacity', 0)
                             .style('visibility','hidden')
 
-            classReference.parent.unhighlight_points()
+            classReference.parent.map.unhighlight_points(classReference.type)
         })
     }
 

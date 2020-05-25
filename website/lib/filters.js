@@ -81,17 +81,17 @@ function filter_data(data, yoshi){
     //---- first filters ----
     let filter_data = FILTERS[0][0]
     let div_11 = volcanoes_div.append('div')
-    append_categories(filter_data, div_11, yoshi, 0, 0)
+    append_categories(filter_data, div_11, yoshi, 0)
 
     //---- second filters ----
     filter_data = FILTERS[0][1]
     let div_12 = volcanoes_div.append('div')
-    append_number(filter_data, div_12, yoshi, 0, 1)
+    append_number(filter_data, div_12, yoshi, 0)
 
     //---- third filters ----
     filter_data = FILTERS[0][2]
     let div_13 = volcanoes_div.append('div')
-    append_categories(filter_data, div_13, yoshi, 0, 2)
+    append_categories(filter_data, div_13, yoshi, 0)
 
     //--------earthquakes filters display--------
     let earthquakes_div = d3.select('#' + 'earthquakes_filters')
@@ -100,12 +100,12 @@ function filter_data(data, yoshi){
     //---- first filters ----
     filter_data = FILTERS[1][0]
     let div_21 = earthquakes_div.append('div')
-    append_number(filter_data, div_21, yoshi, 1, 0)
+    append_number(filter_data, div_21, yoshi, 1)
 
     //---- second filters ----
     filter_data = FILTERS[1][1]
     let div_22 = earthquakes_div.append('div')
-    append_number(filter_data, div_22, yoshi, 1, 1)
+    append_number(filter_data, div_22, yoshi, 1)
 
 
     //--------meteors filters display--------
@@ -121,7 +121,7 @@ function filter_data(data, yoshi){
     //---- second filters ----
     filter_data = FILTERS[2][1]
     let div_32 = meteors_div.append('div')
-    append_number(filter_data, div_32, yoshi, 2, 1)
+    append_number(filter_data, div_32, yoshi, 2)
 }
 
 /**
@@ -130,7 +130,7 @@ function filter_data(data, yoshi){
  * @param {html div} div div where the checkboxes are appended
  * @param {array} data data passed to the callback function of the check box
  */
-function append_categories(filter_data, div, yoshi, i, k){
+function append_categories(filter_data, div, yoshi, i){
     div.append('h4')
         .text(filter_data['name'])
     Object.keys(filter_data['categories']).forEach((elem,idx) => {
@@ -154,7 +154,7 @@ function append_categories(filter_data, div, yoshi, i, k){
 }
 
 
-function append_number(filter_data, div, yoshi, i, k){
+function append_number(filter_data, div, yoshi, i){
     div.append('h4')
         .text(filter_data['name'])
 
@@ -228,5 +228,5 @@ function filter_categories(data_to_filter, name, categories){
 
 //filters the data wrt to the current min-max
 function filter_number(data_to_filter, name, min, max){
-    return data_to_filter.filter(e => (min < e[name]) && (e[name] < max))
+    return data_to_filter.filter(e => (min < parseInt(e[name])) && (parseInt(e[name]) < max))
 }

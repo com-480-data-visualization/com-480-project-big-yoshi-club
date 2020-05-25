@@ -1,15 +1,22 @@
 class Yoshi {
 
     constructor(data, map_svg, roll_svgs) {
-        this.full_data = [...data]
-        this.data = data
+        this.data = [[],[],[]]
+        this.data[0] = data[0]
+        this.data[1] = data[1].filter(function(d){
+            let rand = Math.random() <= 0.7
+            return (parseFloat(d.Magnitude) > 6.2) && (rand)
+        })
+        this.data[2] = data[2].filter(function(d){
+            return (Math.random() <= 0.1) 
+        })
+        this.full_data = [...this.data]
+        //this.data = data
         this.map_svg = map_svg
         this.roll_svgs = roll_svgs
 
         this.y_attributes = ['Elevation', 'Depth', 'mass']
         this.get_means()
-        console.log(this.means[2])
-        console.log(this.data[2])
         // Setup drop down menu
         // 1. On dropdown button hover, display dropdown
         d3.select('#dropdown-button')
@@ -41,11 +48,10 @@ class Yoshi {
         this.speed = 200
         this.window = 500
 
-        this.map = new Map(this, 'map', data, ['date', 'date', 'date'])
+        this.map = new Map(this, 'map', this.data, ['date', 'date', 'date'])
         this.make_stats()
         this.make_filters()
         this.make_rolls()
-
         this.make_buttons()
         // Add timeline controls and display
         const svgId = "#time-controls"
@@ -93,17 +99,6 @@ class Yoshi {
 
     }
 
-    /**
-     * 
-     * @param {can either be volcanoes, earthquakes or meteors} type 
-     * @param {year to be highlighted on the map} year 
-     */
-    highlight_points(type, year) {
-        // TODO
-    }
-    unhighlight_points() {
-        // TODO
-    }
 
     //button functionalities
     start() {
@@ -164,11 +159,9 @@ class Yoshi {
     update_data(){
         this.get_means()
         this.rolls.forEach((r, i)=> {r.update_data(this.data[i], this.means[i])})
-        
-
         this.map.point_container.selectAll('*').remove()
         this.map.buffer = [[], [], []]
-        this.map.setup_data(this.data)
+
         for(let idx = 0; idx < this.data.length; idx++){
             this.map.set_current(idx)
             this.map.update_current(idx)

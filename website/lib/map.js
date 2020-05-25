@@ -2,7 +2,7 @@ class Map {
     constructor(parent, svg_element_id, data, time_accessor) {
         this.parent = parent;
 
-        this.setup_data(data)
+        this.data = data
 
         this.buffer = [[], [], []]
         this.current = [0, 0, 0]
@@ -56,27 +56,35 @@ class Map {
 
     }
 
-    setup_data(data){
-        this.data = _.clone(data)
-        //keep only earthquakes with magnitude > 0
-        this.data[1] = this.data[1].filter(function (d) { if (parseFloat(d.Magnitude) > 6.2) { return d } })
 
-
-
-
-        //keep 1 out of 10 meteors
-        this.data[2] = this.data[2].filter(function (d) {
-            let rand = Math.random() <= 0.1 //probability to keep row
-            if (rand) {
-                return d
-            }
-        })
-        this.data[1] = this.data[1].filter(function (d) {
-            let rand = Math.random() <= 0.7 //probability to keep row
-            if (rand) {
-                return d
-            }
-        })
+    /**
+     * 
+     * @param {can either be volcanoes, earthquakes or meteors} type 
+     * @param {year to be highlighted on the map} year 
+     */
+    highlight_points(type, year) {
+        const colors = ['#F5BCF2','#8FDEB9','#F6C68D']
+        let i = 0
+        if(type == 'volcanoes'){i = 0}
+        else if(type == 'earthquakes'){i = 1}
+        else{i=2}
+        this.point_container.selectAll('circle')
+                            .style('fill', function(d){
+                                if(d['date'] == year){
+                                    return 'red'
+                                }else{
+                                    return colors[i]
+                                }
+                            })
+    }
+    unhighlight_points(type) {
+        const colors = ['#F5BCF2','#8FDEB9','#F6C68D']
+        let i = 0
+        if(type == 'volcanoes'){i = 0}
+        else if(type == 'earthquakes'){i = 1}
+        else{i=2}
+        this.point_container.selectAll('circle')
+                .style('fill', colors[i])
     }
 
     get_points(selection) {
