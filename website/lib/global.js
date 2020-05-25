@@ -8,7 +8,8 @@ class Yoshi {
 
         this.y_attributes = ['Elevation', 'Depth', 'mass']
         this.get_means()
-
+        console.log(this.means[2])
+        console.log(this.data[2])
         // Setup drop down menu
         // 1. On dropdown button hover, display dropdown
         d3.select('#dropdown-button')
@@ -160,7 +161,10 @@ class Yoshi {
 
     
     update_data(){
-        //TODO
+        this.get_means()
+        this.rolls.forEach((r, i)=> {
+            r.update_data(this.means[i])
+        })
     }
 
     tick() {
@@ -194,7 +198,7 @@ class Yoshi {
                 .key(d => d['date'])
                 .rollup((v) => {
                     return {
-                        mean: d3.mean(v, d => d[this.y_attributes[i]])
+                        mean: d3.mean(v, d => Math.floor(parseInt(d[this.y_attributes[i]])))
                     }
                 })
                 .entries(this.data[i])
