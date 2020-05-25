@@ -1,27 +1,8 @@
 class Map {
     constructor(parent, svg_element_id, data, time_accessor) {
         this.parent = parent;
-        this.data = _.clone(data)
-        //keep only earthquakes with magnitude > 0
-        this.data[1] = this.data[1].filter(function (d) { if (parseFloat(d.Magnitude) > 6.2) { return d } })
 
-
-
-
-        //keep 1 out of 10 meteors
-        this.data[2] = this.data[2].filter(function (d) {
-            let rand = Math.random() <= 0.1 //probability to keep row
-            if (rand) {
-                return d
-            }
-        })
-        this.data[1] = this.data[1].filter(function (d) {
-            let rand = Math.random() <= 0.7 //probability to keep row
-            if (rand) {
-                return d
-            }
-        })
-
+        this.setup_data(data)
 
         this.buffer = [[], [], []]
         this.current = [0, 0, 0]
@@ -73,6 +54,29 @@ class Map {
         })
 
 
+    }
+
+    setup_data(data){
+        this.data = _.clone(data)
+        //keep only earthquakes with magnitude > 0
+        this.data[1] = this.data[1].filter(function (d) { if (parseFloat(d.Magnitude) > 6.2) { return d } })
+
+
+
+
+        //keep 1 out of 10 meteors
+        this.data[2] = this.data[2].filter(function (d) {
+            let rand = Math.random() <= 0.1 //probability to keep row
+            if (rand) {
+                return d
+            }
+        })
+        this.data[1] = this.data[1].filter(function (d) {
+            let rand = Math.random() <= 0.7 //probability to keep row
+            if (rand) {
+                return d
+            }
+        })
     }
 
     get_points(selection) {

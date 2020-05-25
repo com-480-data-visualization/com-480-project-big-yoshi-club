@@ -133,7 +133,8 @@ class Yoshi {
         this.map.point_container.selectAll('*').remove()
         this.map.buffer = [[], [], []]
 
-        console.log(`Reset set this.year0 = ${this.year0}, this.window = ${this.window} (called with year0 = ${year0}, window = ${window})`);
+
+        //console.log(`Reset set this.year0 = ${this.year0}, this.window = ${this.window} (called with year0 = ${year0}, window = ${window})`);
 
         this.timelineControl.update(year0, year0 + window)
 
@@ -162,9 +163,17 @@ class Yoshi {
     
     update_data(){
         this.get_means()
-        this.rolls.forEach((r, i)=> {
-            r.update_data(this.means[i])
-        })
+        this.rolls.forEach((r, i)=> {r.update_data(this.means[i])})
+        
+
+        this.map.point_container.selectAll('*').remove()
+        this.map.buffer = [[], [], []]
+        this.map.setup_data(this.data)
+        for(let idx = 0; idx < this.data.length; idx++){
+            this.map.set_current(idx)
+            this.map.update_current(idx)
+            this.map.draw_points(idx)
+        }
     }
 
     tick() {

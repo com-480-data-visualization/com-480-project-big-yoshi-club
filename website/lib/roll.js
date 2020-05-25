@@ -54,26 +54,21 @@ class Roll{
 
         //width of the whole roll
         this.g_width = Math.ceil(this.WIDTH * this.parent.oldest / this.parent.window)
- 
-
-        //right padding
-        //let min = d3.min(this.data, d => parseInt(d[this.y_attribute]))
-        //let max = d3.max(this.data, d => parseInt(d[this.y_attribute])) * 1.1
 
         this.setup()
     }
 
     setup(){
         let min = d3.min(this.means, d => d.value.mean)
-        let max = d3.max(this.means, d => d.value.mean) * 1.1
+        let max = d3.max(this.means, d => d.value.mean) * 1.1 //we here assume the max is highe than 0
         let padding = (this.AXIS_HEIGHT - this.label_height) * 0
         this.y = d3.scaleLinear()
                 .domain([min, max])
-                .range([this.AXIS_HEIGHT - padding, this.label_height + padding])
+                .range([this.AXIS_HEIGHT, this.label_height])
         
         this.y_mirrored = d3.scaleLinear()
                 .domain([min, max])
-                .range([this.label_height + padding, this.AXIS_HEIGHT - padding])
+                .range([this.label_height, this.AXIS_HEIGHT])
         //x scaling
         this.x = d3.scaleLinear()
                     .domain([this.parent.year0, this.parent.year0 - this.parent.window])
