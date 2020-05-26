@@ -64,9 +64,9 @@ class Map {
     highlight_points(type, year) {
         this.year_selected = year
         this.type_id = undefined
-        if(type == 'volcanoes'){this.type_id = 0}
-        else if(type == 'earthquakes'){this.type_id = 1}
-        else{this.type_id = 2}
+        if (type == 'volcanoes') { this.type_id = 0 }
+        else if (type == 'earthquakes') { this.type_id = 1 }
+        else { this.type_id = 2 }
         this.update_points()
     }
 
@@ -120,7 +120,7 @@ class Map {
 
 
     draw_map() {
-        
+
         const projection = this.projection_style
             .rotate([0, 0])
             .center([0, 0])
@@ -144,12 +144,12 @@ class Map {
             .append("path")
             .classed("country", true)
             .attr("d", path_generator)
-            .style("fill" , "#195B51")
+            .style("fill", "#195B51")
         this.point_container = this.svg.append("g");
     }
 
     update_current(idx) {
-        
+
         while (this.current[idx] < this.data[idx].length) {
 
             if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
@@ -169,7 +169,7 @@ class Map {
 
     set_current(idx) {
         let i = 0
-        
+
         while (this.data[idx][i][this.time_accessor[idx]] >= this.parent.year0 & i < this.data[idx].length) {
             i++
         }
@@ -177,13 +177,63 @@ class Map {
     }
 
 
-    show_point_dat(d){
+    show_point_dat(d) {
         console.log(d)
+        const classReference = this
+        const info_box_height = 40
+        const info_box_width = 80
+        let info_rect = classReference.point_container.append('g')
+            .attr('class', 'info_box')
+
+            .style('opacity', 1)
+        info_rect.append('rect')
+            .attr('width', info_box_width)
+            .attr('height', info_box_height)
+            .attr('rx', 10)
+            .attr("transform", "translate(" + classReference.projection_style([d.Longitude, d.Latitude]) + ")")
+
+        let text = info_rect.append('text')
+            .attr('x', '5px')
+            .attr('dy', 0)
+            .attr('y', '10')
+            .attr("font-size", "0.8em")
+            .attr("transform", "translate(" + classReference.projection_style([d.Longitude, d.Latitude]) + ")")
+        //paragraphs
+        text.append('tspan')
+            .text(`Year: ${2018 - d.date}`)
+            .attr('dy', `${info_box_height / 5}`)
+            .attr('x', `${info_box_width / 2}`)
+        if (d.Magnitude) {
+            text.append('tspan')
+                .text(`:D`)
+                .attr('dy', `${info_box_height / 2}`)
+                .attr('x', `${info_box_width / 2}`)
+        } else if (d.recclass) {
+            text.append('tspan')
+                .text(`-.-`)
+                .attr('dy', `${info_box_height / 2}`)
+                .attr('x', `${info_box_width / 2}`)
+        } else {
+            text.append('tspan')
+                .text(`:(`)
+                .attr('dy', `${info_box_height / 2}`)
+                .attr('x', `${info_box_width / 2}`)
+        }
+        /*
+        info_rect.append('text')
+            .attr('x', '5px')
+            .attr('dy', 0)
+            .attr('y', '10')
+            .text(`Year: ${2018 - d.date}`)
+            .attr('dy', `${info_box_height / 5}`)
+            .attr("transform", "translate(" + classReference.projection_style([d.Longitude, d.Latitude]) + ")")
+            .attr('font', '2px')
+        */
 
     }
 
     draw_points(i) {
-        
+
         const classReference = this
         const r = 3;
         const projection = this.projection_style
@@ -197,31 +247,32 @@ class Map {
             .data(this.buffer[i])
             .enter()
             .append("circle")
-            .classed("static_point"+ this.classes[i], true)
+            .classed("static_point" + this.classes[i], true)
             .attr("r", d => {
-                if(d['date'] == classReference.year_selected){
-                    if(i == classReference.type_id){return 10}
-                    else{return 3}
+                if (d['date'] == classReference.year_selected) {
+                    if (i == classReference.type_id) { return 10 }
+                    else { return 3 }
                 }
-                else{return 3}
+                else { return 3 }
             })
             .attr('stroke', 'blue')
             .attr("stroke-width", d => {
-                if(d['date'] == classReference.year_selected){
-                    if(i == classReference.type_id){return 3}
-                    else{return 0}
+                if (d['date'] == classReference.year_selected) {
+                    if (i == classReference.type_id) { return 3 }
+                    else { return 0 }
                 }
-                else{return 0}
+                else { return 0 }
             })
             .attr("cx", -r)
             .attr("cy", -r)
             .style("fill", d3.color(colors[i]))
             .style('opacity', 1)
             .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")")
-            .on('mouseover', function(d){
+            .on('mouseover', function (d) {
                 classReference.show_point_dat(d)
-                
-            });
+
+            })
+            .on('mouseout', function (d) { classReference.point_container.selectAll('g.info_box').remove() });
     }
 
     update_points() {
@@ -257,28 +308,29 @@ class Map {
                 .append("circle")
                 .classed("point", true)
                 .attr("r", d => {
-                    if(d['date'] == classReference.year_selected){
-                        if(idx == classReference.type_id){return 10}
-                        else{return 3}
+                    if (d['date'] == classReference.year_selected) {
+                        if (idx == classReference.type_id) { return 10 }
+                        else { return 3 }
                     }
-                    else{return 3}
+                    else { return 3 }
                 })
                 .attr('stroke', 'blue')
                 .attr("stroke-width", d => {
-                    if(d['date'] == classReference.year_selected){
-                        if(idx == classReference.type_id){return 3}
-                        else{return 0}
+                    if (d['date'] == classReference.year_selected) {
+                        if (idx == classReference.type_id) { return 3 }
+                        else { return 0 }
                     }
-                    else{return 0}
+                    else { return 0 }
                 })
                 .attr("cx", -r)
                 .attr("cy", -r)
                 .style("fill", d3.color(colors[idx]))
                 .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")")
-                .on('mouseover', function(d){
+                .on('mouseover', function (d) {
                     classReference.show_point_dat(d)
-                    
+
                 })
+                .on('mouseout', function (d) { classReference.point_container.selectAll('g.info_box').remove() })
                 .transition()
                 .style('opacity', 1)
                 .ease(d3.easeLinear)
