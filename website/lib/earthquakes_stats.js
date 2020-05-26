@@ -71,6 +71,26 @@ class Earthquake_stats{
         
 
         this.draw_points()
+
+        let label = this.svg.append('g')
+        label.append('rect')
+                .attr('x', 2 * this.X0)
+                .attr('y', 2)
+                .attr('width', this.WIDTH - 4 * this.X0)
+                .attr('height', this.Y0 / 1.2)
+                .style('fill', 'steelblue')
+                .style('opacity', 0.7)
+                .style('stroke', 'red')
+                .style('stroke-width', '1px')
+
+        label.append('text')
+                .text('Magnitude of earthquakes with respect to their depth')
+                .attr('x', this.WIDTH / 2)
+                .attr('dy', this.Y0 / 1.5)
+                .style('font-family', "font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif")
+                .style('text-anchor','middle')
+                .style('stroke', 'red')
+                .style('stroke-width', '1px')
     }
 
     draw_points(){

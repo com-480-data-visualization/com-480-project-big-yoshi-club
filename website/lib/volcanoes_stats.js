@@ -26,6 +26,25 @@ class Volcanoes_stats{
         for(let i = 0; i < temp.length; i++){
             this.plot_data[temp[i].key] = temp[i].value
         }
+
+        let label = this.svg.append('g')
+        label.append('rect')
+                .attr('x', this.WIDTH - 175)
+                .attr('y', this.Y0 + 5)
+                .attr('width', '180')
+                .attr('height','70')
+                .style('fill', 'steelblue')
+                .style('stroke', 'red')
+                .style('stroke-width', '1px')
+
+        label.append('text')
+                .text(name)
+                .attr('x',this.WIDTH - 85)
+                .attr('dy','42')
+                .style('font-family', "font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif")
+                .style('text-anchor','middle')
+                .style('stroke', 'red')
+                .style('stroke-width', '1px')
     }
 
     //https://www.d3-graph-gallery.com/graph/donut_basic.html
@@ -78,13 +97,17 @@ class Volcanoes_stats{
                 .attr("fill", "none")
             )
 
-        this.svg.selectAll('text')
-            .data(line_data)
-            .enter()
-            .append('text')
-                .text((d, i) => data_ready[i].data.key)
-                .attr('x', d => d[2].x)
-                .attr('y', d => d[2].y - 4)
+        let names = data_ready.map(e => {
+            if(e.data.key == ''){ return 'Unknown'}
+            else{return e.data.key}
+        })
+        this.svg.append('g').selectAll('text')
+                    .data(line_data)
+                    .enter()
+                    .append('text')
+                        .text((d, i) => names[i])
+                        .attr('x', d => d[2].x)
+                        .attr('y', d => d[2].y - 4)
     }
 
     generate_path(data){

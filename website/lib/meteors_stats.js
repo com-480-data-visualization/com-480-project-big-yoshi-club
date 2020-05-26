@@ -56,8 +56,30 @@ class Meteors_stats{
                 .attr('class', 'h_grid')
                 .call(this.hgrid)
 
+        this.svg.append('g')
+
 
         this.plot_data()
+
+        let label = this.svg.append('g')
+        label.append('rect')
+                .attr('x', this.X0)
+                .attr('y', 2)
+                .attr('width', this.WIDTH - 2 * this.X0)
+                .attr('height', this.Y0)
+                .style('fill', 'steelblue')
+                .style('opacity', 0.7)
+                .style('stroke', 'red')
+                .style('stroke-width', '1px')
+
+        label.append('text')
+                .text('Mass repartition of meteors with respect to their class')
+                .attr('x', this.WIDTH / 2)
+                .attr('dy', this.Y0 / 1.5)
+                .style('font-family', "font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif")
+                .style('text-anchor','middle')
+                .style('stroke', 'red')
+                .style('stroke-width', '1px')
     }
 
     plot_data(){
@@ -86,5 +108,7 @@ class Meteors_stats{
                 .attr('y', this.HEIGHT - this.Y0 / 2)
                 .attr('text-anchor', 'middle')
                 .text(d => d)
+
+
     }
 }
