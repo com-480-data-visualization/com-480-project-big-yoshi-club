@@ -85,6 +85,8 @@ class Map {
         else{i=2}
         this.point_container.selectAll('circle')
                 .style('fill', colors[i])
+        this.year_selected = year
+        this.type_selected = type
     }
 
     get_points(selection) {
