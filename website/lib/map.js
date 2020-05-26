@@ -3,7 +3,7 @@ class Map {
         this.parent = parent;
 
         this.data = data
-
+        this.classes = ['volcano', 'earthquake', 'meteor']
         this.buffer = [[], [], []]
         this.current = [0, 0, 0]
 
@@ -62,7 +62,7 @@ class Map {
      * @param {year to be highlighted on the map} year 
      */
     highlight_points(type, year) {
-        const colors = ['#F5BCF2','#8FDEB9','#F6C68D']
+        const colors = ['green', 'yellow', 'red']
         let i = 0
         if(type == 'volcanoes'){i = 0}
         else if(type == 'earthquakes'){i = 1}
@@ -70,14 +70,15 @@ class Map {
         this.point_container.selectAll('circle')
                             .style('fill', function(d){
                                 if(d['date'] == year){
-                                    return 'red'
+                                    return 'black'
                                 }else{
                                     return colors[i]
                                 }
                             })
+                            
     }
     unhighlight_points(type) {
-        const colors = ['#F5BCF2','#8FDEB9','#F6C68D']
+        const colors = ['green', 'yellow', 'red']
         let i = 0
         if(type == 'volcanoes'){i = 0}
         else if(type == 'earthquakes'){i = 1}
@@ -165,7 +166,7 @@ class Map {
     }
 
     update_current(idx) {
-
+        
         while (this.current[idx] < this.data[idx].length) {
 
             if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
@@ -185,14 +186,22 @@ class Map {
 
     set_current(idx) {
         let i = 0
-
-        while (this.data[idx][i][this.time_accessor[idx]] >= this.parent.year0 & i < this.data[idx].length - 2) {
+        
+        while (this.data[idx][i][this.time_accessor[idx]] >= this.parent.year0 & i < this.data[idx].length) {
             i++
         }
         this.current[idx] = i
     }
 
+
+    show_point_dat(d){
+        console.log(d)
+
+    }
+
     draw_points(i) {
+        
+        const classReference = this
         const r = 3;
         const projection = this.projection_style
             .center([0, 0])
@@ -200,24 +209,28 @@ class Map {
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
 
-        const colors = ['#F5BCF2','#8FDEB9','#F6C68D']
-        this.point_container.selectAll(".static_point")
+        const colors = ['green', 'yellow', 'red']
+        this.point_container.selectAll(".static_point" + this.classes[i])
             .data(this.buffer[i])
             .enter()
             .append("circle")
-            .classed("static_point", true)
+            .classed("static_point"+ this.classes[i], true)
             .attr("r", r)
             .attr("cx", -r)
             .attr("cy", -r)
             .style("fill", d3.color(colors[i]))
             .style('opacity', 1)
-            .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")");
-
+            .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")")
+            .on('mouseover', function(d){
+                classReference.show_point_dat(d)
+                
+            });
     }
 
     update_points() {
         const r = 3;
-        const colors = ['#F5BCF2','#8FDEB9','#F6C68D']
+        const colors = ['green', 'yellow', 'red']
+        const classReference = this
         const projection = this.projection_style
             .center([0, 0])
             .scale(this.PROJECT_SCALE)
@@ -251,7 +264,10 @@ class Map {
                 .attr("cy", -r)
                 .style("fill", d3.color(colors[idx]))
                 .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")")
-
+                .on('mouseover', function(d){
+                    classReference.show_point_dat(d)
+                    
+                })
                 .transition()
                 .style('opacity', 1)
                 .ease(d3.easeLinear)
@@ -259,7 +275,7 @@ class Map {
                 .transition()
                 .style('opacity', 0)
                 .ease(d3.easeLinear)
-                .duration(this.parent.speed * this.parent.window * 1.3 - this.parent.speed * 10)
+                .duration(this.parent.speed * this.parent.window * 1.3 + this.parent.speed * 3)
                 .on('end', () => {
                     this.buffer[idx].shift()
                 })

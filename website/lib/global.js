@@ -106,8 +106,10 @@ class Yoshi {
 
         d3.select('#start-stop')
             .style('background-image', 'url(img/pause.png)')
-            .on('click', () => this.stop())
-        this.map.point_container.selectAll('.static_point').remove()
+            .on('click', () => this.stop()) 
+        for(let idx = 0; idx < this.data.length; idx++){
+            this.map.point_container.selectAll('.static_point' + this.map.classes[idx]).remove()
+        }
         this.tick()
         this.interval = setInterval(() => this.tick(), this.speed)
     }

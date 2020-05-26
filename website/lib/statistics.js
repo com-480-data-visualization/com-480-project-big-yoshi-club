@@ -63,13 +63,13 @@ class Statistics {
             .style('font', '14px times')
 
             .attr("transform", "translate(0, " + xAxisTranslate + ")")
-            .style('color', d3.color('white'))
+            .style('color', d3.color('black'))
             .call(x_axis);
 
 
         this.svg.append("g")
             .attr('class', 'y_axis')
-            .style('color', d3.color('white'))
+            .style('color', d3.color('black'))
             .style('font', '14px times')
             .attr("transform", "translate(50, 0)")
             .call(y_axis);
@@ -116,7 +116,7 @@ class Statistics {
 
             this.svg.append("g")
                 .attr('class', 'y_axis')
-                .style('color', d3.color('white'))
+                .style('color', d3.color('black'))
                 .style('font', '14px times')
                 .attr("transform", "translate(50, 0)")
                 .call(y_axis);
