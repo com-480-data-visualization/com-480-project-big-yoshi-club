@@ -62,11 +62,12 @@ class Map {
      * @param {year to be highlighted on the map} year 
      */
     highlight_points(type, year) {
-        this.year_selected = year
-        this.type_id = undefined
-        if (type == 'volcanoes') { this.type_id = 0 }
-        else if (type == 'earthquakes') { this.type_id = 1 }
-        else { this.type_id = 2 }
+        this.year_selected = [0,0,0]
+        let type_id = undefined
+        if (type == 'volcanoes') { type_id = 0 }
+        else if (type == 'earthquakes') { type_id = 1 }
+        else { type_id = 2 }
+        this.year_selected[type_id] = year
         this.update_points()
     }
 
@@ -310,9 +311,9 @@ class Map {
                 .attr("r", d => {
                     if (d['date'] == classReference.year_selected) {
                         if (idx == classReference.type_id) { return 10 }
-                        else { return 3 }
+                        else { return r }
                     }
-                    else { return 3 }
+                    else { return r }
                 })
                 .attr('stroke', 'blue')
                 .attr("stroke-width", d => {
