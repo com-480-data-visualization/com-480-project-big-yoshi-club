@@ -25,11 +25,12 @@ class Map {
         const svg_viewbox = this.svg.node().viewBox.animVal;
         this.svg_width = svg_viewbox.width;
         this.svg_height = svg_viewbox.height;
+        /*
         this.svg.append('rect')
-            .attr('fill', '#404258')
+            .attr('fill', 'white')
             .attr('width', `${this.svg_width}`)
             .attr('height', `${this.svg_height}`)
-
+        */
 
 
         const map_promise = d3.json("data/countries.json").then((topojson_raw) => {
@@ -133,7 +134,12 @@ class Map {
             .projection(projection);
 
         this.map_container = this.svg.append('g');
+        
+        this.map_container.append('path')
+            .attr('fill', '#195B51')
+            .attr('d', path_generator({type: "Sphere"}));
 
+        
         this.svg.append("g") // this group with class .brush will be the visual indicator of our brush
             .attr("class", "brush")
 
@@ -178,9 +184,15 @@ class Map {
     }
 
 
-    show_point_dat(d) {
-        console.log(d)
+    show_point_dat(point, d) {
+        
+        //let pos = point.lon.animVal.value
+        
         const classReference = this
+        
+        console.log(point.getAttribute("lon"))
+        let lon = point.getAttribute("lon")
+        let lat = point.getAttribute('lat')
         const info_box_height = 40
         const info_box_width = 80
         let info_rect = classReference.point_container.append('g')
@@ -191,14 +203,15 @@ class Map {
             .attr('width', info_box_width)
             .attr('height', info_box_height)
             .attr('rx', 10)
-            .attr("transform", "translate(" + classReference.projection_style([d.Longitude, d.Latitude]) + ")")
+            
+            .attr("transform", "translate(" + classReference.projection_style([lon, lat]) + ")")
 
         let text = info_rect.append('text')
             .attr('x', '5px')
             .attr('dy', 0)
             .attr('y', '10')
             .attr("font-size", "0.8em")
-            .attr("transform", "translate(" + classReference.projection_style([d.Longitude, d.Latitude]) + ")")
+            .attr("transform", "translate(" + classReference.projection_style([lon, lat]) + ")")
         //paragraphs
         text.append('tspan')
             .text(`Year: ${2018 - d.date}`)
@@ -220,16 +233,7 @@ class Map {
                 .attr('dy', `${info_box_height / 2}`)
                 .attr('x', `${info_box_width / 2}`)
         }
-        /*
-        info_rect.append('text')
-            .attr('x', '5px')
-            .attr('dy', 0)
-            .attr('y', '10')
-            .text(`Year: ${2018 - d.date}`)
-            .attr('dy', `${info_box_height / 5}`)
-            .attr("transform", "translate(" + classReference.projection_style([d.Longitude, d.Latitude]) + ")")
-            .attr('font', '2px')
-        */
+        
 
     }
 
@@ -249,6 +253,8 @@ class Map {
             .enter()
             .append("circle")
             .classed("static_point" + this.classes[i], true)
+            .attr('lon', d => d.Longitude)
+            .attr('lat', d => d.Latitude)
             .attr("r", d => {
                 if (d['date'] == classReference.year_selected) {
                     if (i == classReference.type_id) { return 10 }
@@ -270,7 +276,7 @@ class Map {
             .style('opacity', 1)
             .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")")
             .on('mouseover', function (d) {
-                classReference.show_point_dat(d)
+                classReference.show_point_dat(this, d)
 
             })
             .on('mouseout', function (d) { classReference.point_container.selectAll('g.info_box').remove() });
@@ -308,6 +314,8 @@ class Map {
                 .enter()
                 .append("circle")
                 .classed("point", true)
+                .attr('lon', d => d.Longitude)
+                .attr('lat', d => d.Latitude)
                 .attr("r", d => {
                     if (d['date'] == classReference.year_selected) {
                         if (idx == classReference.type_id) { return 10 }
@@ -328,7 +336,7 @@ class Map {
                 .style("fill", d3.color(colors[idx]))
                 .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")")
                 .on('mouseover', function (d) {
-                    classReference.show_point_dat(d)
+                    classReference.show_point_dat(this, d)
 
                 })
                 .on('mouseout', function (d) { classReference.point_container.selectAll('g.info_box').remove() })
