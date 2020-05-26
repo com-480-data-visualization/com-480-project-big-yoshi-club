@@ -161,12 +161,13 @@ class Yoshi {
         this.rolls.forEach((r, i)=> {r.update_data(this.data[i], this.means[i])})
         this.map.point_container.selectAll('*').remove()
         this.map.buffer = [[], [], []]
-
+        
         for(let idx = 0; idx < this.data.length; idx++){
             this.map.set_current(idx)
             this.map.update_current(idx)
             this.map.draw_points(idx)
         }
+
     }
 
     tick() {

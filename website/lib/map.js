@@ -46,7 +46,6 @@ class Map {
 
 
             this.data.forEach((_, idx) => {
-
                 this.set_current(idx)
                 this.update_current(idx)
                 this.draw_points(idx)
@@ -138,8 +137,6 @@ class Map {
 
     draw_map() {
         
-        
-
         const projection = this.projection_style
             .rotate([0, 0])
             .center([0, 0])
@@ -194,6 +191,7 @@ class Map {
         }
         this.current[idx] = i
     }
+
     draw_points(i) {
         const r = 3;
         const projection = this.projection_style

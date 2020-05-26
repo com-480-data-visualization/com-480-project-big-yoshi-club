@@ -60,13 +60,14 @@ class Roll{
 
     setup(){
         let min = d3.min(this.data, d => parseInt(d[this.y_attribute]))
-        let max = d3.max(this.data, d => parseInt(d[this.y_attribute])) * 1.1 //we here assume the max is highe than 0
+        let max = d3.max(this.data, d => parseInt(d[this.y_attribute])) //we here assume the max is highe than 0
+        let padding = (max - min) * 0.05
         this.y = d3.scaleLinear()
-                .domain([min, max])
+                .domain([min - padding, max + padding])
                 .range([this.AXIS_HEIGHT, this.label_height])
         
         this.y_mirrored = d3.scaleLinear()
-                .domain([min, max])
+                .domain([min - padding, max + padding])
                 .range([this.label_height, this.AXIS_HEIGHT])
         //x scaling
         this.x = d3.scaleLinear()
@@ -117,8 +118,10 @@ class Roll{
      */
     set_current(){
         let i = 0
-        while(this.means[i].key >= this.parent.year0 & i < this.means.length){
-            i++
+        if(this.means.length > 0){
+            while(this.means[i].key >= this.parent.year0 & i < this.means.length){
+                i++
+            }
         }
         this.current = i
     }
@@ -281,16 +284,22 @@ class Roll{
         //Y-axis and horizontal grid
         let axis_left = d3.axisLeft(this.y)
                             .ticks(this.TICKS)
+                            .tickFormat(d => d)
+
         this.svg.append('g')
             .attr('transform', `translate(${this.X0}, 0)`)
             .style('font', '14px times')
             .attr('class', 'axis_y')
             .call(axis_left)
 
-        let h_grid = d3.axisLeft(this.y)
-                        .tickSize(-this.W + this.X0)
-                        .tickFormat('')
-                        .ticks(this.TICKS)
+        let h_grid
+
+        h_grid = d3.axisLeft(this.y)
+                .tickSize(-this.W + this.X0)
+                .tickFormat('')
+                .ticks(this.TICKS)
+
+
 
         this.svg.append('g')
                 .attr('transform', `translate(${this.X0}, 0)`)

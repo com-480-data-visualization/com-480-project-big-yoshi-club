@@ -6,7 +6,8 @@ var VOLCANOES_FILTERS = [
     },
     {
         'name' : 'Elevation',
-        'type' : 'number'
+        'type' : 'number',
+        'unit' : '(m)'
     },
     {
         'name' : 'Dominant Rock Type',
@@ -16,11 +17,13 @@ var VOLCANOES_FILTERS = [
 var EARTHQUAKES_FILTERS = [
     {
         'name' : 'Depth',
-        'type' : 'number'
+        'type' : 'number',
+        'unit' : '(km)'
     },
     {
         'name' : 'Magnitude',
-        'type' : 'number'
+        'type' : 'number',
+        'unit' : '[0-10]'
     }
 ];
 var METEORS_FILTERS = [
@@ -30,7 +33,8 @@ var METEORS_FILTERS = [
     },
     {
         'name' : 'mass',
-        'type' : 'number'
+        'type' : 'number',
+        'unit' : '(g)'
     }
 ];
 
@@ -156,7 +160,7 @@ function append_categories(filter_data, div, yoshi, i){
 
 function append_number(filter_data, div, yoshi, i){
     div.append('h4')
-        .text(filter_data['name'])
+        .text(filter_data['name'] + filter_data['unit'])
 
     div.append('label')
         .text(`min (${Math.ceil(filter_data['min'])}): `)
