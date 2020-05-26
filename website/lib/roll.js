@@ -148,29 +148,6 @@ class Roll{
             .attr('transform', `translate(${this.year_to_x_for_g(this.parent.year0)}, ${this.label_height})`)
     }
 
-    /**
-     * draws the points that are in the interval [year0, year0 - YEAR_WINDOW]
-     */
-    draw_points(){
-        let c = this.circles.selectAll('circle')
-            .data(this.buffer)
-
-        c.enter()
-            .append('circle')
-                .attr('cy', d => this.y(d.value.mean) - this.label_height)
-                .attr('cx', d => this.x(d.key) - this.year_to_x_for_g(this.parent.year0))
-                .attr('r', this.RADIUS)
-                .attr('class','roll_points')
-            
-        c.exit()
-            .remove()
-        
-        //adds the hover function displaying more information on the point
-        const classReference = this
-        this.circles.selectAll('circle')
-            .each(function(point_data){classReference.add_hover_function(this, point_data)})
-    }
-
     get_buffer(){
         while(this.current < this.means.length - 2){
             if(this.means[this.current].key == this.parent.year0 - this.parent.window+1){
@@ -191,15 +168,26 @@ class Roll{
         let c = this.circles.selectAll('circle')
                 .data(this.buffer)
         
-
+        const classReference = this
 
         c.enter()
             .append('circle')
                 .merge(c)
                 .attr('cy', d => this.y(d.value.mean) - this.label_height)
                 .attr('cx', d => this.x(d.key) - this.year_to_x_for_g(this.parent.year0))
-                .attr('r', this.RADIUS)
-                .style('fill', this.rgb)
+                .attr('r', d => {
+                    if(d.key == classReference.year_selected){return 10
+                    }else{return this.RADIUS}
+                })
+                .style('fill', d => {
+                    if(d.key == classReference.year_selected){return 'red'
+                    }else{return this.rgb}
+                })
+                .style('stroke', 'red')
+                .style('stroke-width', d => {
+                    if(d.key == classReference.year_selected){return 5
+                    }else{ return 0}
+                })
                 .style('opacity', '0.8')
                 .attr('class','roll_points')
 
@@ -208,11 +196,23 @@ class Roll{
 
 
 
-        const classReference = this
+
         this.circles.selectAll('circle')
             .each(function(point_data){classReference.add_hover_function(this, point_data)})
+
+        this.circles.selectAll('circle')
+            .on('click', function(point_data){
+                classReference.year_selected = parseInt(point_data.key)
+                classReference.update_points()
+                classReference.parent.map.highlight_points(classReference.type, parseInt(point_data.key))
+            })
+
+        
     }
 
+    highlight_year(){
+
+    }
 
     update_data(data, means){
         if(this.means.length == 0){
@@ -227,6 +227,7 @@ class Roll{
         const classReference = this
         d3.select(circle).on('mouseover', function(){
             d3.select(this).style('fill','rgba(250,0,0,0.7)')
+                           .style('cursor', 'pointer')
             let info_box = classReference.info_rect
             info_box.text('')
             let a = classReference.x(point_data.key)
@@ -265,7 +266,7 @@ class Roll{
                 .style('opacity', 0.9)
                 .style('visibility','visible')
 
-            classReference.parent.map.highlight_points(classReference.type, point_data.key)
+            
         })//what happens when unhovering of a point
         .on('mouseout', function(){
             d3.select(this)
@@ -274,8 +275,6 @@ class Roll{
                             .duration(300)
                             .style('opacity', 0)
                             .style('visibility','hidden')
-
-            classReference.parent.map.unhighlight_points(classReference.type)
         })
     }
 

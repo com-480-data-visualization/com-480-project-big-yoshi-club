@@ -62,28 +62,8 @@ class Map {
      * @param {year to be highlighted on the map} year 
      */
     highlight_points(type, year) {
-        const colors = ['#F5BCF2','#8FDEB9','#F6C68D']
-        let i = 0
-        if(type == 'volcanoes'){i = 0}
-        else if(type == 'earthquakes'){i = 1}
-        else{i=2}
-        this.point_container.selectAll('circle')
-                            .style('fill', function(d){
-                                if(d['date'] == year){
-                                    return 'red'
-                                }else{
-                                    return colors[i]
-                                }
-                            })
-    }
-    unhighlight_points(type) {
-        const colors = ['#F5BCF2','#8FDEB9','#F6C68D']
-        let i = 0
-        if(type == 'volcanoes'){i = 0}
-        else if(type == 'earthquakes'){i = 1}
-        else{i=2}
-        this.point_container.selectAll('circle')
-                .style('fill', colors[i])
+        this.year_selected = year
+        this.type_selected = type
     }
 
     get_points(selection) {
@@ -205,13 +185,13 @@ class Map {
             .data(this.buffer[i])
             .enter()
             .append("circle")
-            .classed("static_point", true)
-            .attr("r", r)
-            .attr("cx", -r)
-            .attr("cy", -r)
-            .style("fill", d3.color(colors[i]))
-            .style('opacity', 1)
-            .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")");
+                .classed("static_point", true)
+                .attr("r", r)
+                .attr("cx", -r)
+                .attr("cy", -r)
+                .style("fill", d3.color(colors[i]))
+                .style('opacity', 1)
+                .attr("transform", (d) => "translate(" + projection([d.Longitude, d.Latitude]) + ")");
 
     }
 
