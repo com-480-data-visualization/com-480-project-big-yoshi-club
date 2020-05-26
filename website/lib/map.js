@@ -113,9 +113,10 @@ class Map {
                 }
             })
 
-            this.parent.stats[idx].draw_hist(selected)
-        })
+            this.parent.stats.data[idx] = selected
 
+        })
+        this.parent.stats.update()
     }
 
 

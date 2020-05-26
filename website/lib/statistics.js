@@ -13,10 +13,18 @@ class Statistics {
         this.meteors_stats = new Meteors_stats(this.data[2], this.svgs[2])
     }
 
-    draw_hist(){
-        console.log('hahaha yes')
+    update(){
+        this.volcanoes_stats.svg.selectAll('*').remove()
+        this.volcanoes_stats.data = this.data[0]
+        this.volcanoes_stats.setup()
+
+        this.earthquakes_stats.svg.selectAll('*').remove()
+        this.earthquakes_stats.data = this.data[1]
+        this.earthquakes_stats.setup()
+
+        this.meteors_stats.svg.selectAll('*').remove()
+        this.meteors_stats.data = this.data[2]
+        this.meteors_stats.setup()
     }
-
-
 
 }

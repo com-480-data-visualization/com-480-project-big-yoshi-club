@@ -9,16 +9,15 @@ class Earthquake_stats{
         this.HEIGHT = svg_viewbox.height
         this.X0 = this.WIDTH * 0.1
         this.Y0 = this.HEIGHT * 0.1
-        this.svg.append('rect')
-            .attr('width', this.WIDTH)
-            .attr('height', this.HEIGHT)
-            .style('fill', 'rgba(100, 200, 100, 0.7)')
 
         this.setup()
     }
 
     setup(){
-
+        this.svg.append('rect')
+            .attr('width', this.WIDTH)
+            .attr('height', this.HEIGHT)
+            .style('fill', 'rgba(100, 200, 100, 0.7)')
         let max_x = d3.max(this.data, d => parseInt(d[this.name_x]) + 1)
         let min_x = d3.min(this.data, d => d[this.name_x])
         this.x_scale = d3.scaleLinear()
@@ -75,7 +74,6 @@ class Earthquake_stats{
     }
 
     draw_points(){
-        console.log(this.data)
         this.svg.append('g')
             .selectAll('circle')
             .data(this.data)

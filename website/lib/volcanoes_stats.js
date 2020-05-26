@@ -8,18 +8,14 @@ class Volcanoes_stats{
         this.HEIGHT = svg_viewbox.height
         this.MARGIN = 50
 
-        this.svg.append('rect')
-            .attr('width', this.WIDTH)
-            .attr('height', this.HEIGHT)
-            .style('fill', 'rgba(200, 100, 100, 0.7)')
-        this.generate_data()
-        this.draw()
+        this.setup()
     }
 
     /**
      * creates an object with the number of points per category
      */
     generate_data(){
+
         let name = 'Dominant Rock Type'
         let temp = d3.nest().key(d => d[name])
                 .rollup((v) => {
@@ -34,7 +30,12 @@ class Volcanoes_stats{
 
     //https://www.d3-graph-gallery.com/graph/donut_basic.html
     //http://bl.ocks.org/dbuezas/9572040
-    draw(){
+    setup(){
+        this.svg.append('rect')
+        .attr('width', this.WIDTH)
+        .attr('height', this.HEIGHT)
+        .style('fill', 'rgba(200, 100, 100, 0.7)')
+        this.generate_data()
         this.radius = Math.min(this.WIDTH, this.HEIGHT) / 2 - this.MARGIN
         this.small_radius = 50
         let plot = this.svg.append('g')
