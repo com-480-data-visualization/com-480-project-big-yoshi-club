@@ -4,12 +4,13 @@
 class Roll{
     /**
      * 
-     * @param { parent class } parent 
-     * @param { data specific to roll } data 
-     * @param { svg id to plot on } svg 
-     * @param { name of the data type (for axis) } type 
-     * @param { name of the attribute on y axis} y_attribute 
-     * @param { means per year wrt y_axis } means 
+     * @param {Yoshi} parent the parent classs managing time
+     * @param {array} data the data relative to the specific roll
+     * @param {String} svg the id of the svg that we draw on
+     * @param {String} type the type of the data, either 'volcanoes', 'earthquakes' or 'meteors'
+     * @param {String} y_attribute the name of the attribute displayed on the roll
+     * @param {array} means the data displayed on the roll. The mean each year of the y_attribute for the data type.
+     * @param {String} unit the type of unit of the y_attribute
      */
     constructor(parent, data, svg, type, y_attribute, means, unit){
         this.means = means
@@ -58,6 +59,9 @@ class Roll{
         this.setup()
     }
 
+    /**
+     * the setup function is called when need to draw or redraw the roll. For example when the year or the data changes.
+     */
     setup(){
         let min = d3.min(this.data, d => parseInt(d[this.y_attribute]))
         let max = d3.max(this.data, d => parseInt(d[this.y_attribute])) //we here assume the max is highe than 0
@@ -91,7 +95,7 @@ class Roll{
                         .attr('width', `${this.AXIS_HEIGHT - this.label_height}`)
                         .attr('height', `${this.W / 4}`)
 
-        this.draw_graph()                            
+        this.update_graph()                            
         //g containing the circles
         this.circles = this.svg.append('g')
                         .attr('width', this.g_width)
@@ -114,7 +118,7 @@ class Roll{
     }
 
     /**
-     * finds the current index
+     * finds the current index in the means data array. this.current will be set to the index corresponding to the element that has the first year inside the window.
      */
     set_current(){
         let i = 0
@@ -126,7 +130,7 @@ class Roll{
         this.current = i
     }
     /**
-     * searches for all the points that should be displayed and puts them in the buffer
+     * searches for all the points that should be displayed and puts them in the buffer.
      */
     update_current(){
         while(this.current < this.means.length){
@@ -141,6 +145,9 @@ class Roll{
         }
     }
 
+    /**
+     * this function is called when the roll is on. It simply gives a transition to the g holding all the points.
+     */
     update_roll(){
         this.circles.transition()
             .duration(this.parent.speed)
@@ -148,6 +155,9 @@ class Roll{
             .attr('transform', `translate(${this.year_to_x_for_g(this.parent.year0)}, ${this.label_height})`)
     }
 
+    /**
+     * basically the same method as update_current but called by update_points()
+     */
     get_buffer(){
         while(this.current < this.means.length - 2){
             if(this.means[this.current].key == this.parent.year0 - this.parent.window+1){
@@ -160,7 +170,7 @@ class Roll{
         this.buffer = this.buffer.filter(d => d.key < this.parent.year0+1)
     }
     /**
-     * updates the points according to the current year
+     * updates the points according to the current year. It draws and removes them accordingly.
      */
     update_points(){
         this.get_buffer()
@@ -183,7 +193,7 @@ class Roll{
                     if(d.key == classReference.year_selected){return 'red'
                     }else{return this.rgb}
                 })
-                .style('stroke', 'red')
+                .style('stroke', 'blue')
                 .style('stroke-width', d => {
                     if(d.key == classReference.year_selected){return 5
                     }else{ return 0}
@@ -196,10 +206,11 @@ class Roll{
 
 
 
-
+        // adds the listener for the information pannel 
         this.circles.selectAll('circle')
             .each(function(point_data){classReference.add_hover_function(this, point_data)})
 
+        // adds the listener for the point highlight
         this.circles.selectAll('circle')
             .on('click', function(point_data){
                 classReference.year_selected = parseInt(point_data.key)
@@ -210,19 +221,22 @@ class Roll{
         
     }
 
-    highlight_year(){
-
-    }
-
+    /**
+     * updates the data when it has been filtered and redraws the roll.
+     * @param {array} data the new data points
+     * @param {array} means the new means 
+     */
     update_data(data, means){
-        if(this.means.length == 0){
-
-        }
         this.means = means
         this.data = data
         this.reset()
     }
 
+    /**
+     * handles the case when a point is hovered on in the roll
+     * @param {svg-circle} circle the svg element that has been hovered
+     * @param {Object} point_data the data relative to the point
+     */
     add_hover_function(circle, point_data){
         const classReference = this
         d3.select(circle).on('mouseover', function(){
@@ -278,7 +292,9 @@ class Roll{
         })
     }
 
-
+    /**
+     * handles the drawing of the x-axis, the y-axis and the horizontal lines
+     */
     draw_axis(){
         //Y-axis and horizontal grid
         let axis_left = d3.axisLeft(this.y)
@@ -291,9 +307,7 @@ class Roll{
             .attr('class', 'axis_y')
             .call(axis_left)
 
-        let h_grid
-
-        h_grid = d3.axisLeft(this.y)
+        let h_grid = d3.axisLeft(this.y)
                 .tickSize(-this.W + this.X0)
                 .tickFormat('')
                 .ticks(this.TICKS)
@@ -321,6 +335,9 @@ class Roll{
 
     }
 
+    /**
+     * updates the x-axis position according to the current time
+     */
     update_axis(){
         this.x.domain([this.parent.year0, this.parent.year0 - this.parent.window])
         this.axis_x.transition()
@@ -329,8 +346,10 @@ class Roll{
              .call(this.axis_bottom)
     }
 
+    /**
+     * draws the title of the roll
+     */
     draw_label(){
-
         this.svg.append('rect')
             .attr("class", "timeline-label")
             .attr("x", "0")
@@ -347,6 +366,9 @@ class Roll{
 
     }
     
+    /**
+     * draws the colored background of the roll
+     */
     draw_background(){
         this.svg.append('rect')
             .attr("class", "timeline-bg")
@@ -356,39 +378,18 @@ class Roll{
             .attr('height', '100%')
     }
 
+    /**
+     * reset the roll with respect to the current year, window and data.
+     */
     reset(){
         this.buffer = []
         this.svg.selectAll('*').remove()
         this.setup()
     }
 
-    draw_graph(){
-        let classRef = this
-        if(this.buffer.length > 0){
-            let temp = this.data.filter(d => (parseInt(d['date']) < this.parent.year0) && (parseInt(d['date']) > this.parent.year0 - this.parent.window))
-            this.hist = d3.histogram()
-                            .value(d => d[classRef.y_attribute])
-                            .domain(classRef.y.domain())
-                            .thresholds(classRef.y.ticks(this.TICKS * 4))
-
-            let bins = this.hist(temp)
-            let height_scale = d3.scaleLinear()
-                            .domain([0, d3.max(bins, b => b.length)])
-                            .range([0, this.W / 5])
-            this.distribution_graph.selectAll("rect")
-                                    .data(bins)
-                                    .enter()
-                                    .append("rect")
-                                        .attr("x", 1)
-                                        .attr("transform", d => `translate(${classRef.y(d.x1) - classRef.label_height}, ${-height_scale(d.length)})`)
-                                        .attr("width", d => classRef.y(d.x0) - classRef.y(d.x1))
-                                        .attr("height", d => height_scale(d.length))
-                                        .style("fill", this.rgb)
-                                        .style('opacity', 0.4)
-        }
-
-    }
-
+    /**
+     * draws the distribution wrt the data, the year and the window
+     */
     update_graph(){
         this.distribution_graph.selectAll('rect').remove()
         let classRef = this
@@ -413,7 +414,7 @@ class Roll{
                                     .attr("width", d => classRef.y(d.x0) - classRef.y(d.x1))
                                     .attr("height", d => height_scale(d.length))
                                     .style("fill", this.rgb)
-                                    .style('opacity', 0.4)
+                                    .style('opacity', 0.7)
         }
 
     }

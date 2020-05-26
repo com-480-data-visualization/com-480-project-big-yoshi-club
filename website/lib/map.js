@@ -62,31 +62,12 @@ class Map {
      * @param {year to be highlighted on the map} year 
      */
     highlight_points(type, year) {
-        const colors = ['green', 'yellow', 'red']
-        let i = 0
-        if(type == 'volcanoes'){i = 0}
-        else if(type == 'earthquakes'){i = 1}
-        else{i=2}
-        this.point_container.selectAll('circle')
-                            .style('fill', function(d){
-                                if(d['date'] == year){
-                                    return 'black'
-                                }else{
-                                    return colors[i]
-                                }
-                            })
-                            
-    }
-    unhighlight_points(type) {
-        const colors = ['green', 'yellow', 'red']
-        let i = 0
-        if(type == 'volcanoes'){i = 0}
-        else if(type == 'earthquakes'){i = 1}
-        else{i=2}
-        this.point_container.selectAll('circle')
-                .style('fill', colors[i])
         this.year_selected = year
-        this.type_selected = type
+        this.type_id = undefined
+        if(type == 'volcanoes'){this.type_id = 0}
+        else if(type == 'earthquakes'){this.type_id = 1}
+        else{this.type_id = 2}
+        this.update_points()
     }
 
     get_points(selection) {
@@ -217,7 +198,21 @@ class Map {
             .enter()
             .append("circle")
             .classed("static_point"+ this.classes[i], true)
-            .attr("r", r)
+            .attr("r", d => {
+                if(d['date'] == classReference.year_selected){
+                    if(i == classReference.type_id){return 10}
+                    else{return 3}
+                }
+                else{return 3}
+            })
+            .attr('stroke', 'blue')
+            .attr("stroke-width", d => {
+                if(d['date'] == classReference.year_selected){
+                    if(i == classReference.type_id){return 3}
+                    else{return 0}
+                }
+                else{return 0}
+            })
             .attr("cx", -r)
             .attr("cy", -r)
             .style("fill", d3.color(colors[i]))
@@ -261,7 +256,21 @@ class Map {
                 .enter()
                 .append("circle")
                 .classed("point", true)
-                .attr("r", r)
+                .attr("r", d => {
+                    if(d['date'] == classReference.year_selected){
+                        if(idx == classReference.type_id){return 10}
+                        else{return 3}
+                    }
+                    else{return 3}
+                })
+                .attr('stroke', 'blue')
+                .attr("stroke-width", d => {
+                    if(d['date'] == classReference.year_selected){
+                        if(idx == classReference.type_id){return 3}
+                        else{return 0}
+                    }
+                    else{return 0}
+                })
                 .attr("cx", -r)
                 .attr("cy", -r)
                 .style("fill", d3.color(colors[idx]))
