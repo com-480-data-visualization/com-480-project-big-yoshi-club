@@ -77,10 +77,19 @@ function filter_data(data, yoshi){
         }
     }
 
+    // Filters style
+    const point_radius = 15
+
     //--------volcanoes filters display--------
     let volcanoes_div = d3.select('#' + 'volcanoes_filters')
-        .style('background-color', '#859FDE')
-    volcanoes_div.append("h2").text("Volcano Filters")
+        // .style('background-color', '#859FDE')
+    volcanoes_div.append("h2").text("Volcano Filters ")
+    volcanoes_div.append("svg")
+        .attr("height", 2 * point_radius).attr("width", 2 * point_radius)
+        .append("circle")
+            .attr("r", point_radius)
+            .attr("fill", "#1243b5")
+            .attr("cx", point_radius).attr("cy", point_radius)
 
     //---- first filters ----
     let filter_data = FILTERS[0][0]
@@ -99,8 +108,15 @@ function filter_data(data, yoshi){
 
     //--------earthquakes filters display--------
     let earthquakes_div = d3.select('#' + 'earthquakes_filters')
-                        .style('background-color', '#FF23D7')
-    earthquakes_div.append("h2").text("Earthquake Filters")
+                        // .style('background-color', '#FF23D7')
+    earthquakes_div.append("h2").text("Earthquake Filters ")
+    earthquakes_div.append("svg")
+        .attr("height", 2 * point_radius).attr("width", 2 * point_radius)
+        .append("circle")
+            .attr("r", point_radius)
+            .attr("fill", "#ff24d7")
+            .attr("cx", point_radius).attr("cy", point_radius)
+
     //---- first filters ----
     filter_data = FILTERS[1][0]
     let div_21 = earthquakes_div.append('div')
@@ -111,11 +127,16 @@ function filter_data(data, yoshi){
     let div_22 = earthquakes_div.append('div')
     append_number(filter_data, div_22, yoshi, 1)
 
-
     //--------meteors filters display--------
     let meteors_div = d3.select('#' + 'meteors_filters')
-                        .style('background-color', '#EC8776')
-    meteors_div.append("h2").text("Meteorite Filters")
+                        // .style('background-color', '#EC8776')
+    meteors_div.append("h2").text("Meteorite Filters ")
+    meteors_div.append("svg")
+        .attr("height", 2 * point_radius).attr("width", 2 * point_radius)
+        .append("circle")
+            .attr("r", point_radius)
+            .attr("fill", "#d92100")
+            .attr("cx", point_radius).attr("cy", point_radius)
 
     //---- first filters ----
     //filter_data = FILTERS[2][0]
