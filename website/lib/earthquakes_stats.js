@@ -17,7 +17,7 @@ class Earthquake_stats{
         this.svg.append('rect')
             .attr('width', this.WIDTH)
             .attr('height', this.HEIGHT)
-            .style('fill', '#FFA3EE')
+            .style('fill', '#EDEDEC')
         let max_x = d3.max(this.data, d => parseInt(d[this.name_x]) + 1)
         let min_x = d3.min(this.data, d => d[this.name_x]) - 1
         this.x_scale = d3.scaleLinear()
@@ -78,9 +78,9 @@ class Earthquake_stats{
                 .attr('y', 2)
                 .attr('width', this.WIDTH - 4 * this.X0)
                 .attr('height', this.Y0 / 1.2)
-                .style('fill', 'steelblue')
+                .style('fill', '#81886E')
                 .style('opacity', 0.7)
-                .style('stroke', 'red')
+                .style('stroke', 'whitesmoke')
                 .style('stroke-width', '1px')
 
         label.append('text')
@@ -89,7 +89,7 @@ class Earthquake_stats{
                 .attr('dy', this.Y0 / 1.5)
                 .style('font-family', "font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif")
                 .style('text-anchor','middle')
-                .style('stroke', 'red')
+                .style('fill', 'whitesmoke')
                 .style('stroke-width', '1px')
     }
 

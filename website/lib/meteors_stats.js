@@ -20,7 +20,7 @@ class Meteors_stats{
         this.svg.append('rect')
             .attr('width', this.WIDTH)
             .attr('height', this.HEIGHT)
-            .style('fill', '#EC8776')
+            .style('fill', '#EDEDEC')
         this.groups_data = d3.nest().key(d => d[this.name])
                 .rollup(v => v.map(e => +e['mass']))
                 .entries(this.data)
@@ -67,7 +67,7 @@ class Meteors_stats{
                 .attr('y', 2)
                 .attr('width', this.WIDTH - 2 * this.X0)
                 .attr('height', this.Y0)
-                .style('fill', 'steelblue')
+                .style('fill', '#81886E')
                 .style('opacity', 0.7)
                 .style('stroke', 'red')
                 .style('stroke-width', '1px')
@@ -78,7 +78,7 @@ class Meteors_stats{
                 .attr('dy', this.Y0 / 1.5)
                 .style('font-family', "font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif")
                 .style('text-anchor','middle')
-                .style('stroke', 'red')
+                .style('fill', 'whitesmoke')
                 .style('stroke-width', '1px')
     }
 

@@ -314,7 +314,7 @@ class Map {
                 classReference.show_point_dat(this, d)
 
             })
-            .on('mouseout', function (d) { classReference.point_container[i].selectAll('g.info_box').remove() });
+            .on('mouseout', function (d) { classReference.point_container[0].selectAll('g.info_box').remove() });
 
     }
 
@@ -376,7 +376,7 @@ class Map {
                     classReference.show_point_dat(this, d)
 
                 })
-                .on('mouseout', function (d) { classReference.point_container[idx].selectAll('g.info_box').remove() })
+                .on('mouseout', function (d) { classReference.point_container[0].selectAll('g.info_box').remove() })
                 .transition()
                 .style('opacity', 1)
                 .ease(d3.easeLinear)
