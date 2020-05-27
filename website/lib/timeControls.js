@@ -58,10 +58,6 @@ class TimelineControl {
 		this.yearToPc = d3.scaleLinear().domain([this.minYear, this.maxYear]).range([0, 100]).clamp(true)
 		this.pxToYear = d3.scaleLinear().domain([tsXStart_px, tsXEnd_px]).range([this.minYear, this.maxYear]).clamp(true)
 
-		// 3. Do selections in advance
-		const tw = this.svg.select("#time-window")
-		const twRect = tw.select("rect")
-
 		// I wish I was doing Scala, or Rust, or even C would be better
 		const thisClass = this
 
@@ -166,7 +162,7 @@ class TimelineControl {
 				// Limits of resizing
 				modifiers: [
 					interact.modifiers.restrictSize({
-						min: { width: 100 } // Limit width to 100 px
+						min: { width: 40 } // Limit width to 100 px
 					})
 				]
 			})
@@ -202,12 +198,34 @@ class TimelineControl {
 	 */
 	_redrawTWBounds() {
 		const tw = this.svg.select("#time-window")
-		tw.select(".time-window-lo-year")
-			.attr("x", `${this.yearToPc(this.twLoBnd)}%`)
-			.text(`${parseInt(this.twLoBnd)}`)
-		tw.select(".time-window-up-year")
-			.attr("x", `${this.yearToPc(this.twUpBnd)}%`)
-			.text(`${parseInt(this.twUpBnd)}`)
+		const bbox = tw.select("rect").node().getBoundingClientRect()
+		if (bbox.width > 70) {
+			tw.select(".time-window-lo-year")
+				.attr("x", `${this.yearToPc(this.twLoBnd)}%`)
+				.attr("y", "84%")
+				.attr("text-anchor", "start")
+				.text(`${parseInt(this.twLoBnd)}`)
+				.style("writing-mode", "horizontal-tb")
+			tw.select(".time-window-up-year")
+				.attr("x", `${this.yearToPc(this.twUpBnd)}%`)
+				.attr("y", "84%")
+				.attr("text-anchor", "end")
+				.text(`${parseInt(this.twUpBnd)}`)
+				.style("writing-mode", "horizontal-tb")
+		} else {
+			tw.select(".time-window-lo-year")
+				.attr("x", `${this.yearToPc(this.twLoBnd) + 0.7}%`)
+				.attr("y", `50%`)
+				.attr("text-anchor", "end")
+				.text(`${parseInt(this.twLoBnd)}`)
+				.style("writing-mode", "vertical-lr")
+			tw.select(".time-window-up-year")
+				.attr("x", `${this.yearToPc(this.twUpBnd) - 0.7}%`)
+				.attr("y", `50%`)
+				.attr("text-anchor", "end")
+				.text(`${parseInt(this.twUpBnd)}`)
+				.style("writing-mode", "vertical-lr")
+		}
 	}
 
 	/**

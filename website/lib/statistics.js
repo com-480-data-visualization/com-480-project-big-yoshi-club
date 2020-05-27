@@ -1,7 +1,7 @@
 class Statistics {
     constructor(parent, svg_element_id, data) {
         this.parent = parent;
-        this.data = data
+        this.data = [...data]
         this.svgs = svg_element_id
 
         this.setup()
