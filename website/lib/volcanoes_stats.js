@@ -6,6 +6,7 @@ class Volcanoes_stats{
         //width & height of the containing svg
         this.WIDTH = svg_viewbox.width
         this.HEIGHT = svg_viewbox.height
+        this.Y0 = 2
         this.MARGIN = 50
 
         this.setup()
@@ -53,36 +54,28 @@ class Volcanoes_stats{
         this.svg.append('rect')
         .attr('width', this.WIDTH)
         .attr('height', this.HEIGHT)
-        .style('fill', 'rgba(200, 100, 100, 0.7)')
+        .style('fill', '#859FDE')
         this.generate_data()
         this.radius = Math.min(this.WIDTH, this.HEIGHT) / 2 - this.MARGIN
         this.small_radius = 50
-        let plot = this.svg.append('g')
+        this.plot = this.svg.append('g')
             .attr('transform', `translate(${this.WIDTH / 2}, ${this.HEIGHT / 2})`)
         
-        let pie = d3.pie()
+        this.pie = d3.pie()
             .value(d => {return d.value})
 
-        let classRef = this
-        let data_ready = pie(d3.entries(this.plot_data))
-        plot.selectAll('slices')
+        let data_ready = this.pie(d3.entries(this.plot_data))
+        this.plot.selectAll('slices')
                 .data(data_ready)
                 .enter()
                 .append('path')
                 .attr('d', d3.arc()
-                    .innerRadius(classRef.small_radius)
-                    .outerRadius(classRef.radius))
+                    .innerRadius(this.small_radius)
+                    .outerRadius(this.radius))
                     .attr('fill', d => "#"+((1<<24)*Math.random()|0).toString(16))
                     .attr("stroke", "black")
                     .style("stroke-width", "2px")
                     .style("opacity", 0.7)
-
-        let slice = this.svg.select('.slices').selectAll('path.slice')
-            .data(pie(this.plot_data), d => d.key)
-            .enter()
-            .insert('path')
-            .attr('class', 'slice')
-            .style('fill', function(d){return color(d.key)})
 
         let line_data = this.generate_path(data_ready)
         let line = d3.line()
@@ -92,7 +85,7 @@ class Volcanoes_stats{
         line_data.forEach(e => 
             this.svg.append('path')
                 .attr('d', line(e))
-                .attr("stroke", "rgba(20,20,200,1)")
+                .attr("stroke", "rgba(100,10,10,1)")
                 .attr("stroke-width", 2)
                 .attr("fill", "none")
             )
@@ -109,6 +102,7 @@ class Volcanoes_stats{
                         .attr('x', d => d[2].x)
                         .attr('y', d => d[2].y - 4)
     }
+
 
     generate_path(data){
         let res = []

@@ -56,7 +56,7 @@ class Yoshi {
         this.speed = 200
         this.window = 500
         this.map = new Map(this, 'map', this.data, ['date', 'date', 'date'])
-        //this.make_stats()
+        this.make_stats()
         
         this.make_filters()
         this.make_rolls()

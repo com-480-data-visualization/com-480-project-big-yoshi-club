@@ -20,7 +20,7 @@ class Meteors_stats{
         this.svg.append('rect')
             .attr('width', this.WIDTH)
             .attr('height', this.HEIGHT)
-            .style('fill', 'rgba(200, 200, 100, 0.7)')
+            .style('fill', '#EC8776')
         this.groups_data = d3.nest().key(d => d[this.name])
                 .rollup(v => v.map(e => +e['mass']))
                 .entries(this.data)

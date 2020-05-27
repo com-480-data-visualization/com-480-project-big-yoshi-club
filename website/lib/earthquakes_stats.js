@@ -17,9 +17,9 @@ class Earthquake_stats{
         this.svg.append('rect')
             .attr('width', this.WIDTH)
             .attr('height', this.HEIGHT)
-            .style('fill', 'rgba(100, 200, 100, 0.7)')
+            .style('fill', '#FFA3EE')
         let max_x = d3.max(this.data, d => parseInt(d[this.name_x]) + 1)
-        let min_x = d3.min(this.data, d => d[this.name_x])
+        let min_x = d3.min(this.data, d => d[this.name_x]) - 1
         this.x_scale = d3.scaleLinear()
                     .domain([min_x, max_x])
                     .range([this.X0, this.WIDTH - this.X0])
