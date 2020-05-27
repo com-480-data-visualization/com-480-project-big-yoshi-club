@@ -199,7 +199,7 @@ class Map {
         if (posy + info_box_height > classReference.svg_height) {
             posy -= info_box_height
         }
-        let info_rect = classReference.point_container[0].append('g')
+        let info_rect = classReference.point_container[2].append('g')
             .attr('class', 'info_box')
 
             .style('opacity', 1)
@@ -314,7 +314,7 @@ class Map {
                 classReference.show_point_dat(this, d)
 
             })
-            .on('mouseout', function (d) { classReference.point_container[0].selectAll('g.info_box').remove() });
+            .on('mouseout', function (d) { classReference.point_container[2].selectAll('g.info_box').remove() });
 
     }
 
@@ -376,7 +376,7 @@ class Map {
                     classReference.show_point_dat(this, d)
 
                 })
-                .on('mouseout', function (d) { classReference.point_container[0].selectAll('g.info_box').remove() })
+                .on('mouseout', function (d) { classReference.point_container[2].selectAll('g.info_box').remove() })
                 .transition()
                 .style('opacity', 1)
                 .ease(d3.easeLinear)
