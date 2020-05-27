@@ -36,7 +36,7 @@ body {
 }
 
 #left-col > *, #right-col > * {
-	border: 2px solid steelblue;
+	border: 2px solid #81886E;
 	background-color: whitesmoke;
 }
 
@@ -92,7 +92,7 @@ body {
 
 /* Dropdown Button */
 #dropdown-button {
-	background-color: steelblue;
+	background-color: #81886E;
 	color: white;
 	padding: 10px;
 	font-size: 20px;
@@ -129,7 +129,7 @@ body {
 
 /* Change color of dropdown links on hover */
 #dropdown-content a:hover {
-	background-color: steelblue
+	background-color: #C2C2AF
 }
 
 /* ----- TIME CONTROL STYLE ----- */
@@ -144,22 +144,21 @@ body {
 }
 
 #time-span rect {
-	fill: whitesmoke;
+	fill: #EDEDEC;
 	width: 100%;
 	height: 90%;
 }
 
 #time-span path {
-	stroke: steelblue;
+	stroke: #C2C2AF;
 	stroke-width: 1px;
 }
 
 #time-window rect {
-	fill: rgba(70, 131, 180, 0.25);
-
+	fill: rgba(194, 194, 175, 0.315);
 	height: 70%;
 
-	stroke: steelblue;
+	stroke: #81886E;
 	stroke-width: 1px;
 }
 
@@ -183,7 +182,7 @@ body {
 
 /* Set timeline label */
 #timelines svg > .timeline-label {
-	fill: rgb(0, 87, 201);
+	fill: #81886E;
 }
 
 .roll_label {
@@ -206,9 +205,9 @@ body {
 }
 
 .info_box rect {
-	fill: steelblue;
+	fill: #EDEDEC;
 	stroke-width: 1px;
-	stroke: red;
+	stroke: #81886E;
 }
 
 .info_box text {
@@ -220,12 +219,12 @@ body {
 }
 
 .axis_x {
-	color: steelblue;
+	color: #81886E;
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 .axis_y {
-	color: steelblue;
+	color: #81886E;
 	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 	stroke-width: 0;
 }
@@ -235,7 +234,7 @@ body {
 }
 
 .h_grid line {
-	stroke: steelblue;
+	stroke: #C2C2AF;
 }
 
 /*----right collumn style-------*/
@@ -250,8 +249,8 @@ body {
 }
 
 #filters .A:nth-child(2) {
-	border-top: 2px dashed steelblue;
-	border-bottom: 2px dashed steelblue;
+	border-top: 2px solid #81886E;
+	border-bottom: 2px solid #81886E;
 }
 
 #filters .A > div {
@@ -262,8 +261,22 @@ body {
 	margin-bottom: 0;
 }
 
-#filters h4, #filters h2 {
+#filters .A svg {
+	position: relative;
+	left: 20px;
+	top: 5px;
+}
+
+#filters h2 {
+	display: inline-block;
+	margin: 0 0 15px 0;
+}
+
+#filters h4 {
 	margin: 0 0 10px 0;
+}
+
+#filters h4, #filters h2 {
 	text-transform: capitalize;
 }
 
