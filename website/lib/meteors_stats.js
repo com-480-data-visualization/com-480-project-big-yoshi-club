@@ -21,6 +21,7 @@ class Meteors_stats{
             .attr('width', this.WIDTH)
             .attr('height', this.HEIGHT)
             .style('fill', '#EC8776')
+            
         this.groups_data = d3.nest().key(d => d[this.name])
                 .rollup(v => v.map(e => +e['mass']))
                 .entries(this.data)
@@ -105,7 +106,10 @@ class Meteors_stats{
             .enter()
                 .append('text')
                 .attr('x', (d, i) => this.x_scale(i + 2))
-                .attr('y', this.HEIGHT - this.Y0 / 2)
+                .attr('y', (d, i) => {
+                    if(i%2==0){return this.HEIGHT - this.Y0 / 2}
+                    else{return this.HEIGHT - this.Y0 / 4}
+                })
                 .attr('text-anchor', 'middle')
                 .text(d => d)
 

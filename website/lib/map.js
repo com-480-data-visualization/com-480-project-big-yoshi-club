@@ -116,7 +116,7 @@ class Map {
                     return d
                 }
             })
-            this.parent.stats.data[idx] = selected
+            this.parent.stats.data[idx] = [...selected]
 
         })
         this.parent.stats.update()
