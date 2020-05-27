@@ -6,9 +6,18 @@ class Volcanoes_stats{
         //width & height of the containing svg
         this.WIDTH = svg_viewbox.width
         this.HEIGHT = svg_viewbox.height
-        this.Y0 = 2
+        this.Y0 = 0
         this.MARGIN = 50
+        this.name = 'Dominant Rock Type'
+        this.temp = d3.nest().key(d => d[this.name])
+                .rollup((v) => {
+                    return v.length
+                }).entries(this.data)
 
+        this.color_map = {}
+        this.temp.forEach(e => {
+            this.color_map[e.key] = "#"+((1<<24)*Math.random()|0).toString(16)
+        })
         this.setup()
     }
 
@@ -16,22 +25,19 @@ class Volcanoes_stats{
      * creates an object with the number of points per category
      */
     generate_data(){
-
-        let name = 'Dominant Rock Type'
-        let temp = d3.nest().key(d => d[name])
-                .rollup((v) => {
-                    return v.length
-                }).entries(this.data)
-
+        this.temp = d3.nest().key(d => d[this.name])
+        .rollup((v) => {
+            return v.length
+        }).entries(this.data)
         this.plot_data = {}
-        for(let i = 0; i < temp.length; i++){
-            this.plot_data[temp[i].key] = temp[i].value
+        for(let i = 0; i < this.temp.length; i++){
+            this.plot_data[this.temp[i].key] = this.temp[i].value
         }
 
         let label = this.svg.append('g')
         label.append('rect')
                 .attr('x', this.WIDTH - 175)
-                .attr('y', this.Y0 + 5)
+                .attr('y', this.Y0)
                 .attr('width', '180')
                 .attr('height','70')
                 .style('fill', 'steelblue')
@@ -39,7 +45,7 @@ class Volcanoes_stats{
                 .style('stroke-width', '1px')
 
         label.append('text')
-                .text(name)
+                .text(this.name)
                 .attr('x',this.WIDTH - 85)
                 .attr('dy','42')
                 .style('font-family', "font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif")
@@ -72,7 +78,7 @@ class Volcanoes_stats{
                 .attr('d', d3.arc()
                     .innerRadius(this.small_radius)
                     .outerRadius(this.radius))
-                    .attr('fill', d => "#"+((1<<24)*Math.random()|0).toString(16))
+                    .attr('fill', d => this.color_map[d.data.key])
                     .attr("stroke", "black")
                     .style("stroke-width", "2px")
                     .style("opacity", 0.7)
