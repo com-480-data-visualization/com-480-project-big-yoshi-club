@@ -6,7 +6,7 @@ class Map {
         this.classes = ['volcano', 'earthquake', 'meteor']
         this.buffer = [[], [], []]
         this.current = [0, 0, 0]
-        this.year_selected = 0
+        this.year_selected = [0, 0, 0]
         this.time_accessor = time_accessor
 
         //projection params
@@ -17,9 +17,9 @@ class Map {
         //brush
         this.brush = d3.brush().on("end", () => {
             this.selection = d3.event.selection;
-            if (this.selection != null){
+            if (this.selection != null) {
                 this.get_points(this.selection);
-            }            
+            }
         });
 
 
@@ -27,12 +27,7 @@ class Map {
         const svg_viewbox = this.svg.node().viewBox.animVal;
         this.svg_width = svg_viewbox.width;
         this.svg_height = svg_viewbox.height;
-        /*
-        this.svg.append('rect')
-            .attr('fill', 'white')
-            .attr('width', `${this.svg_width}`)
-            .attr('height', `${this.svg_height}`)
-        */
+        
 
 
         const map_promise = d3.json("data/countries.json").then((topojson_raw) => {
@@ -51,7 +46,7 @@ class Map {
                 this.set_current(idx)
                 this.update_current(idx)
                 this.draw_points(idx)
-                
+
             });
         })
 
@@ -66,12 +61,13 @@ class Map {
      */
     highlight_points(type, year) {
 
-        this.year_selected = year
+
         this.type_id = undefined
         if (type == 'volcanoes') { this.type_id = 0 }
         else if (type == 'earthquakes') { this.type_id = 1 }
         else { this.type_id = 2 }
-        this.point_container.selectAll('.static_point' + this.classes[this.type_id]).remove()
+        this.year_selected[this.type_id] = year
+        this.point_container[this.type_id].selectAll('.static_point' + this.classes[this.type_id]).remove()
 
         this.draw_points(this.type_id)
     }
@@ -155,7 +151,8 @@ class Map {
             .classed("country", true)
             .attr("d", path_generator)
             .style("fill", "#C2C2AF")
-        this.point_container = this.svg.append("g");
+        this.point_container = [this.svg.append("g"), this.svg.append("g"), this.svg.append("g")]
+
     }
 
     update_current(idx) {
@@ -202,7 +199,7 @@ class Map {
         if (posy + info_box_height > classReference.svg_height) {
             posy -= info_box_height
         }
-        let info_rect = classReference.point_container.append('g')
+        let info_rect = classReference.point_container[0].append('g')
             .attr('class', 'info_box')
 
             .style('opacity', 1)
@@ -281,7 +278,7 @@ class Map {
             .precision(0.1)
 
         const colors = ['#1243b5', '#ff24d7', '#d92100']
-        this.point_container.selectAll(".static_point" + this.classes[i])
+        this.point_container[i].selectAll(".static_point" + this.classes[i])
             .data(this.buffer[i])
             .enter()
             .append("circle")
@@ -289,7 +286,8 @@ class Map {
             .attr('lon', d => d.Longitude)
             .attr('lat', d => d.Latitude)
             .attr("r", d => {
-                if (d['date'] == classReference.year_selected) {
+
+                if (d['date'] == classReference.year_selected[i]) {
                     if (i == classReference.type_id) {
                         return 10
                     }
@@ -299,9 +297,9 @@ class Map {
                     return 3
                 }
             })
-            .attr('stroke', 'blue')
+            .attr('stroke', '#81886E')
             .attr("stroke-width", d => {
-                if (d['date'] == classReference.year_selected) {
+                if (d['date'] == classReference.year_selected[i]) {
                     if (i == classReference.type_id) { return 3 }
                     else { return 0 }
                 }
@@ -316,8 +314,8 @@ class Map {
                 classReference.show_point_dat(this, d)
 
             })
-            .on('mouseout', function (d) { classReference.point_container.selectAll('g.info_box').remove() });
-            
+            .on('mouseout', function (d) { classReference.point_container[i].selectAll('g.info_box').remove() });
+
     }
 
     update_points() {
@@ -335,10 +333,10 @@ class Map {
 
             while (this.current[idx] < this.data[idx].length) {
 
-                if ((this.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
-                    (this.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0)) {
+                if ((this.parent.data[idx][this.current[idx]][this.time_accessor[idx]] >= this.parent.year0 - this.parent.window) &&
+                    (this.parent.data[idx][this.current[idx]][this.time_accessor[idx]] <= this.parent.year0)) {
 
-                    this.buffer[idx].push(this.data[idx][this.current[idx]])
+                    this.buffer[idx].push(this.parent.data[idx][this.current[idx]])
 
 
 
@@ -347,7 +345,8 @@ class Map {
                     break
                 }
             }
-            this.point_container.selectAll(".point")
+
+            this.point_container[idx].selectAll(".point")
                 .data(this.buffer[idx])
                 .enter()
                 .append("circle")
@@ -355,15 +354,15 @@ class Map {
                 .attr('lon', d => d.Longitude)
                 .attr('lat', d => d.Latitude)
                 .attr("r", d => {
-                    if (d['date'] == classReference.year_selected) {
+                    if (d['date'] == classReference.year_selected[idx]) {
                         if (idx == classReference.type_id) { return 10 }
-                        else { return r }
+                        else { return 3 }
                     }
-                    else { return r }
+                    else { return 3 }
                 })
-                .attr('stroke', 'blue')
+                .attr('stroke', '#81886E')
                 .attr("stroke-width", d => {
-                    if (d['date'] == classReference.year_selected) {
+                    if (d['date'] == classReference.year_selected[idx]) {
                         if (idx == classReference.type_id) { return 3 }
                         else { return 0 }
                     }
@@ -377,7 +376,7 @@ class Map {
                     classReference.show_point_dat(this, d)
 
                 })
-                .on('mouseout', function (d) { classReference.point_container.selectAll('g.info_box').remove() })
+                .on('mouseout', function (d) { classReference.point_container[idx].selectAll('g.info_box').remove() })
                 .transition()
                 .style('opacity', 1)
                 .ease(d3.easeLinear)
@@ -390,6 +389,8 @@ class Map {
                     this.buffer[idx].shift()
                 })
                 .remove()
+
+
         })
         if (this.selection != null) {
 
@@ -412,18 +413,24 @@ class Map {
     }
 
     stop_fade() {
-        this.point_container.selectAll('.point')
-            .transition()
-            .duration(0)
+        for (let idx = 0; idx < this.data.length; idx++) {
+            this.point_container[idx].selectAll('.point')
+                .transition()
+                .duration(0)
+        }
     }
     cont_fade() {
-        this.point_container.selectAll('.point')
-            .transition()
-            .style('opacity', 0)
-            .ease(d3.easeLinear)
-            .duration(this.parent.speed * this.parent.window * 1.3 + this.parent.speed * 3)
-            
-            .remove()
+        for (let idx = 0; idx < this.data.length; idx++) {
+            this.point_container[idx].selectAll('.point')
+                .transition()
+                .style('opacity', 0)
+                .ease(d3.easeLinear)
+                .duration(this.parent.speed * (this.parent.window - 1))
+                .on('end', () => {
+                    this.buffer[idx].shift()
+                })
+                .remove()
+        }
 
     }
 
