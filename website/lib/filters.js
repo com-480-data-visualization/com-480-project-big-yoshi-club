@@ -23,7 +23,7 @@ var EARTHQUAKES_FILTERS = [
     {
         'name' : 'Magnitude',
         'type' : 'number',
-        'unit' : '[0-10]'
+        'unit' : '[0-9]'
     }
 ];
 var METEORS_FILTERS = [
