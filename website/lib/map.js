@@ -180,7 +180,7 @@ class Map {
     set_current(idx) {
         let i = 0
 
-        while (this.data[idx][i][this.time_accessor[idx]] >= this.parent.year0 & i < this.data[idx].length) {
+        while (i < this.data[idx].length && this.data[idx][i][this.time_accessor[idx]] >= this.parent.year0) {
             i++
         }
         this.current[idx] = i
