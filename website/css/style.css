@@ -92,7 +92,7 @@ body {
 
 /* Dropdown Button */
 #dropdown-button {
-	background-color: steelblue;
+	background-color: #81886E;
 	color: white;
 	padding: 10px;
 	font-size: 20px;
@@ -129,7 +129,7 @@ body {
 
 /* Change color of dropdown links on hover */
 #dropdown-content a:hover {
-	background-color: steelblue
+	background-color: #C2C2AF
 }
 
 /* ----- TIME CONTROL STYLE ----- */
@@ -150,7 +150,7 @@ body {
 }
 
 #time-span path {
-	stroke: steelblue;
+	stroke: #C2C2AF;
 	stroke-width: 1px;
 }
 
@@ -183,7 +183,7 @@ body {
 
 /* Set timeline label */
 #timelines svg > .timeline-label {
-	fill: rgb(0, 87, 201);
+	fill: #81886E;
 }
 
 .roll_label {
@@ -206,9 +206,9 @@ body {
 }
 
 .info_box rect {
-	fill: steelblue;
+	fill: #EDEDEC;
 	stroke-width: 1px;
-	stroke: red;
+	stroke: #81886E;
 }
 
 .info_box text {

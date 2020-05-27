@@ -79,7 +79,7 @@ function filter_data(data, yoshi){
 
     //--------volcanoes filters display--------
     let volcanoes_div = d3.select('#' + 'volcanoes_filters')
-        .style('background-color', 'rgba(200,100,100,0.7)')
+        .style('background-color', '#859FDE')
     volcanoes_div.append("h2").text("Volcano Filters")
 
     //---- first filters ----
@@ -99,7 +99,7 @@ function filter_data(data, yoshi){
 
     //--------earthquakes filters display--------
     let earthquakes_div = d3.select('#' + 'earthquakes_filters')
-                        .style('background-color', 'rgba(100,100,200, 0.7)')
+                        .style('background-color', '#FFA3EE')
     earthquakes_div.append("h2").text("Earthquake Filters")
     //---- first filters ----
     filter_data = FILTERS[1][0]
@@ -114,7 +114,7 @@ function filter_data(data, yoshi){
 
     //--------meteors filters display--------
     let meteors_div = d3.select('#' + 'meteors_filters')
-                        .style('background-color', 'rgba(100,200,100,0.7)')
+                        .style('background-color', '#EC8776')
     meteors_div.append("h2").text("Meteorite Filters")
 
     //---- first filters ----

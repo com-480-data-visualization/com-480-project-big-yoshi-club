@@ -6,7 +6,7 @@ class Map {
         this.classes = ['volcano', 'earthquake', 'meteor']
         this.buffer = [[], [], []]
         this.current = [0, 0, 0]
-
+        this.year_selected = 0
         this.time_accessor = time_accessor
 
         //projection params
@@ -63,12 +63,15 @@ class Map {
      * @param {year to be highlighted on the map} year 
      */
     highlight_points(type, year) {
+
         this.year_selected = year
         this.type_id = undefined
         if (type == 'volcanoes') { this.type_id = 0 }
         else if (type == 'earthquakes') { this.type_id = 1 }
         else { this.type_id = 2 }
-        this.update_points()
+        this.point_container.selectAll('.static_point' + this.classes[this.type_id]).remove()
+
+        this.draw_points(this.type_id)
     }
 
     get_points(selection) {
@@ -133,12 +136,12 @@ class Map {
             .projection(projection);
 
         this.map_container = this.svg.append('g');
-        
-        this.map_container.append('path')
-            .attr('fill', '#195B51')
-            .attr('d', path_generator({type: "Sphere"}));
 
-        
+        this.map_container.append('path')
+            .attr('fill', '#EDEDEC')
+            .attr('d', path_generator({ type: "Sphere" }));
+
+
         this.svg.append("g") // this group with class .brush will be the visual indicator of our brush
             .attr("class", "brush")
 
@@ -150,7 +153,7 @@ class Map {
             .append("path")
             .classed("country", true)
             .attr("d", path_generator)
-            .style("fill", "#195B51")
+            .style("fill", "#C2C2AF")
         this.point_container = this.svg.append("g");
     }
 
@@ -184,16 +187,20 @@ class Map {
 
 
     show_point_dat(point, d) {
-        
-        //let pos = point.lon.animVal.value
-        
+
         const classReference = this
-        
-        console.log(point.getAttribute("lon"))
         let lon = point.getAttribute("lon")
         let lat = point.getAttribute('lat')
         const info_box_height = 40
         const info_box_width = 80
+        let posx = classReference.projection_style([lon, lat])[0]
+        let posy = classReference.projection_style([lon, lat])[1]
+        if (posx + info_box_width > classReference.svg_width) {
+            posx -= info_box_width
+        }
+        if (posy + info_box_height > classReference.svg_height) {
+            posy -= info_box_height
+        }
         let info_rect = classReference.point_container.append('g')
             .attr('class', 'info_box')
 
@@ -201,38 +208,66 @@ class Map {
         info_rect.append('rect')
             .attr('width', info_box_width)
             .attr('height', info_box_height)
+            .style('fill', 'ivory')
+            .style('stroke', 'black')
             .attr('rx', 10)
-            
-            .attr("transform", "translate(" + classReference.projection_style([lon, lat]) + ")")
+
+            .attr("transform", "translate(" + posx + ',' + posy + ")")
 
         let text = info_rect.append('text')
             .attr('x', '5px')
             .attr('dy', 0)
             .attr('y', '10')
-            .attr("font-size", "0.8em")
-            .attr("transform", "translate(" + classReference.projection_style([lon, lat]) + ")")
+            .style('fill', 'black')
+            .attr("font-size", "0.5em")
+            .attr("transform", "translate(" + posx + ',' + posy + ")")
         //paragraphs
-        text.append('tspan')
-            .text(`Year: ${2018 - d.date}`)
-            .attr('dy', `${info_box_height / 5}`)
-            .attr('x', `${info_box_width / 2}`)
+
         if (d.Magnitude) {
             text.append('tspan')
-                .text(`:D`)
-                .attr('dy', `${info_box_height / 2}`)
+                .text(`Year: ${2018 - d.date}`)
                 .attr('x', `${info_box_width / 2}`)
+            text.append('tspan')
+                .text(`Magnitude: ${d.Magnitude}`)
+                .attr('dy', `${info_box_height / 2.9}`)
+                .attr('x', `${info_box_width / 2}`)
+            text.append('tspan')
+                .text(`Depth: ${d.Depth}km`)
+                .attr('dy', `${info_box_height / 2.85}`)
+                .attr('x', `${info_box_width / 2}`)
+
         } else if (d.recclass) {
             text.append('tspan')
-                .text(`-.-`)
-                .attr('dy', `${info_box_height / 2}`)
+                .text(`Year: ${2018 - d.date}`)
                 .attr('x', `${info_box_width / 2}`)
-        } else {
             text.append('tspan')
-                .text(`:(`)
-                .attr('dy', `${info_box_height / 2}`)
+                .text(`Recclass:`)
+                .attr('dy', `${info_box_height / 2.9}`)
                 .attr('x', `${info_box_width / 2}`)
+            text.append('tspan')
+                .text(`${d.recclass}`)
+                .attr('dy', `${info_box_height / 2.85}`)
+                .attr('x', `${info_box_width / 2}`)
+
+        } else {
+            let v = d['Volcano Name']
+            if (v.length > 14) {
+                v = v.slice(0, 13) + '...'
+            }
+            text.append('tspan')
+                .text(`${v}`)
+                .attr('x', `${info_box_width / 2}`)
+            text.append('tspan')
+                .text(`Elevation: ${d.Elevation}`)
+                .attr('x', `${info_box_width / 2}`)
+                .attr('dy', `${info_box_height / 2.85}`)
+            text.append('tspan')
+                .text(`Year: ${2018 - d.date}`)
+                .attr('x', `${info_box_width / 2}`)
+                .attr('dy', `${info_box_height / 2.9}`)
+
         }
-        
+
 
     }
 
@@ -246,7 +281,7 @@ class Map {
             .translate([this.svg_width / 2, this.svg_height / 2])
             .precision(0.1)
 
-        const colors = ['green', 'yellow', 'red']
+        const colors = ['#1243b5', '#ff24d7', '#d92100']
         this.point_container.selectAll(".static_point" + this.classes[i])
             .data(this.buffer[i])
             .enter()
@@ -256,10 +291,14 @@ class Map {
             .attr('lat', d => d.Latitude)
             .attr("r", d => {
                 if (d['date'] == classReference.year_selected) {
-                    if (i == classReference.type_id) { return 10 }
+                    if (i == classReference.type_id) {
+                        return 10
+                    }
                     else { return 3 }
                 }
-                else { return 3 }
+                else {
+                    return 3
+                }
             })
             .attr('stroke', 'blue')
             .attr("stroke-width", d => {
@@ -283,7 +322,7 @@ class Map {
 
     update_points() {
         const r = 3;
-        const colors = ['green', 'yellow', 'red']
+        const colors = ['#1243b5', '#ff24d7', '#d92100']
         const classReference = this
         const projection = this.projection_style
             .center([0, 0])
@@ -375,6 +414,21 @@ class Map {
         this.point_container.selectAll('.point')
             .transition()
             .duration(0)
+    }
+    cont_fade() {
+        console.log('hi')
+        console.log(this.point_container.selectAll('.point'))
+        this.point_container.selectAll('.point')
+            .transition()
+            .style('opacity', 0)
+            .ease(d3.easeLinear)
+            .duration(this.parent.speed * this.parent.window * 1.3 + this.parent.speed * 3)
+            .on('end', (d) => {
+                console.log(d)
+                this.buffer[idx].shift()
+            })
+            .remove()
+
     }
 
 

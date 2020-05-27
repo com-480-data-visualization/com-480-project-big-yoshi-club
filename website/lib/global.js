@@ -1,5 +1,13 @@
 class Yoshi {
+    /*COLOR SCHEME
+    volcanoes: #466DC9,#1143B5,#859FDE
+    earthquakes: #FF63E2,#FF23D7,#FFA3EE
+    meteors: #E25238,#D92100,#EC8776
+    background: #EDEDEC, #C2C2AF, #81886E
 
+
+
+    */
     constructor(data, map_svg, roll_svgs) {
         this.data = [[],[],[]]
         this.data[0] = data[0]
@@ -91,7 +99,7 @@ class Yoshi {
             .on('click', () => {
                 this.stop()
 
-                this.map.PROJECT_SCALE = 150
+                this.map.PROJECT_SCALE = 158
 
                 this.map.projection_style = d3.geoEquirectangular()
                 this.map.update_projection()
@@ -110,6 +118,7 @@ class Yoshi {
         for(let idx = 0; idx < this.data.length; idx++){
             this.map.point_container.selectAll('.static_point' + this.map.classes[idx]).remove()
         }
+        this.map.cont_fade()
         this.tick()
         this.interval = setInterval(() => this.tick(), this.speed)
     }

@@ -43,11 +43,11 @@ class Roll{
         this.rgb = 'steelblue'
 
         if(this.type == 'volcanoes'){
-            this.rgb = 'rgb(100,200,100)'
+            this.rgb = '#1243b5'
         }else if(this.type == 'meteors'){
-            this.rgb = 'rgb(100,100,100)'
+            this.rgb = '#d92100'
         }else{
-            this.rgb = 'rgb(100,100,200)'
+            this.rgb = '#ff24d7'
         }
         //scalings
         //right x padding
