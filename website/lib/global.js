@@ -12,8 +12,8 @@ class Yoshi {
         this.data = [[],[],[]]
         this.data[0] = data[0]
         this.data[1] = data[1].filter(function(d){
-            let rand = Math.random() <= 0.7
-            return (parseFloat(d.Magnitude) > 6.2) && (rand)
+            let rand = Math.random() <= 0.2
+            return (parseFloat(d.Magnitude) >= 5.5) && (rand)
         })
         this.data[2] = data[2].filter(function(d){
             return (Math.random() <= 0.1) 
@@ -232,13 +232,7 @@ class Yoshi {
 
     make_stats() {
         let names = ['volcano_stats', 'earthquake_stats', 'meteor_stats']
-        let y_vals = ['Elevation', 'Depth', 'mass']
-        let x_vals = ['Dominant Rock Type', 'Magnitude', 'recclass']
-        this.stats = []
-        for (let i = 0; i < 3; i++) {
-            let stat = new Statistics(this, names[i], this.map.data[i], y_vals[i], x_vals[i])
-            this.stats[i] = stat
-        }
+        this.stats = new Statistics(this, names, this.data)
     }
 
     make_buttons() {

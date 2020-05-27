@@ -115,9 +115,10 @@ class Map {
                 }
             })
 
-            this.parent.stats[idx].draw_hist(selected)
-        })
+            this.parent.stats.data[idx] = selected
 
+        })
+        this.parent.stats.update()
     }
 
 
@@ -357,9 +358,9 @@ class Map {
                 .attr("r", d => {
                     if (d['date'] == classReference.year_selected) {
                         if (idx == classReference.type_id) { return 10 }
-                        else { return 3 }
+                        else { return r }
                     }
-                    else { return 3 }
+                    else { return r }
                 })
                 .attr('stroke', 'blue')
                 .attr("stroke-width", d => {
