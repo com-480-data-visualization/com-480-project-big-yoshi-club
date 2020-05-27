@@ -99,7 +99,7 @@ function filter_data(data, yoshi){
 
     //--------earthquakes filters display--------
     let earthquakes_div = d3.select('#' + 'earthquakes_filters')
-                        .style('background-color', '#FFA3EE')
+                        .style('background-color', '#FF23D7')
     earthquakes_div.append("h2").text("Earthquake Filters")
     //---- first filters ----
     filter_data = FILTERS[1][0]

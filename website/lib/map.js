@@ -17,7 +17,9 @@ class Map {
         //brush
         this.brush = d3.brush().on("end", () => {
             this.selection = d3.event.selection;
-            this.get_points(this.selection);
+            if (this.selection != null){
+                this.get_points(this.selection);
+            }            
         });
 
 
@@ -45,11 +47,11 @@ class Map {
             this.draw_map()
 
 
-
             this.data.forEach((_, idx) => {
                 this.set_current(idx)
                 this.update_current(idx)
                 this.draw_points(idx)
+                
             });
         })
 
@@ -114,7 +116,6 @@ class Map {
                     return d
                 }
             })
-
             this.parent.stats.data[idx] = selected
 
         })
@@ -147,7 +148,6 @@ class Map {
             .attr("class", "brush")
 
             .call(this.brush);
-
         this.map_container.selectAll(".country")
             .data(this.map_data)
             .enter()
@@ -214,7 +214,6 @@ class Map {
             .attr('rx', 10)
 
             .attr("transform", "translate(" + posx + ',' + posy + ")")
-
         let text = info_rect.append('text')
             .attr('x', '5px')
             .attr('dy', 0)
@@ -223,7 +222,6 @@ class Map {
             .attr("font-size", "0.5em")
             .attr("transform", "translate(" + posx + ',' + posy + ")")
         //paragraphs
-
         if (d.Magnitude) {
             text.append('tspan')
                 .text(`Year: ${2018 - d.date}`)
@@ -319,6 +317,7 @@ class Map {
 
             })
             .on('mouseout', function (d) { classReference.point_container.selectAll('g.info_box').remove() });
+            
     }
 
     update_points() {
@@ -382,22 +381,23 @@ class Map {
                 .transition()
                 .style('opacity', 1)
                 .ease(d3.easeLinear)
-                .duration(this.parent.speed * 10)
+                .duration(this.parent.speed)
                 .transition()
                 .style('opacity', 0)
                 .ease(d3.easeLinear)
-                .duration(this.parent.speed * this.parent.window * 1.3 + this.parent.speed * 3)
+                .duration(this.parent.speed * (this.parent.window - 1))
                 .on('end', () => {
                     this.buffer[idx].shift()
                 })
                 .remove()
         })
         if (this.selection != null) {
+
             this.get_points(this.selection);
         }
     }
     update_projection() {
-
+        this.selection = null
         this.svg.selectAll('g').remove()
 
         this.draw_map()
@@ -417,17 +417,12 @@ class Map {
             .duration(0)
     }
     cont_fade() {
-        console.log('hi')
-        console.log(this.point_container.selectAll('.point'))
         this.point_container.selectAll('.point')
             .transition()
             .style('opacity', 0)
             .ease(d3.easeLinear)
             .duration(this.parent.speed * this.parent.window * 1.3 + this.parent.speed * 3)
-            .on('end', (d) => {
-                console.log(d)
-                this.buffer[idx].shift()
-            })
+            
             .remove()
 
     }

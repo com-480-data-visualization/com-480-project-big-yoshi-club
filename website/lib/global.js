@@ -9,14 +9,14 @@ class Yoshi {
 
     */
     constructor(data, map_svg, roll_svgs) {
-        this.data = [[],[],[]]
+        this.data = [[], [], []]
         this.data[0] = data[0]
-        this.data[1] = data[1].filter(function(d){
+        this.data[1] = data[1].filter(function (d) {
             let rand = Math.random() <= 0.2
             return (parseFloat(d.Magnitude) >= 5.5) && (rand)
         })
-        this.data[2] = data[2].filter(function(d){
-            return (Math.random() <= 0.1) 
+        this.data[2] = data[2].filter(function (d) {
+            return (Math.random() <= 0.1)
         })
         this.full_data = [...this.data]
         //this.data = data
@@ -55,9 +55,9 @@ class Yoshi {
         this.min_speed = 300
         this.speed = 200
         this.window = 500
-
         this.map = new Map(this, 'map', this.data, ['date', 'date', 'date'])
-        this.make_stats()
+        //this.make_stats()
+        
         this.make_filters()
         this.make_rolls()
         this.make_buttons()
@@ -68,7 +68,6 @@ class Yoshi {
         const twLoBnd = 2018 - this.year0
         const twUpBnd = twLoBnd + this.window
         this.timelineControl = new TimelineControl(this, svgId, minDate, maxDate, twLoBnd, twUpBnd)
-
         // Force statistics to be aligned with the rolls
         // Align the one placed higher with the one placed lower
         const rolls = d3.select("#timelines")
@@ -114,8 +113,8 @@ class Yoshi {
 
         d3.select('#start-stop')
             .style('background-image', 'url(img/pause.png)')
-            .on('click', () => this.stop()) 
-        for(let idx = 0; idx < this.data.length; idx++){
+            .on('click', () => this.stop())
+        for (let idx = 0; idx < this.data.length; idx++) {
             this.map.point_container.selectAll('.static_point' + this.map.classes[idx]).remove()
         }
         this.map.cont_fade()
@@ -123,6 +122,7 @@ class Yoshi {
         this.interval = setInterval(() => this.tick(), this.speed)
     }
     stop() {
+        
         clearInterval(this.interval)
         this.on = false
         this.map.stop_fade()
@@ -145,7 +145,9 @@ class Yoshi {
         this.timelineControl.update(year0, year0 + window)
 
         this.rolls.forEach((r, idx) => {
+
             r.reset()
+
             this.map.set_current(idx)
             this.map.update_current(idx)
             this.map.draw_points(idx)
@@ -166,14 +168,15 @@ class Yoshi {
         this.timelineControl.update(loBnd, upBnd)
     }
 
-    
-    update_data(){
+
+    update_data() {
+        
         this.get_means()
-        this.rolls.forEach((r, i)=> {r.update_data(this.data[i], this.means[i])})
+        this.rolls.forEach((r, i) => { r.update_data(this.data[i], this.means[i]) })
         this.map.point_container.selectAll('*').remove()
         this.map.buffer = [[], [], []]
-        
-        for(let idx = 0; idx < this.data.length; idx++){
+
+        for (let idx = 0; idx < this.data.length; idx++) {
             this.map.set_current(idx)
             this.map.update_current(idx)
             this.map.draw_points(idx)
@@ -236,6 +239,7 @@ class Yoshi {
     }
 
     make_buttons() {
+        
         d3.select('#start-stop')
             .style('background-image', 'url(img/play.png)')
             .style('background-size', 'cover')
@@ -260,6 +264,7 @@ class Yoshi {
     }
 
     make_filters() {
+        
         filter_data(this.data, this)
     }
 
