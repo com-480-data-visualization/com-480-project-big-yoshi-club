@@ -115,7 +115,7 @@ class Yoshi {
             .style('background-image', 'url(img/pause.png)')
             .on('click', () => this.stop())
         for (let idx = 0; idx < this.data.length; idx++) {
-            this.map.point_container.selectAll('.static_point' + this.map.classes[idx]).remove()
+            this.map.point_container[idx].selectAll('.static_point' + this.map.classes[idx]).remove()
         }
         this.map.cont_fade()
         this.tick()
@@ -136,7 +136,12 @@ class Yoshi {
         this.stop()
         this.year0 = 2018 - year0
         this.window = window
-        this.map.point_container.selectAll('*').remove()
+        
+        for (let idx = 0; idx < this.data.length; idx++) {
+            this.map.point_container[idx].selectAll('*').remove()
+
+        }
+        
         this.map.buffer = [[], [], []]
 
 
@@ -173,10 +178,11 @@ class Yoshi {
         
         this.get_means()
         this.rolls.forEach((r, i) => { r.update_data(this.data[i], this.means[i]) })
-        this.map.point_container.selectAll('*').remove()
+        
         this.map.buffer = [[], [], []]
 
         for (let idx = 0; idx < this.data.length; idx++) {
+            this.map.point_container[idx].selectAll('*').remove()
             this.map.set_current(idx)
             this.map.update_current(idx)
             this.map.draw_points(idx)

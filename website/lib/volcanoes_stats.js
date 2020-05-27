@@ -40,8 +40,8 @@ class Volcanoes_stats{
                 .attr('y', this.Y0)
                 .attr('width', '180')
                 .attr('height','70')
-                .style('fill', 'steelblue')
-                .style('stroke', 'red')
+                .style('fill', '#81886E')
+                .style('stroke', '#81886E')
                 .style('stroke-width', '1px')
 
         label.append('text')
@@ -50,7 +50,7 @@ class Volcanoes_stats{
                 .attr('dy','42')
                 .style('font-family', "font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif")
                 .style('text-anchor','middle')
-                .style('stroke', 'red')
+                .style('fill', 'whitesmoke')
                 .style('stroke-width', '1px')
     }
 
@@ -60,7 +60,7 @@ class Volcanoes_stats{
         this.svg.append('rect')
         .attr('width', this.WIDTH)
         .attr('height', this.HEIGHT)
-        .style('fill', '#859FDE')
+        .style('fill', '#EDEDEC')
         this.generate_data()
         this.radius = Math.min(this.WIDTH, this.HEIGHT) / 2 - this.MARGIN
         this.small_radius = 50
