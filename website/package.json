@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/com-480-data-visualization/com-480-project-big-yoshi-club#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.18.2"
   }
 }
